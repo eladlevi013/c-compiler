@@ -1,59 +1,58 @@
 %%
 // keywords lexemes
-"bool" { return BOOL; }
-"char" { return CHAR; }
-"int" { return INT; }
-"real" { return REAL; }
-"string" { return STRING; }
-"int*" { return INT_POINTER; }
-"char*" { return CHAR_POINTER; }
-"real*" { return REAL_POINTER; }
-"if" { return IF; }
-"else" { return ELSE; }
-"while" { return WHILE; }
-"for" { return FOR; }
-"var" { return VAR; }
-"arg->" { return ARG_ARROW; }
-"function" { return FUNCTION; }
-"return" { return RETURN; }
-"null" { return NULL; }
-"void" { return VOID; }
-"do" { return DO; }
+bool { printf("BOOL"); }
+char { printf("CHAR"); }
+int { printf("INT"); }
+real { printf("REAL"); }
+string { printf("STRING"); }
+int* { printf("INT_POINTER"); }
+char* { printf("CHAR_POINTER"); }
+real* { printf("REAL_POINTER"); }
+if { printf("IF"); }
+else { printf("ELSE"); }
+while { printf("WHILE"); }
+for { printf("FOR"); }
+var { printf("VAR"); }
+arg-> { printf("ARG_ARROW"); }
+function { printf("FUNCTION"); }
+return X { printf("%s", "X"); }
+null { printf("NULL"); }
+void { printf("VOID"); }
+do { printf("DO"); }
 
 // operator lexemes
-"&&" { return AND; }
-"/" { return DIVIDE; }
-"=" { return AST; }
-"==" { return EQ; }
-">" { return GT; }
-">=" { return GE; }
-"<" { return LT; }
-"<=" { return LE; }
-"-" { return SUBTRACT; }
-"!" { return NOT; }
-"!=" { return NE; }
-"||" { return OR; }
-"+" { return ADD; }
-"*" { return MULTIPLY; }
-"&" { return AMPERSAND; }
+&& { printf("AND"); }
+/ { printf("DIVIDE"); }
+= { printf("AST"); }
+== { printf("EQ"); }
+> { printf("GT"); }
+>= { printf("GE"); }
+< { printf("LT"); }
+<= { printf("LE"); }
+- { printf("SUBTRACT"); }
+! { printf("NOT"); }
+!= { printf("NE"); }
+|| { printf("OR"); }
++ { printf("ADD"); }
+* { printf("MULTIPLY"); }
+& { printf("AMPERSAND"); }
 
 // literal lexemes
-"false" { return FALSE; }
-"true" { return TRUE; }
-['][.+\n]['] { return CHAR; }
-[-]?[0-9]+ { return INTEGER_LITERAL; }
-0[x+X][0-9A-F]+ { return INTEGER_LITERAL; }
-[-]?([0-9]*[\.][0-9]+) { return REALS_LITERAL; }
-["][.+\n]*["] { return STRING; }
+false { printf("FALSE"); }
+true { printf("TRUE"); }
+['][.+\n]['] { printf("CHAR"); }
+[-]?[0-9]+ { printf("%s", yytext); }
+0[x+X][0-9A-F]+ { printf("%s", yytext); }
+[-]?([0-9]*[\.][0-9]+) { printf("%s", yytext); }
+["][.+\n]*["] { printf("STRING"); }
 
 // literal lexemes
-\; { return SEMICOLON;}
-\, { return COMMA; }
-\| { return VETICAL_BAR; }
-\{ { return START_CURLY_BRACKETS; }
-\} { return END_CURLY_BRACKETS; }
-\( { return START_ROUND_BRACKETS; }
-\) { return END_ROUND_BRACKETS; }
-\[ { return START_SQUARE_BRACKETS; }
-\] { return END_SQUARE_BRACKETS; }
+\; { printf("SEMICOLON"); }
+\, { printf("COMMA"); }
+\| { printf("VERTICAL_BAR"); }
+\{ { printf("START_CURLY_BRACKETS"); }
+\} { printf("END_CURLY_BRACKETS"); }
+\( { printf("START_ROUND_BRACKETS"); }
+\) { printf("END_ROUND_BRACKETS"); }
+\[ { printf("START_SQUARE_BRACKETS"); }\] { printf("END_SQUARE_BRACKETS"); }
 %%
