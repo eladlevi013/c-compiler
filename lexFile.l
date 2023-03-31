@@ -1,5 +1,4 @@
 %%
-// keywords lexemes
 bool { printf("BOOL"); }
 char { printf("CHAR"); }
 int { printf("INT"); }
@@ -15,38 +14,32 @@ for { printf("FOR"); }
 var { printf("VAR"); }
 arg-> { printf("ARG_ARROW"); }
 function { printf("FUNCTION"); }
-return X { printf("%s", "X"); }
+return { printf("RETURN"); }
 null { printf("NULL"); }
 void { printf("VOID"); }
 do { printf("DO"); }
-
-// operator lexemes
 && { printf("AND"); }
-/ { printf("DIVIDE"); }
-= { printf("AST"); }
-== { printf("EQ"); }
-> { printf("GT"); }
->= { printf("GE"); }
-< { printf("LT"); }
-<= { printf("LE"); }
-- { printf("SUBTRACT"); }
-! { printf("NOT"); }
-!= { printf("NE"); }
-|| { printf("OR"); }
-+ { printf("ADD"); }
-* { printf("MULTIPLY"); }
-& { printf("AMPERSAND"); }
-
-// literal lexemes
+\/ { printf("DIVIDE"); }
+\= { printf("AST"); }
+\== { printf("EQ"); }
+\> { printf("GT"); }
+\>= { printf("GE"); }
+\< { printf("LT"); }
+\<= { printf("LE"); }
+\- { printf("SUBTRACT"); }
+\! { printf("NOT"); }
+\!= { printf("NE"); }
+\|\| { printf("OR"); }
+\+ { printf("ADD"); }
+\* { printf("MULTIPLY"); }
+\& { printf("AMPERSAND"); }
 false { printf("FALSE"); }
 true { printf("TRUE"); }
-['][.+\n]['] { printf("CHAR"); }
+\'.\' { printf("CHAR"); }
 [-]?[0-9]+ { printf("%s", yytext); }
 0[x+X][0-9A-F]+ { printf("%s", yytext); }
 [-]?([0-9]*[\.][0-9]+) { printf("%s", yytext); }
 ["][.+\n]*["] { printf("STRING"); }
-
-// literal lexemes
 \; { printf("SEMICOLON"); }
 \, { printf("COMMA"); }
 \| { printf("VERTICAL_BAR"); }
@@ -54,5 +47,6 @@ true { printf("TRUE"); }
 \} { printf("END_CURLY_BRACKETS"); }
 \( { printf("START_ROUND_BRACKETS"); }
 \) { printf("END_ROUND_BRACKETS"); }
-\[ { printf("START_SQUARE_BRACKETS"); }\] { printf("END_SQUARE_BRACKETS"); }
+\[ { printf("START_SQUARE_BRACKETS"); }
+\] { printf("END_SQUARE_BRACKETS"); }
 %%
