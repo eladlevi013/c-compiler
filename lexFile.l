@@ -35,11 +35,11 @@ do { printf("DO"); }
 \& { printf("AMPERSAND"); }
 false { printf("FALSE"); }
 true { printf("TRUE"); }
-\'.\' { printf("CHAR"); }
-[-]?[0-9]+ { printf("%s", yytext); }
-0[x+X][0-9A-F]+ { printf("%s", yytext); }
-[-]?([0-9]*[\.][0-9]+) { printf("%s", yytext); }
-["][.+\n]*["] { printf("STRING"); }
+\'(.|\\n)\' { printf("CHAR"); }
+[-]?[0-9]+ { printf("INTEGER_LITERAL"); }
+0[x|X]([0-9A-F])+ { printf("INTEGER_LITERAL_HEX"); }
+[+|-]?([0-9]*[\.][0-9]*[e|E][+|-]?[0-9]+|[0-9]+[e|E][+|-]?[0-9]+|[0-9]*[.][0-9]+) { printf("REAL_LITERAL"); }
+\"[^"]*\" { printf("STRING"); }
 \; { printf("SEMICOLON"); }
 \, { printf("COMMA"); }
 \| { printf("VERTICAL_BAR"); }
@@ -49,4 +49,5 @@ true { printf("TRUE"); }
 \) { printf("END_ROUND_BRACKETS"); }
 \[ { printf("START_SQUARE_BRACKETS"); }
 \] { printf("END_SQUARE_BRACKETS"); }
+\/\*(.|\n)*\*\/ { printf("COMMENT") };
 %%
