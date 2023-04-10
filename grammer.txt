@@ -10,6 +10,9 @@ parameter_list: "arg->" variable1 parameter_list | "arg->" variable1
 body: function | variable_declarations | statements
 statements: assignment_statement | function_call_statement | if_statement | if_else_statement | while_statement | code_block_statement | return_statement
 
+assignment_statement: lhs "=" expression ";" | lhs "=" STRING_LITERAL ";"
+lhs: 
+
 if_statement: "if" "(" expression ")" "{" body_of_nested_statement "}" | 
 
 code_block_statement: "{" ...... "}"
