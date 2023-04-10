@@ -1,1 +1,16 @@
+program:
+functions: function | procedure
+body: 
 
+type: bool | char | int | real | char* | real* | int*
+
+literal_lexemes: bool_literal, char_literal, integer_litearal, real_literal, string_literal
+
+
+
+
+//A program is composed of many functions/procedures, just listed one after 
+another. Procedure is a function that does not return any value. Every legal 
+program should have one and only one procedure: 'main()'. This is case 
+sensitive, so Main() is incorrect. Of course, a program can have user defined 
+functions too. Any function must be defined before the point of call.
