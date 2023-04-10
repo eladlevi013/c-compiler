@@ -1,19 +1,35 @@
-program: procedure // main()
+!!!אם מישהו קורא את זה תתקשרו ב11 שנשב!!!
+
+program: procedure // main() - need fix 4sure
 functions: function | procedure
 function: "function" id "(" parameter_list ")": type "{" body "}" //where type is not void.
 procedure: "function" id "(" parameter_list ")": void "{" body "}"
-pr
-body: function | variable | statements
+
+body: function | variable_declarations | statements
+statements: assignment_statement | function_call_statement | if_statement | if_else_statement | while_statement | code_block_statement | return_statement
+
+if_statement: "if" "(" expression ")" "{" body_of_nested_statement "}" | 
+
+code_block_statement: "{" ...... "}"
+return_statement: "return" expression ";"
+
+body_of_nested_statement: 
 
 type: bool | char | int | real | char* | real* | int*
 
 literal_lexemes: bool_literal, char_literal, integer_litearal, real_literal, string_literal
 
 
---Variable Declarations--
+variable_declarations: variable | string
+
+--Variable Declarations-- 
 variable: "var" variable'
 variable': id variable'' | id = "put something" variable''
 variable'': "," variable' | ":" type ";" 
 
 --Strings (character arrays)--
-arrays: "string" 
+string: "string" string'
+string': id "[" integer_litearal "]" string'' | id "[" integer_litearal "]" = "put something" string''
+string'': "," string' | ";"
+
+"put something" -> need to be value => 5 , 2 , "sda" 
