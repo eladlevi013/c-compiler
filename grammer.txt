@@ -1,16 +1,19 @@
-program:
+program: procedure // main()
 functions: function | procedure
 function: "function" id "(" parameter_list ")": type "{" body "}" //where type is not void.
 procedure: "function" id "(" parameter_list ")": void "{" body "}"
 pr
-body: 
+body: function | variable | statements
 
 type: bool | char | int | real | char* | real* | int*
 
 literal_lexemes: bool_literal, char_literal, integer_litearal, real_literal, string_literal
 
-variable_declaration: 
 
+--Variable Declarations--
+variable: "var" variable'
+variable': id variable'' | id = "put something" variable''
+variable'': "," variable' | ":" type ";" 
 
-
-
+--Strings (character arrays)--
+arrays: "string" 
