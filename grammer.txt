@@ -33,7 +33,7 @@ body_of_nested_statement:
 type: BOOL | CHAR | INT | REAL | CHAR_POINTER | REAL_POINTER | INT_POINTER 
 
 --> literal_lexemes: bool_literal, char_literal, integer_litearal, real_literal, string_literal | identifier | pointers
-literal_lexemes: FALSE | TRUE
+literal_lexemes: FALSE | TRUE | CHAR_LITERAL | INTEGER_LITERAL | INTEGER_LITERAL_HEX | REAL_LITERAL | STRING_LITERAL | IDENTIFIER
 
 variable_declarations: variable | string
 
@@ -49,7 +49,7 @@ string2: "," string1 | ";"
 
 expression: expression operator expression | operator expression | literal_lexemes
 
---> operator: "&&" | '/' | "==" | '>' | ">=" | '<' | "<=" | '-' | '!' | "!=" | "||" | '+' | '*' | '&' 
+--> operator: "&&" | '/' | "==" | '>' | ">=" | '<' | "<=" | '-' | '!' | "!=" | "||" | '+' | '*' 
 operator: AND | DIVIDE | ASSIGNMENT | EQUALS | GREATER_THAN | GREATER_EQUALS | LOWER_THAN | LOWER_EQUALS | SUBTRACT | NOT | NOT_EQUALS | OR | ADD | MULTIPLY | AMPERSAND
 
 "put something" -> need to be value => 5 , 2 , "sda" 
