@@ -37,5 +37,8 @@ string: "string" string1
 string1: id "[" integer_litearal "]" string2 | id "[" integer_litearal "]" = "put something" string2
 string2: "," string1 | ";"
 
+expression: expression operator expression | operator expression | literal_lexemes
+operator: && | / | = | == | > | >= | < | <= | - | ! | != | || | + | * | & 
+
 "put something" -> need to be value => 5 , 2 , "sda" 
 נ.ב : אני כזה גאון וחתיך
