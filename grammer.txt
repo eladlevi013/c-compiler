@@ -1,5 +1,3 @@
-!!!אם מישהו קורא את זה תתקשרו ב11 שנשב!!!
-
 program: procedure // main() - need fix 4sure
 functions: function | procedure
 function: "function" id "(" parameter_list ")": type "{" body "}" //where type is not void.
