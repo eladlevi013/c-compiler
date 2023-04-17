@@ -7,7 +7,9 @@ procedure: "function" id "(" parameter_list ")": void "{" body "}"
 
 parameter_list: "arg->" variable1 parameter_list | "arg->" variable1
 
-body: function | variable_declarations | statements
+body: functions body1 
+body1: variable_declarations body2
+body2: statements
 
 statements: assignment_statement | function_call_statement | if_statement | if_else_statement | while_statement | do_while_statement | for_statement | code_block_statement | return_statement
 
@@ -20,7 +22,11 @@ while_statement:  "while" "(" expression ")" "{" body_of_nested_statement "} | "
 do_while_statement: "do" "{" body_of_nested_statement "}" "while" "(" expression ")" ";"
 for_statement: "for" "(" init ";" expression ";" update ")" "{" body_of_nested_statement "}" | "for" "(" init ";" expression ";" update ")" statement;
 
-code_block_statement: "{" ...... "}"
+code_block_statement: "{" code_block_statement1
+code_block_statement1: variable_declarations code_block_statement1 | code_block_statement2
+code_block_statement2: statements code_block_statement2 | code_block_statement3
+code_block_statement3: "}"
+
 return_statement: "return" expression ";"
 
 body_of_nested_statement: 
