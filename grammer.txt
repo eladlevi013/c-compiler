@@ -29,7 +29,8 @@ return_statement: "return" expression";"
 
 body_of_nested_statement: 
 
-type: bool | char | int | real | char* | real* | int*
+--> type: bool | char | int | real | char* | real* | int*
+type: BOOL | CHAR | INT | REAL | CHAR_POINTER | REAL_POINTER | INT_POINTER 
 
 literal_lexemes: bool_literal, char_literal, integer_litearal, real_literal, string_literal | identifier | pointers
 
@@ -47,6 +48,8 @@ string1: id "[" integer_litearal "]" string2 | id "[" integer_litearal "]" = "pu
 string2: "," string1 | ";"
 
 expression: expression operator expression | operator expression | literal_lexemes
-operator: "&&" | '/' | "==" | '>' | ">=" | '<' | "<=" | '-' | '!' | "!=" | "||" | '+' | '*' | '&' 
+
+--> operator: "&&" | '/' | "==" | '>' | ">=" | '<' | "<=" | '-' | '!' | "!=" | "||" | '+' | '*' | '&' 
+operator: AND | DIVIDE | ASSIGNMENT | EQUALS | GREATER_THAN | GREATER_EQUALS | LOWER_THAN | LOWER_EQUALS | SUBTRACT | NOT | NOT_EQUALS | OR | ADD | MULTIPLY | AMPERSAND
 
 "put something" -> need to be value => 5 , 2 , "sda" 
