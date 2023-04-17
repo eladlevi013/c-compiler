@@ -1,9 +1,9 @@
 program: procedure // main() - need fix 4sure
 functions: function | procedure
-function: "function" id "(" parameter_list ")": type "{" body "}" //where type is not void.
-procedure: "function" id "(" parameter_list ")": void "{" body "}"
+function: FUNCTION IDENTIFIER START_ROUND_BRACKETS parameter_list END_ROUND_BRACKETS: type START_CURLY_BRACKETS body END_CURLY_BRACKETS
+procedure: FUNCTION IDENTIFIER START_ROUND_BRACKETS parameter_list END_ROUND_BRACKETS: VOID START_CURLY_BRACKETS body END_CURLY_BRACKETS
 
-parameter_list: "arg->" variable1 parameter_list | "arg->" variable1
+parameter_list: ARG_ARROW variable1 parameter_list | ARG_ARROW variable1
 
 body: functions body1 
 body1: variable_declarations body2
@@ -29,7 +29,6 @@ return_statement: "return" expression";"
 
 body_of_nested_statement: 
 
---> type: bool | char | int | real | char* | real* | int*
 type: BOOL | CHAR | INT | REAL | CHAR_POINTER | REAL_POINTER | INT_POINTER 
 
 --> literal_lexemes: bool_literal, char_literal, integer_litearal, real_literal, string_literal | identifier | pointers
