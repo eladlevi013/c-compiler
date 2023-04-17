@@ -35,7 +35,7 @@ do { return DO; }
 \& { return AMPERSAND; }
 false { return FALSE; }
 true { return TRUE; }
-\'(.|\\n)\' { return CHAR; }
+\'(.|\\n)\' { return CHAR_LITERAL; }
 [-]?[0-9]+ { return INTEGER_LITERAL; }
 0[x|X]([0-9A-F])+ { return INTEGER_LITERAL_HEX; }
 [+|-]?([0-9]*[\.][0-9]*[e|E][+|-]?[0-9]+|[0-9]+[e|E][+|-]?[0-9]+|[0-9]*[.][0-9]+) { return REAL_LITERAL; }
