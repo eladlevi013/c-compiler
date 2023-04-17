@@ -32,8 +32,8 @@ body_of_nested_statement:
 --> type: bool | char | int | real | char* | real* | int*
 type: BOOL | CHAR | INT | REAL | CHAR_POINTER | REAL_POINTER | INT_POINTER 
 
-literal_lexemes: bool_literal, char_literal, integer_litearal, real_literal, string_literal | identifier | pointers
-
+--> literal_lexemes: bool_literal, char_literal, integer_litearal, real_literal, string_literal | identifier | pointers
+literal_lexemes: FALSE | TRUE
 
 variable_declarations: variable | string
 
