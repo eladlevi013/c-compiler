@@ -43,7 +43,7 @@ string1: id "[" integer_litearal "]" string2 | id "[" integer_litearal "]" = "pu
 string2: "," string1 | ";"
 
 expression: expression operator expression | operator expression | literal_lexemes
-operator: && | / | = | == | > | >= | < | <= | - | ! | != | || | + | * | & 
+operator: "&&" | '/' | "==" | '>' | ">=" | '<' | "<=" | '-' | '!' | "!=" | "||" | '+' | '*' | '&' 
 
 "put something" -> need to be value => 5 , 2 , "sda" 
 נ.ב : אני כזה גאון וחתיך
