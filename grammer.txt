@@ -48,6 +48,6 @@ string2: "," string1 | ";"
 
 expression: expression operator expression | operator expression | literal_lexemes
 
-operator: AND | DIVIDE | ASSIGNMENT | EQUALS | GREATER_THAN | GREATER_EQUALS | LOWER_THAN | LOWER_EQUALS | SUBTRACT | NOT | NOT_EQUALS | OR | ADD | MULTIPLY
+operator: AND | DIVIDE | EQUALS | GREATER_THAN | GREATER_EQUALS | LOWER_THAN | LOWER_EQUALS | SUBTRACT | NOT | NOT_EQUALS | OR | ADD | MULTIPLY
 
 "put something" -> need to be value => 5 , 2 , "sda" 
