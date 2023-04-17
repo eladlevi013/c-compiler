@@ -39,16 +39,14 @@ variable_declarations: variable | string
 
 --Variable Declarations-- 
 variable: VAR variable1
-variable1: IDENTIFIER variable2 | IDENTIFIER = "put something" variable2
+variable1: IDENTIFIER variable2 | IDENTIFIER = literal_lexemes variable2
 variable2: COMMA variable1 | ":" type SEMICOLON
 
 --Strings (character arrays)--
 string: STRING string1
-string1: IDENTIFIER "[" integer_litearal "]" string2 | IDENTIFIER "[" integer_litearal "]" = "put something" string2
+string1: IDENTIFIER "[" integer_litearal "]" string2 | IDENTIFIER "[" integer_litearal "]" = literal_lexemes string2
 string2: "," string1 | ";"
 
 expression: expression operator expression | operator expression | literal_lexemes
 
-operator: AND | DIVIDE | EQUALS | GREATER_THAN | GREATER_EQUALS | LOWER_THAN | LOWER_EQUALS | SUBTRACT | NOT | NOT_EQUALS | OR | ADD | MULTIPLY
-
-"put something" -> need to be value => 5 , 2 , "sda" 
+operator: AND | DIVIDE | EQUALS | GREATER_THAN | GREATER_EQUALS | LOWER_THAN | LOWER_EQUALS | SUBTRACT | NOT | NOT_EQUALS | OR | ADD | MULTIPLY 
