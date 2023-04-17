@@ -25,7 +25,7 @@ code_block_statement1: variable_declarations code_block_statement1 | code_block_
 code_block_statement2: statements code_block_statement2 | code_block_statement3
 code_block_statement3: "}"
 
-return_statement: "return" expression ";"
+return_statement: "return" expression";"
 
 body_of_nested_statement: 
 
