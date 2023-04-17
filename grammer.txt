@@ -1,5 +1,3 @@
-!!!אם מישהו קורא את זה תתקשרו ב11 שנשב!!!
-
 program: procedure // main() - need fix 4sure
 functions: function | procedure
 function: "function" id "(" parameter_list ")": type "{" body "}" //where type is not void.
@@ -7,23 +5,35 @@ procedure: "function" id "(" parameter_list ")": void "{" body "}"
 
 parameter_list: "arg->" variable1 parameter_list | "arg->" variable1
 
-body: function | variable_declarations | statements
-statements: assignment_statement | function_call_statement | if_statement | if_else_statement | while_statement | code_block_statement | return_statement
+body: functions body1 
+body1: variable_declarations body2
+body2: statements
+
+statements: assignment_statement | function_call_statement | if_statement | if_else_statement | while_statement | do_while_statement | for_statement | code_block_statement | return_statement
 
 assignment_statement: lhs "=" expression ";" | lhs "=" STRING_LITERAL ";"
-lhs: 
+lhs: variable_identifier | string_element | dereferenced_pointer
 
-if_statement: "if" "(" expression ")" "{" body_of_nested_statement "}" | 
+if_statement: "if" "(" expression ")" "{" body_of_nested_statement "}" | "if" "(" expression ")" statement ";" 
+if_else_statement: "if" "(" expression ")" "{" body_of_nested_statement "}" "else" "{" body_of_nested_statement "}" | "if" "(" expression ")" statement ";" "else" statement ";" 
+while_statement:  "while" "(" expression ")" "{" body_of_nested_statement "} | "while" "(" expression ")" statement ";"
+do_while_statement: "do" "{" body_of_nested_statement "}" "while" "(" expression ")" ";"
+for_statement: "for" "(" init ";" expression ";" update ")" "{" body_of_nested_statement "}" | "for" "(" init ";" expression ";" update ")" statement;
 
-code_block_statement: "{" ...... "}"
-return_statement: "return" expression ";"
+code_block_statement: "{" code_block_statement1
+code_block_statement1: variable_declarations code_block_statement1 | code_block_statement2
+code_block_statement2: statements code_block_statement2 | code_block_statement3
+code_block_statement3: "}"
+
+return_statement: "return" expression";"
 
 body_of_nested_statement: 
 
-type: bool | char | int | real | char* | real* | int*
+--> type: bool | char | int | real | char* | real* | int*
+type: BOOL | CHAR | INT | REAL | CHAR_POINTER | REAL_POINTER | INT_POINTER 
 
-literal_lexemes: bool_literal, char_literal, integer_litearal, real_literal, string_literal
-
+--> literal_lexemes: bool_literal, char_literal, integer_litearal, real_literal, string_literal | identifier | pointers
+literal_lexemes: FALSE | TRUE
 
 variable_declarations: variable | string
 
@@ -37,5 +47,9 @@ string: "string" string1
 string1: id "[" integer_litearal "]" string2 | id "[" integer_litearal "]" = "put something" string2
 string2: "," string1 | ";"
 
+expression: expression operator expression | operator expression | literal_lexemes
+
+--> operator: "&&" | '/' | "==" | '>' | ">=" | '<' | "<=" | '-' | '!' | "!=" | "||" | '+' | '*' | '&' 
+operator: AND | DIVIDE | ASSIGNMENT | EQUALS | GREATER_THAN | GREATER_EQUALS | LOWER_THAN | LOWER_EQUALS | SUBTRACT | NOT | NOT_EQUALS | OR | ADD | MULTIPLY | AMPERSAND
+
 "put something" -> need to be value => 5 , 2 , "sda" 
-נ.ב : אני כזה גאון וחתיך
