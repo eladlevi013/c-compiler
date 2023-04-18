@@ -12,7 +12,7 @@ body2: statements
 statements: assignment_statement | function_call_statement | if_statement | if_else_statement | while_statement | do_while_statement | for_statement | code_block_statement | return_statement
 
 assignment_statement: lhs ASSIGNMENT expression SEMICOLON | lhs ASSIGNMENT STRING_LITERAL SEMICOLON
-lhs: IDENTIFIER | lhs '[' expression ']'
+lhs: IDENTIFIER '[' expression ']' | IDENTIFIER
 
 if_statement: "if" "(" expression ")" "{" body_of_nested_statement "}" | "if" "(" expression ")" statement ";" 
 if_else_statement: "if" "(" expression ")" "{" body_of_nested_statement "}" "else" "{" body_of_nested_statement "}" | "if" "(" expression ")" statement ";" "else" statement ";" 
