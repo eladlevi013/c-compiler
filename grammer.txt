@@ -3,13 +3,24 @@ functions: function | procedure
 function: FUNCTION IDENTIFIER START_ROUND_BRACKETS parameter_list END_ROUND_BRACKETS: type START_CURLY_BRACKETS body END_CURLY_BRACKETS
 procedure: FUNCTION IDENTIFIER START_ROUND_BRACKETS parameter_list END_ROUND_BRACKETS: VOID START_CURLY_BRACKETS body END_CURLY_BRACKETS
 
-parameter_list: ARG_ARROW variable1 parameter_list | ARG_ARROW variable1
+parameter_list: ARG_ARROW variable1 parameter_list 
+              | ARG_ARROW variable1
+              ;
 
 body: functions body1 
 body1: variable_declarations body2
 body2: statements
 
-statements: assignment_statement | function_call_statement | if_statement | if_else_statement | while_statement | do_while_statement | for_statement | code_block_statement | return_statement
+statements: assignment_statement 
+          | function_call_statement 
+          | if_statement 
+          | if_else_statement 
+          | while_statement
+          | do_while_statement 
+          | for_statement 
+          | code_block_statement 
+          | return_statement
+          ;
 
 assignment_statement: lhs ASSIGNMENT expression SEMICOLON | lhs ASSIGNMENT STRING_LITERAL SEMICOLON
 lhs: IDENTIFIER '[' expression ']' | IDENTIFIER
@@ -35,13 +46,34 @@ code_block_statement3: END_CURLY_BRACKETS
 
 return_statement: RETURN expression SEMICOLON
 
-type: BOOL | CHAR | INT | REAL | CHAR_POINTER | REAL_POINTER | INT_POINTER 
+type: BOOL 
+    | CHAR
+    | INT 
+    | REAL 
+    | CHAR_POINTER 
+    | REAL_POINTER
+    | INT_POINTER 
+    ;
 
-integer_literal: INTEGER_LITERAL | INTEGER_LITERAL_HEX 
-bool__literal: FALSE | TRUE
-literal_lexemes: bool__literal | CHAR_LITERAL | integer_literal | REAL_LITERAL | STRING_LITERAL | IDENTIFIER
+integer_literal: INTEGER_LITERAL 
+               | INTEGER_LITERAL_HEX
+               ;
+               
+bool__literal: FALSE 
+             | TRUE
+             ;
+             
+literal_lexemes: bool__literal 
+               | CHAR_LITERAL
+               | integer_literal 
+               | REAL_LITERAL 
+               | STRING_LITERAL 
+               | IDENTIFIER
+               ;
 
-variable_declarations: variable | string
+variable_declarations: variable 
+                     | string
+                     ;
 
 --Variable Declarations-- 
 variable: VAR variable1
@@ -53,9 +85,22 @@ string: STRING string1
 string1: IDENTIFIER START_SQUARE_BRACKETS integer_litearal END_SQUARE_BRACKETS string2 | IDENTIFIER START_SQUARE_BRACKETS integer_litearal END_SQUARE_BRACKETS = literal_lexemes string2
 string2: COMMA string1 | SEMICOLON
 
-expression: expression operator expression | operator expression | literal_lexemes
+expression: expression operator expression 
+          | operator expression 
+          | literal_lexemes
+          ;
           
-operator: AND{$$ = ADD;} | DIVIDE{$$ = DIVIDE;} | EQUALS{$$ = EQUALS;} | GREATER_THAN{$$ = GREATER_THAN;} 
-        | GREATER_EQUALS{$$ = GREATER_EQUALS;} | LOWER_THAN{$$ = LOWER_THAN;} | LOWER_EQUALS{$$ = LOWER_EQUALS;}
-        | SUBTRACT{$$ = SUBTRACT;} | NOT{$$ = NOT;} | NOT_EQUALS{$$ = NOT_EQUALS;} | OR{$$ = OR;} 
-        | ADD{$$ = ADD;} | MULTIPLY{$$ = MULTIPLY;}
+operator: AND
+        | DIVIDE
+        | EQUALS
+        | GREATER_THAN 
+        | GREATER_EQUALS
+        | LOWER_THAN
+        | LOWER_EQUALS
+        | SUBTRACT
+        | NOT
+        | NOT_EQUALS
+        | OR
+        | ADD 
+        | MULTIPLY
+        ;
