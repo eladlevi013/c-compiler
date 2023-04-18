@@ -14,11 +14,19 @@ statements: assignment_statement | function_call_statement | if_statement | if_e
 assignment_statement: lhs ASSIGNMENT expression SEMICOLON | lhs ASSIGNMENT STRING_LITERAL SEMICOLON
 lhs: IDENTIFIER '[' expression ']' | IDENTIFIER
 
-if_statement: "if" "(" expression ")" "{" body_of_nested_statement "}" | "if" "(" expression ")" statement ";" 
-if_else_statement: "if" "(" expression ")" "{" body_of_nested_statement "}" "else" "{" body_of_nested_statement "}" | "if" "(" expression ")" statement ";" "else" statement ";" 
-while_statement:  "while" "(" expression ")" "{" body_of_nested_statement "} | "while" "(" expression ")" statement ";"
-do_while_statement: "do" "{" body_of_nested_statement "}" "while" "(" expression ")" ";"
-for_statement: "for" "(" init ";" expression ";" update ")" "{" body_of_nested_statement "}" | "for" "(" init ";" expression ";" update ")" statement;
+function_call_statement: lhs ASSIGNMENT IDENTIFIER START_ROUND_BRACKETS function_call_statement1
+function_call_statement1: expression function_call_statement2 | function_call_statement2
+function_call_statement2: COMMA function_call_statement1 | END_ROUND_BRACKETS SEMICOLON
+
+if_statement: IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statement
+
+if_else_statement: IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statement ELSE statement 
+
+while_statement: WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS statement
+
+do_while_statement: DO statement WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS
+
+for_statement: FOR START_ROUND_BRACKETS lhs ASSIGNMENT expression SEMICOLON expression SEMICOLON lhs ASSIGNMENT expression END_ROUND_BRACKETS statement
 
 code_block_statement: START_CURLY_BRACKETS code_block_statement1
 code_block_statement1: variable_declarations code_block_statement1 | code_block_statement2
