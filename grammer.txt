@@ -11,8 +11,8 @@ body2: statements
 
 statements: assignment_statement | function_call_statement | if_statement | if_else_statement | while_statement | do_while_statement | for_statement | code_block_statement | return_statement
 
-assignment_statement: lhs "=" expression ";" | lhs "=" STRING_LITERAL ";"
-lhs: IDENTIFIER | string_element | dereferenced_pointer
+assignment_statement: lhs ASSIGNMENT expression SEMICOLON | lhs ASSIGNMENT STRING_LITERAL SEMICOLON
+lhs: IDENTIFIER | lhs '[' expression ']'
 
 if_statement: "if" "(" expression ")" "{" body_of_nested_statement "}" | "if" "(" expression ")" statement ";" 
 if_else_statement: "if" "(" expression ")" "{" body_of_nested_statement "}" "else" "{" body_of_nested_statement "}" | "if" "(" expression ")" statement ";" "else" statement ";" 
@@ -48,3 +48,23 @@ string2: COMMA string1 | SEMICOLON
 expression: expression operator expression | operator expression | literal_lexemes
 
 operator: AND | DIVIDE | EQUALS | GREATER_THAN | GREATER_EQUALS | LOWER_THAN | LOWER_EQUALS | SUBTRACT | NOT | NOT_EQUALS | OR | ADD | MULTIPLY 
+
+==================================================================================================
+
+logical_expression: logical_expression AND logical_expression
+                  | logical_expression OR logical_expression 
+                  | equality_expression
+equality_expression: equality_expression EQUALS equality_expression 
+                  | equality_expression NOT_EQUALS equality_expression 
+                  | relational_expression 
+relational_expression: relational_expression GREATER_THAN relational_expression 
+                  | relational_expression GREATER_EQUALS relational_expression 
+                  | relational_expression LOWER_THAN relational_expression 
+                  | relational_expression LOWER_EQUALS relational_expression 
+                  | additive_expression
+additive_expression: additive_expression ADD additive_expression 
+                  | additive_expression SUBTRACT additive_expression
+                  | multiplicative_expression
+multiplicative_expression: multiplicative_expression MULTIPLY multiplicative_expression 
+                  | multiplicative_expression DIVIDE multiplicative_expression 
+                  | lhs 
