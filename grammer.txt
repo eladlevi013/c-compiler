@@ -24,7 +24,7 @@ if_else_statement: IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS stateme
 
 while_statement: WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS statement
 
-do_while_statement: DO statement WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS
+do_while_statement: DO statement WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS SEMICOLON
 
 for_statement: FOR START_ROUND_BRACKETS lhs ASSIGNMENT expression SEMICOLON expression SEMICOLON lhs ASSIGNMENT expression END_ROUND_BRACKETS statement
 
