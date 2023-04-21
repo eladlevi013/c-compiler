@@ -1,1 +1,1 @@
-=lex lexFile.l && cc lex.yy.c -o program -ll && ./program < input.t
+lex project.l && cc lex.yy.c -o program -ll && ./program < input.t
