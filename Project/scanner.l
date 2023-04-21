@@ -15,7 +15,7 @@ var { return VAR; }
 arg-> { return ARG_ARROW; }
 function { return FUNCTION; }
 return { return RETURN; }
-null { return NULL; }
+null { return NULL_TOKEN; }
 void { return VOID; }
 do { return DO; }
 && { return AND; }
@@ -26,7 +26,7 @@ do { return DO; }
 \>= { return GREATER_EQUALS; }
 \< { return LOWER_THAN; }
 \<= { return LOWER_EQUALS; }
-\- { return SUBTRACT; }
+\- { return SUBSTRACT; }
 \! { return NOT; }
 \!= { return NOT_EQUALS; }
 \|\| { return OR; }

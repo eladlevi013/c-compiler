@@ -902,7 +902,7 @@ YY_RULE_SETUP
 case 17:
 YY_RULE_SETUP
 #line 18 "scanner.l"
-{ return NULL; }
+{ return NULL_TOKEN; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
@@ -957,7 +957,7 @@ YY_RULE_SETUP
 case 28:
 YY_RULE_SETUP
 #line 29 "scanner.l"
-{ return SUBTRACT; }
+{ return SUBSTRACT; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP

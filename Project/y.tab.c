@@ -146,7 +146,7 @@ extern int yydebug;
     VAR = 273,                     /* VAR  */
     ARG_ARROW = 274,               /* ARG_ARROW  */
     RETURN = 275,                  /* RETURN  */
-    NULL = 276,                    /* NULL  */
+    NULL_TOKEN = 276,              /* NULL_TOKEN  */
     VOID = 277,                    /* VOID  */
     AND = 278,                     /* AND  */
     ASSIGNMENT = 279,              /* ASSIGNMENT  */
@@ -207,7 +207,7 @@ extern int yydebug;
 #define VAR 273
 #define ARG_ARROW 274
 #define RETURN 275
-#define NULL 276
+#define NULL_TOKEN 276
 #define VOID 277
 #define AND 278
 #define ASSIGNMENT 279
@@ -283,7 +283,7 @@ enum yysymbol_kind_t
   YYSYMBOL_VAR = 18,                       /* VAR  */
   YYSYMBOL_ARG_ARROW = 19,                 /* ARG_ARROW  */
   YYSYMBOL_RETURN = 20,                    /* RETURN  */
-  YYSYMBOL_NULL = 21,                      /* NULL  */
+  YYSYMBOL_NULL_TOKEN = 21,                /* NULL_TOKEN  */
   YYSYMBOL_VOID = 22,                      /* VOID  */
   YYSYMBOL_AND = 23,                       /* AND  */
   YYSYMBOL_ASSIGNMENT = 24,                /* ASSIGNMENT  */
@@ -776,25 +776,25 @@ static const char *const yytname[] =
   "\"end of file\"", "error", "\"invalid token\"", "BOOL", "CHAR", "INT",
   "REAL", "STRING", "INT_POINTER", "CHAR_POINTER", "REAL_POINTER",
   "ADDRESS", "IF", "ELSE", "WHILE", "DO", "FOR", "FUNCTION", "VAR",
-  "ARG_ARROW", "RETURN", "NULL", "VOID", "AND", "ASSIGNMENT", "EQUALS",
-  "GREATER_THAN", "GREATER_EQUALS", "LOWER_THAN", "LOWER_EQUALS", "NOT",
-  "NOT_EQUALS", "OR", "SUBSTRACT", "ADD", "MULTIPLY", "DIVIDE", "TRUE",
-  "FALSE", "CHAR_LITERAL", "INTEGER_LITERAL", "INTEGER_LITERAL_HEX",
-  "REAL_LITERAL", "STRING_LITERAL", "IDENTIFIER", "COMMENT", "COLON",
-  "SEMICOLON", "COMMA", "VERTICAL_BAR", "START_CURLY_BRACKETS",
-  "END_CURLY_BRACKETS", "START_ROUND_BRACKETS", "END_ROUND_BRACKETS",
-  "START_SQUARE_BRACKETS", "END_SQUARE_BRACKETS", "'['", "']'", "$accept",
-  "s", "code", "functions", "function", "procedure", "args_list",
-  "args_list_helper", "single_arg", "args_parameters", "single_parameter",
-  "body", "body_after_functions_declared", "statements",
-  "assignment_statement", "lhs", "function_call_statement",
-  "function_call_statement1", "function_call_statement2", "if_statement",
-  "if_else_statement", "while_statement", "do_while_statement",
-  "for_statement", "code_block_statement", "code_block_statement1",
-  "code_block_statement2", "code_block_statement3", "return_statement",
-  "type", "integer_literal", "bool__literal", "literal_lexemes",
-  "variable_declarations", "variable_list", "variable_helper",
-  "expression", "operator", YY_NULLPTR
+  "ARG_ARROW", "RETURN", "NULL_TOKEN", "VOID", "AND", "ASSIGNMENT",
+  "EQUALS", "GREATER_THAN", "GREATER_EQUALS", "LOWER_THAN", "LOWER_EQUALS",
+  "NOT", "NOT_EQUALS", "OR", "SUBSTRACT", "ADD", "MULTIPLY", "DIVIDE",
+  "TRUE", "FALSE", "CHAR_LITERAL", "INTEGER_LITERAL",
+  "INTEGER_LITERAL_HEX", "REAL_LITERAL", "STRING_LITERAL", "IDENTIFIER",
+  "COMMENT", "COLON", "SEMICOLON", "COMMA", "VERTICAL_BAR",
+  "START_CURLY_BRACKETS", "END_CURLY_BRACKETS", "START_ROUND_BRACKETS",
+  "END_ROUND_BRACKETS", "START_SQUARE_BRACKETS", "END_SQUARE_BRACKETS",
+  "'['", "']'", "$accept", "s", "code", "functions", "function",
+  "procedure", "args_list", "args_list_helper", "single_arg",
+  "args_parameters", "single_parameter", "body",
+  "body_after_functions_declared", "statements", "assignment_statement",
+  "lhs", "function_call_statement", "function_call_statement1",
+  "function_call_statement2", "if_statement", "if_else_statement",
+  "while_statement", "do_while_statement", "for_statement",
+  "code_block_statement", "code_block_statement1", "code_block_statement2",
+  "code_block_statement3", "return_statement", "type", "integer_literal",
+  "bool__literal", "literal_lexemes", "variable_declarations",
+  "variable_list", "variable_helper", "expression", "operator", YY_NULLPTR
 };
 
 static const char *
@@ -1484,14 +1484,8 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 73: /* expression: expression operator expression  */
-#line 157 "parser.y"
-                                           { mknode(yyvsp[-2], yyvsp[0])}
-#line 1491 "y.tab.c"
-    break;
 
-
-#line 1495 "y.tab.c"
+#line 1489 "y.tab.c"
 
       default: break;
     }
@@ -1686,6 +1680,17 @@ yyreturnlab:
 
 #line 176 "parser.y"
 
+#include "lex.yy.c"
+int main()
+{
+    return yyparse();
+}
+
+int yyerror() 
+{ 
+    printf("MY ERROR\n");
+    return 0; 
+}
 
 // Functions
 void printtree(node *tree) 
@@ -1697,25 +1702,13 @@ void printtree(node *tree)
         printtree(tree->right); 
 }
 
-int yyerror() 
-{ 
-    printf("MY ERROR\n");
-    return 0; 
-}
-
 node *mknode(char *token,node *left,node *right)
 {
     node *newnode = (node*)malloc(sizeof(node));
-    char *newstr = (char*)malloc(sizeof(token) + 1);
-    strcpy(newstr,token);
-    newnode->left = left;
-    newnode->right = right;
-    newnode->token = newstr;
+    // char *newstr = (char*)malloc(sizeof(token) + 1);
+    // strcpy(newstr,token);
+    // newnode->left = left;
+    // newnode->right = right;
+    // newnode->token = newstr;
     return newnode;
-}
-
-#include "lex.yy.c"
-int main()
-{
-    return yyparse();
 }
