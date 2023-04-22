@@ -753,15 +753,15 @@ static const yytype_int8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    36,    36,    38,    40,    40,    40,    43,    59,    76,
-      77,    78,    80,    85,    86,    88,    89,    91,    92,    95,
-      95,    96,    96,    99,   100,   101,   102,   103,   104,   105,
-     106,   107,   110,   111,   113,   113,   115,   117,   117,   119,
-     119,   121,   123,   125,   127,   129,   131,   133,   133,   135,
-     135,   137,   139,   142,   143,   144,   145,   146,   147,   148,
-     151,   155,   156,   159,   160,   163,   164,   165,   166,   167,
-     168,   172,   173,   173,   174,   174,   183,   184,   185,   188,
-     189,   190,   191,   192,   193,   194,   195,   196,   197,   198,
-     199,   200
+      84,    91,    95,   103,   109,   115,   119,   125,   129,   135,
+     135,   136,   136,   139,   140,   141,   142,   143,   144,   145,
+     146,   147,   150,   151,   153,   153,   155,   157,   157,   159,
+     159,   161,   163,   165,   167,   169,   171,   173,   173,   175,
+     175,   177,   179,   182,   183,   184,   185,   186,   187,   188,
+     191,   195,   196,   199,   200,   203,   204,   205,   206,   207,
+     208,   212,   213,   213,   214,   214,   223,   224,   225,   228,
+     229,   230,   231,   232,   233,   234,   235,   236,   237,   238,
+     239,   240
 };
 #endif
 
@@ -1544,95 +1544,148 @@ yyreduce:
     break;
 
   case 9: /* args_list: single_arg args_list_helper  */
-#line 76 "parser.y"
-                                { yyval = makeNode("ARGS"); addNode(&yyval, yyvsp[-1]); }
-#line 1550 "y.tab.c"
-    break;
-
-  case 10: /* args_list: single_arg  */
 #line 77 "parser.y"
-                 { yyval = makeNode("ARGS"); addNode(&yyval, yyvsp[0]); }
+    {
+        node *args_root = makeNode("ARGS");
+        addNode(&args_root, yyvsp[-1]);
+        addNode(&args_root, yyvsp[0]);
+        printf("2");
+        yyval = args_root;
+    }
 #line 1556 "y.tab.c"
     break;
 
+  case 10: /* args_list: single_arg  */
+#line 85 "parser.y"
+    {
+        node *args_root = makeNode("ARGS");
+        addNode(&args_root, yyvsp[0]);
+        yyval = args_root;
+    }
+#line 1566 "y.tab.c"
+    break;
+
   case 11: /* args_list: %empty  */
-#line 78 "parser.y"
-      {yyval = makeNode("ARGS NONE");}
-#line 1562 "y.tab.c"
+#line 91 "parser.y"
+    {
+        yyval = makeNode("ARGS NONE");
+    }
+#line 1574 "y.tab.c"
     break;
 
   case 12: /* single_arg: ARG_ARROW args_parameters COLON type  */
-#line 81 "parser.y"
+#line 96 "parser.y"
 {
-    yyval = makeNode(yyvsp[0]->token);
+    printf("1");
+    node* args_root = makeNode(yyvsp[0]->token);
+    addNode(&args_root, yyvsp[-2]);
+    yyval = args_root;
 }
-#line 1570 "y.tab.c"
+#line 1585 "y.tab.c"
     break;
 
   case 13: /* args_list_helper: SEMICOLON single_arg args_list_helper  */
-#line 85 "parser.y"
-                                                        {  }
-#line 1576 "y.tab.c"
+#line 104 "parser.y"
+{
+    node* args_root = yyvsp[-1];
+    addNode(&args_root, yyvsp[0]);
+    yyval = args_root;
+}
+#line 1595 "y.tab.c"
     break;
 
   case 14: /* args_list_helper: SEMICOLON single_arg  */
-#line 86 "parser.y"
-                       { addNode(&yyval ,yyvsp[0]);}
-#line 1582 "y.tab.c"
+#line 110 "parser.y"
+{
+    yyval = yyvsp[0];
+}
+#line 1603 "y.tab.c"
+    break;
+
+  case 15: /* args_parameters: id single_parameter  */
+#line 116 "parser.y"
+{
+    yyval = makeNode(yyvsp[-1]->token);
+}
+#line 1611 "y.tab.c"
+    break;
+
+  case 16: /* args_parameters: id  */
+#line 120 "parser.y"
+{
+    yyval = makeNode(yyvsp[0]->token);
+}
+#line 1619 "y.tab.c"
+    break;
+
+  case 17: /* single_parameter: COMMA id single_parameter  */
+#line 126 "parser.y"
+{
+    yyval = makeNode(yyvsp[-1]->token);
+}
+#line 1627 "y.tab.c"
+    break;
+
+  case 18: /* single_parameter: COMMA id  */
+#line 130 "parser.y"
+{
+    yyval = makeNode(yyvsp[0]->token);
+}
+#line 1635 "y.tab.c"
     break;
 
   case 53: /* type: BOOL  */
-#line 142 "parser.y"
+#line 182 "parser.y"
            { yyval = makeNode("BOOL"); }
-#line 1588 "y.tab.c"
+#line 1641 "y.tab.c"
     break;
 
   case 54: /* type: CHAR  */
-#line 143 "parser.y"
+#line 183 "parser.y"
            { yyval = makeNode("CHAR"); }
-#line 1594 "y.tab.c"
+#line 1647 "y.tab.c"
     break;
 
   case 55: /* type: INT  */
-#line 144 "parser.y"
+#line 184 "parser.y"
           { yyval = makeNode("INT"); }
-#line 1600 "y.tab.c"
+#line 1653 "y.tab.c"
     break;
 
   case 56: /* type: REAL  */
-#line 145 "parser.y"
+#line 185 "parser.y"
            { yyval = makeNode("REAL"); }
-#line 1606 "y.tab.c"
+#line 1659 "y.tab.c"
     break;
 
   case 57: /* type: CHAR_POINTER  */
-#line 146 "parser.y"
+#line 186 "parser.y"
                    { yyval = makeNode("CHAR_POINTER"); }
-#line 1612 "y.tab.c"
+#line 1665 "y.tab.c"
     break;
 
   case 58: /* type: REAL_POINTER  */
-#line 147 "parser.y"
+#line 187 "parser.y"
                    { yyval = makeNode("REAL_POINTER"); }
-#line 1618 "y.tab.c"
+#line 1671 "y.tab.c"
     break;
 
   case 59: /* type: INT_POINTER  */
-#line 148 "parser.y"
+#line 188 "parser.y"
                   { yyval = makeNode("INT_POINTER"); }
-#line 1624 "y.tab.c"
+#line 1677 "y.tab.c"
     break;
 
   case 60: /* id: IDENTIFIER  */
-#line 151 "parser.y"
+#line 191 "parser.y"
                {
     yyval = makeNode(yytext);
 }
-#line 1632 "y.tab.c"
+#line 1685 "y.tab.c"
     break;
 
 
-#line 1636 "y.tab.c"
+#line 1689 "y.tab.c"
 
       default: break;
     }
@@ -1825,7 +1878,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 202 "parser.y"
+#line 242 "parser.y"
 
 #include "lex.yy.c"
 int main()

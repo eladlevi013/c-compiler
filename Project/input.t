@@ -1,1 +1,1 @@
-arg-> a,b:int; arg-> c,d:real
+arg-> a:int; arg-> b:real; arg-> b:char

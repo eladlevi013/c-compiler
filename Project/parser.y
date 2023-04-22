@@ -73,23 +73,61 @@ procedure: FUNCTION id START_ROUND_BRACKETS args_list END_ROUND_BRACKETS COLON V
 
 // Function args parameters
 args_list:
-    single_arg args_list_helper { $$ = makeNode("ARGS"); addNode(&$$, $1); }
-    | single_arg { $$ = makeNode("ARGS"); addNode(&$$, $1); }
-    | {$$ = makeNode("ARGS NONE");};
+    single_arg args_list_helper
+    {
+        node *args_root = makeNode("ARGS");
+        addNode(&args_root, $1);
+        addNode(&args_root, $2);
+        $$ = args_root;
+    }
+    | single_arg 
+    {
+        node *args_root = makeNode("ARGS");
+        addNode(&args_root, $1);
+        $$ = args_root;
+    }
+    |
+    {
+        $$ = makeNode("ARGS NONE");
+    };
 
 single_arg: ARG_ARROW args_parameters COLON type
 {
-    $$ = makeNode($4->token);
+    node* args_root = makeNode($4->token);
+    addNode(&args_root, $2);
+    $$ = args_root;
 }
 
-args_list_helper: SEMICOLON single_arg args_list_helper {  }
-| SEMICOLON single_arg { addNode(&$$, $2);}
+args_list_helper: SEMICOLON single_arg args_list_helper
+{
+    node* args_root = $2;
+    addNode(&args_root, $3);
+    $$ = args_root;
+}
+| SEMICOLON single_arg 
+{
+    $$ = $2;
+}
 
-args_parameters: id single_parameter
-    | id
+args_parameters: 
+id single_parameter
+{
+    $$ = makeNode($1->token);
+}
+| id
+{
+    $$ = makeNode($1->token);
+}
 
-single_parameter: COMMA id single_parameter
+single_parameter: 
+COMMA id single_parameter
+{
+    $$ = makeNode($2->token);
+}
 | COMMA id
+{
+    $$ = makeNode($2->token);
+}
 
 // Body
 body: functions body | body_after_functions_declared
