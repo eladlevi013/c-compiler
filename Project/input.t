@@ -1,1 +1,1 @@
-function goo(arg-> a:int): int {}
+arg-> a,b:int; arg-> c,d:real

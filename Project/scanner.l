@@ -36,11 +36,11 @@ do { return DO; }
 false { return FALSE; }
 true { return TRUE; }
 \'(.|\\n)\' { return CHAR_LITERAL; }
-[-]?[1-9][0-9]*|0 { return INTEGER_LITERAL; }
-0[x|X]([0-9A-F])+ { return INTEGER_LITERAL_HEX; }
-[+|-]?([0-9]*[\.][0-9]*[e|E][+|-]?[0-9]+|[0-9]+[e|E][+|-]?[0-9]+|[0-9]*[.][0-9]+) { return REAL_LITERAL; }
-\"[^"]*\" { return STRING_LITERAL; }
-[a-zA-Z][a-zA-Z0-9_]* { return IDENTIFIER; }
+[-]?[1-9][0-9]*|0 {  return INTEGER_LITERAL; }
+0[x|X]([0-9A-F])+ {  return INTEGER_LITERAL_HEX; }
+[+|-]?([0-9]*[\.][0-9]*[e|E][+|-]?[0-9]+|[0-9]+[e|E][+|-]?[0-9]+|[0-9]*[.][0-9]+) {  return REAL_LITERAL; }
+\"[^"]*\" {  return STRING_LITERAL; }
+[a-zA-Z][a-zA-Z0-9_]* {  return IDENTIFIER; }
 \; { return SEMICOLON; }
 \, { return COMMA; }
 \| { return VERTICAL_BAR; }

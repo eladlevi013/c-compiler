@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<string.h>
 
 // Function declarations
 int yylex(void);
@@ -10,13 +11,12 @@ char *yytext;
 typedef struct node
 {
     char *token;
-    struct node *first;
-    struct node *second;
-    struct node *third;
-    struct node *fourth;
+    struct node **nodes;
+    int count;
 } node;
-node *makeNode(char* token, node *first, node *second, node *third, node *fourth);
-void printTree(node *tree);
+node *makeNode(char* token);
+void addNode(node **father, node *descendant);
+void printtree(node* tree, int tab);
 #define YYSTYPE struct node*
 %}
 
@@ -33,46 +33,63 @@ void printTree(node *tree);
         START_ROUND_BRACKETS END_ROUND_BRACKETS START_SQUARE_BRACKETS END_SQUARE_BRACKETS;
 %%
 
-s: code { printf("THIS IS FINE. HAVE A GOOD DAY!\n"); };
+s: code { printtree($1, 0); };  
 
-code: functions { $$ = makeNode("CODE", $1, NULL, NULL, NULL); }
+code: functions { $$ = makeNode("CODE"); addNode(&$$, $1); }
 
-functions: function1 | procedure
-
-function1: 
-    FUNCTION IDENTIFIER START_ROUND_BRACKETS args_list END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS END_CURLY_BRACKETS
-    {
-        if (*($2) == NULL) {
-            printf("muzar");
-        }
-        printf("%s", (*$2).token);
-        $$ = makeNode("FUNCTION",
-            makeNode($2->token, NULL, NULL, NULL, NULL),
-            makeNode("ARGS", $4, NULL, NULL, NULL),
-            makeNode("TYPE", $7, NULL, NULL, NULL),
-            makeNode("BODY", $9, NULL, NULL, NULL)
-        );
-    }
+functions: function | procedure | args_list
 
 function: 
-    FUNCTION IDENTIFIER START_ROUND_BRACKETS args_list END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
+    FUNCTION id START_ROUND_BRACKETS args_list END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
     {
-        $$ = makeNode("FUNCTION",
-            makeNode($2->token, NULL, NULL, NULL, NULL),
-            makeNode("ARGS", $4, NULL, NULL, NULL),
-            makeNode("TYPE", $7, NULL, NULL, NULL),
-            makeNode("BODY", $9, NULL, NULL, NULL)
-        );
+        node* func_node = makeNode("FUNCTION");
+        addNode(&func_node, makeNode($2->token));
+        node* args_node = makeNode("ARGS");
+        addNode(&args_node, $4);
+        addNode(&func_node, args_node);
+        node* type_node = makeNode("TYPE");
+        addNode(&type_node, $7);
+        addNode(&func_node, type_node);
+        node* body_node = makeNode("BODY");
+        addNode(&body_node, $9);
+        addNode(&func_node, body_node);
+        $$ = func_node;
     }
 
-procedure: FUNCTION IDENTIFIER START_ROUND_BRACKETS args_list END_ROUND_BRACKETS COLON VOID START_CURLY_BRACKETS body END_CURLY_BRACKETS
+procedure: FUNCTION id START_ROUND_BRACKETS args_list END_ROUND_BRACKETS COLON VOID START_CURLY_BRACKETS body END_CURLY_BRACKETS
+    {
+        node* func_node = makeNode("FUNCTION");
+        addNode(&func_node, makeNode($2->token));
+        node* args_node = makeNode("ARGS");
+        addNode(&args_node, $4);
+        addNode(&func_node, args_node);
+        node* type_node = makeNode("TYPE VOID");
+        addNode(&func_node, type_node);
+        node* body_node = makeNode("BODY");
+        addNode(&body_node, $9);
+        addNode(&func_node, body_node);
+        $$ = func_node;
+    }
 
 // Function args parameters
-args_list: single_arg  args_list_helper | single_arg | {$$=makeNode("NONE",NULL,NULL,NULL,NULL);};
-args_list_helper: SEMICOLON single_arg args_list_helper | SEMICOLON single_arg
+args_list:
+    single_arg args_list_helper { $$ = makeNode("ARGS"); addNode(&$$, $1); }
+    | single_arg { $$ = makeNode("ARGS"); addNode(&$$, $1); }
+    | {$$ = makeNode("ARGS NONE");};
+
 single_arg: ARG_ARROW args_parameters COLON type
-args_parameters: IDENTIFIER single_parameter | IDENTIFIER
-single_parameter: COMMA IDENTIFIER single_parameter | COMMA IDENTIFIER
+{
+    $$ = makeNode($4->token);
+}
+
+args_list_helper: SEMICOLON single_arg args_list_helper {  }
+| SEMICOLON single_arg { addNode(&$$, $2);}
+
+args_parameters: id single_parameter
+    | id
+
+single_parameter: COMMA id single_parameter
+| COMMA id
 
 // Body
 body: functions body | body_after_functions_declared
@@ -122,14 +139,18 @@ code_block_statement3: END_CURLY_BRACKETS
 return_statement: RETURN expression SEMICOLON
 
 // Types
-type: BOOL { makeNode("BOOL",NULL,NULL,NULL,NULL); }
-    | CHAR { makeNode("CHAR",NULL,NULL,NULL,NULL); }
-    | INT { makeNode("INT",NULL,NULL,NULL,NULL); }
-    | REAL { makeNode("REAL",NULL,NULL,NULL,NULL); }
-    | CHAR_POINTER { makeNode("CHAR_POINTER",NULL,NULL,NULL,NULL); }
-    | REAL_POINTER { makeNode("REAL_POINTER",NULL,NULL,NULL,NULL); }
-    | INT_POINTER { makeNode("INT_POINTER",NULL,NULL,NULL,NULL); }
+type: BOOL { $$ = makeNode("BOOL"); }
+    | CHAR { $$ = makeNode("CHAR"); }
+    | INT { $$ = makeNode("INT"); }
+    | REAL { $$ = makeNode("REAL"); }
+    | CHAR_POINTER { $$ = makeNode("CHAR_POINTER"); }
+    | REAL_POINTER { $$ = makeNode("REAL_POINTER"); }
+    | INT_POINTER { $$ = makeNode("INT_POINTER"); }
     ;
+
+id: IDENTIFIER {
+    $$ = makeNode(yytext);
+};
 
 integer_literal: INTEGER_LITERAL 
                | INTEGER_LITERAL_HEX
@@ -191,25 +212,43 @@ int yyerror()
     return 0; 
 }
 
-// Functions
-void printTree(node *tree) 
-{ 
-    // printf("%s\n", tree->token); 
-    // if(tree->left) 
-    //     printtree(tree->left); 
-    // if(tree->right) 
-    //     printtree(tree->right);
+node *makeNode(char *token)
+{
+    node *newnode = (node*)malloc(sizeof(node));
+    char *newstr = (char*)malloc(strlen(token) + 1);
+    strcpy(newstr, token);
+    newnode->token = newstr;
+    newnode->count = 0;
+    newnode->nodes = NULL;
+    return newnode;
 }
 
-node *makeNode(char* token, node *first, node *second, node *third, node *fourth)
+void addNode(node **father, node *descendant)
 {
-    node* newnode = (node*)malloc(sizeof(node));
-    char* newstr = (char*)malloc(sizeof(token) + 1);
-    strcpy(newstr,token);
-    newnode->first = first;
-    newnode->second = second;
-    newnode->third = third;
-    newnode->fourth = fourth;
-    newnode->token = newstr;
-    return newnode;
+    (*father)->nodes = (node**) realloc((*father)->nodes, ((*father)->count + 1) * sizeof(node*));
+    (*father)->nodes[(*father)->count++] = descendant;
+}
+
+void printtree(node* tree, int tab) {
+	int i;
+	char* token = tree->token;
+
+	if (*token) {
+		for (i = 0; i < tab; i++) {
+			printf("\t");
+		}
+		printf("(%s\n", token);
+	}
+	else
+		tab -= 1;
+	if (tree->nodes) {
+		for (int j = 0; j < tree->count; j++) {
+			printtree(tree->nodes[j], tab + 1);
+		}
+	}
+	for (i = 0; i < tab; i++) {
+		printf("\t");
+	}
+	if (*token)
+		printf(")\n");
 }
