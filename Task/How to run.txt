@@ -1,1 +1,1 @@
-lex project.l && cc lex.yy.c -o program -ll && ./program < input.t
+lex scanner.l && yacc parser.y && cc -o parser y.tab.c -ll -Ly && ./parser < input.t
