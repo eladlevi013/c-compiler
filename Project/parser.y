@@ -200,23 +200,29 @@ string2: COMMA string1
 | SEMICOLON
 
 expression: expression operator expression
-          | operator expression 
+          {
+
+          }
+          | operator expression
+          {
+
+          } 
           | literal_lexemes { $$ = $1; }
           ;
           
-operator: AND
-        | DIVIDE
-        | EQUALS
-        | GREATER_THAN 
-        | GREATER_EQUALS
-        | LOWER_THAN
-        | LOWER_EQUALS
-        | SUBSTRACT
-        | NOT
-        | NOT_EQUALS
-        | OR
-        | ADD 
-        | MULTIPLY
+operator: AND { $$ = makeNode("&&"); }
+        | DIVIDE { $$ = makeNode("/"); }
+        | EQUALS { $$ = makeNode("=="); }
+        | GREATER_THAN { $$ = makeNode(">"); }
+        | GREATER_EQUALS { $$ = makeNode(">="); }
+        | LOWER_THAN { $$ = makeNode("<"); }
+        | LOWER_EQUALS { $$ = makeNode("<="); }
+        | SUBSTRACT { $$ = makeNode("-"); }
+        | NOT { $$ = makeNode("!"); }
+        | NOT_EQUALS { $$ = makeNode("!="); }
+        | OR { $$ = makeNode("||"); }
+        | ADD { $$ = makeNode("+"); }
+        | MULTIPLY { $$ = makeNode("*"); }
         ;
 %%
 
