@@ -305,11 +305,6 @@ literal_lexemes:
 
 variable_declarations: 
     variable_declare
-    | variable_declarations variable_declare
-
-
-variable_declare:
-    VAR variable 
     {
         node* temp = makeNode("VAR");
         temp->nodes = argsList;
@@ -318,27 +313,41 @@ variable_declare:
         argsList = NULL;
         counter=0;
     }
-    | STRING variable_list SEMICOLON
+    | variable_declarations variable_declare
     {
-        node* temp = makeNode("STRING");
-        temp->nodes = argsList;
-        temp->count = counter;
-        $$ = temp;
+        $$->nodes = argsList;
+        $$->count = counter;
         argsList = NULL;
         counter=0;
+    }
+
+
+variable_declare:
+    VAR variable 
+    {
+        $$ = $2;
+    }
+    | STRING variable_list SEMICOLON
+    {
+        // node* temp = makeNode("STRING");
+        // temp->nodes = argsList;
+        // temp->count = counter;
+        // $$ = temp;
+        // argsList = NULL;
+        // counter=0;
     }
 
 // Variable Delarations    
 variable: variable_list COLON type SEMICOLON
         {
-            $3->nodes = varlist;
-            $3->count = counter_varlist;
-            addElement(&argsList, $4, counter);
+            $3->nodes = varList;
+            $3->count = counter_varList;
+            addElement(&argsList, $3, counter);
             counter++;
         
             // Resetting
-            varlist = NULL;
-            counter_varlist = 0;
+            varList = NULL;
+            counter_varList = 0;
         }
 
 variable_list:

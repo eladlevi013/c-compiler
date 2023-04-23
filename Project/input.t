@@ -1,1 +1,2 @@
-var i=0:int;
+var a:int;
+var b:int;
