@@ -334,7 +334,7 @@ variable_declare:
         $$ = makeNode("VAR");
         addNode(&$$,$2);
     }
-    | STRING string_list
+    | STRING string
     {
         $$ = makeNode("STRING");
         addNode(&$$,$2);
@@ -345,8 +345,8 @@ variable: variable_list COLON type SEMICOLON
         {
             $3->nodes = varlist;
             $3->count = counter_varlist;
-            addElement(&varlist, $3, counter_varlist);
-            counter_varlist++;
+            addElement(&varlist, $3, counter);
+            counter++; // why have counter???
         }
 
 variable_list:
@@ -367,14 +367,12 @@ variable_list:
     }
 
 // String Delarations
-string_list: 
-    IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS string2 
-    | IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes string2
-
-string_helper:
-    COMMA string1 
-    | SEMICOLON
-    ;
+string: variable_list SEMICOLON
+    
+string_list:
+    id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS  
+    | id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes 
+    | string_list COMMA string_list
 
 expression: 
     expression operator expression
