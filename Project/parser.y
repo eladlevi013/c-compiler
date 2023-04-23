@@ -204,6 +204,9 @@ do_while_statement:
 
 for_statement:
     FOR START_ROUND_BRACKETS assignment_statement expression SEMICOLON lhs ASSIGNMENT expression END_ROUND_BRACKETS statements
+    {
+        
+    }
 
 code_block_statement:
     START_CURLY_BRACKETS code_block_statement1
