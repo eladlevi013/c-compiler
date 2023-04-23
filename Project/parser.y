@@ -50,7 +50,7 @@ s: code { printtree($1, 0); };
 
 code: functions { $$ = makeNode("CODE"); addNode(&$$, $1); }
 
-functions: function | procedure | args | return_statement
+functions: function | procedure | if_statement
 
 function: 
     FUNCTION id START_ROUND_BRACKETS args_list END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
@@ -108,7 +108,7 @@ args_list:
         addElement(&argsList, $4, counter);
         counter++;
         
-        // resetting
+        // Resetting
         parList = NULL;
         counter_parlist = 0;
     }
@@ -119,7 +119,7 @@ args_list:
         addElement(&argsList, $6, counter);
         counter++;
 
-        // resetting
+        // Resetting
         parList = NULL;
         counter_parlist = 0;
     }
@@ -137,7 +137,8 @@ parameters_list:
     }
 
 // Body
-body: functions body
+body: 
+    functions body
     | body_after_functions_declared
 
 body_after_functions_declared: 
@@ -145,16 +146,17 @@ body_after_functions_declared:
     | variable_declarations
 
 // Statements
-statements: assignment_statement { $$ = $1; }
-          | function_call_statement { $$ = $1; }
-          | if_statement { $$ = $1; }
-          | if_else_statement { $$ = $1; }
-          | while_statement { $$ = $1; }
-          | do_while_statement { $$ = $1; }
-          | for_statement { $$ = $1; }
-          | code_block_statement { $$ = $1; }
-          | return_statement { $$ = $1; }
-          ;
+statements: 
+    assignment_statement { $$ = $1; }
+    | function_call_statement { $$ = $1; }
+    | if_statement { $$ = $1; }
+    | if_else_statement { $$ = $1; }
+    | while_statement { $$ = $1; }
+    | do_while_statement { $$ = $1; }
+    | for_statement { $$ = $1; }
+    | code_block_statement { $$ = $1; }
+    | return_statement { $$ = $1; }
+    ;
 
 assignment_statement: 
     lhs ASSIGNMENT expression SEMICOLON 
@@ -175,44 +177,59 @@ function_call_statement2:
     COMMA function_call_statement1
     | END_ROUND_BRACKETS SEMICOLON
 
-if_statement: IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
-            {
-                node* if_node = makeNode("IF");
-                addNode(&if_node, $3);
-                addNode(&if_node, $5);
-            }
+if_statement: 
+    IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
+    {
+        node* if_node = makeNode("IF");
+        addNode(&if_node, $3);
+        addNode(&if_node, $5);
+        $$ = if_node;
+    }
 
-if_else_statement: IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements ELSE statements
-            {
-                node* if_node = makeNode("IF-ELSE");
-                addNode(&if_node, $3);
-                addNode(&if_node, $5);
-                //FIX
-            }
+if_else_statement: 
+    IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements ELSE statements
+    {
+        node* if_else_node = makeNode("IF-ELSE");
+        addNode(&if_else_node, $3);
+        addNode(&if_else_node, $5);
+        addNode(&if_else_node, $7);
+        $$ = if_else_node;
+    }
 
-while_statement: WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
+while_statement: 
+    WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
 
-do_while_statement: DO statements WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS SEMICOLON
+do_while_statement: 
+    DO statements WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS SEMICOLON
 
-for_statement: FOR START_ROUND_BRACKETS assignment_statement expression SEMICOLON lhs ASSIGNMENT expression END_ROUND_BRACKETS statements
+for_statement:
+    FOR START_ROUND_BRACKETS assignment_statement expression SEMICOLON lhs ASSIGNMENT expression END_ROUND_BRACKETS statements
 
-code_block_statement: START_CURLY_BRACKETS code_block_statement1
+code_block_statement:
+    START_CURLY_BRACKETS code_block_statement1
 
-code_block_statement1: variable_declarations code_block_statement1 | code_block_statement2
+code_block_statement1:
+    variable_declarations code_block_statement1
+    | code_block_statement2
 
-code_block_statement2: statements code_block_statement2 | code_block_statement3
+code_block_statement2: 
+    statements code_block_statement2
+    | code_block_statement3
 
-code_block_statement3: END_CURLY_BRACKETS
+code_block_statement3:
+    END_CURLY_BRACKETS
 
-return_statement: RETURN expression SEMICOLON
-{
-    node* temp = makeNode("RET");
-    addNode(&temp, $2);
-    $$ = temp;
-}
+return_statement:
+    RETURN expression SEMICOLON
+    {
+        node* temp = makeNode("RET");
+        addNode(&temp, $2);
+        $$ = temp;
+    }
 
 // Types
-type: BOOL { $$ = makeNode("BOOL"); }
+type: 
+    BOOL { $$ = makeNode("BOOL"); }
     | CHAR { $$ = makeNode("CHAR"); }
     | INT { $$ = makeNode("INT"); }
     | REAL { $$ = makeNode("REAL"); }
@@ -221,66 +238,81 @@ type: BOOL { $$ = makeNode("BOOL"); }
     | INT_POINTER { $$ = makeNode("INT_POINTER"); }
     ;
 
-id: IDENTIFIER {
-    $$ = makeNode(yytext);
-};
+id: 
+    IDENTIFIER {
+        $$ = makeNode(yytext);
+    };
 
-integer_literal: 
-                INTEGER_LITERAL
-               | INTEGER_LITERAL_HEX
-               ;
+integer_literal:
+    INTEGER_LITERAL
+    | INTEGER_LITERAL_HEX
+    ;
                
 bool__literal: 
-            FALSE 
-             | TRUE
-             ;
+    FALSE 
+    | TRUE
+    ;
              
 literal_lexemes: 
-                bool__literal
-               | CHAR_LITERAL
-               | integer_literal 
-               | REAL_LITERAL 
-               | STRING_LITERAL 
-               | id { $$ = $1; }
-               ;
+    bool__literal
+    | CHAR_LITERAL
+    | integer_literal 
+    | REAL_LITERAL 
+    | STRING_LITERAL 
+    | id { $$ = $1; }
+    ;
 
 // Variable Delarations
-variable_declarations: VAR variable_list
-variable_list: IDENTIFIER variable_helper | IDENTIFIER EQUALS literal_lexemes variable_helper
-variable_helper: COMMA variable_list | COLON type SEMICOLON
+variable_declarations: 
+    VAR variable_list
+
+variable_list:
+    IDENTIFIER variable_helper
+    | IDENTIFIER EQUALS literal_lexemes variable_helper
+
+variable_helper: 
+    COMMA variable_list 
+    | COLON type SEMICOLON
 
 // String Delarations
-string: STRING string1
-string1: IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS string2 
-        | IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes string2
-string2: COMMA string1 
-| SEMICOLON
+string:
+    STRING string1
 
-expression: expression operator expression
-          {
+string1: 
+    IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS string2 
+    | IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes string2
 
-          }
-          | operator expression
-          {
+string2: 
+    COMMA string1 
+    | SEMICOLON
 
-          } 
-          | literal_lexemes { $$ = $1; }
-          ;
-          
-operator: AND { $$ = makeNode("&&"); }
-        | DIVIDE { $$ = makeNode("/"); }
-        | EQUALS { $$ = makeNode("=="); }
-        | GREATER_THAN { $$ = makeNode(">"); }
-        | GREATER_EQUALS { $$ = makeNode(">="); }
-        | LOWER_THAN { $$ = makeNode("<"); }
-        | LOWER_EQUALS { $$ = makeNode("<="); }
-        | SUBSTRACT { $$ = makeNode("-"); }
-        | NOT { $$ = makeNode("!"); }
-        | NOT_EQUALS { $$ = makeNode("!="); }
-        | OR { $$ = makeNode("||"); }
-        | ADD { $$ = makeNode("+"); }
-        | MULTIPLY { $$ = makeNode("*"); }
-        ;
+expression: 
+    expression operator expression
+    {
+    
+    }
+    | operator expression
+    {
+
+    } 
+    | literal_lexemes { $$ = $1; }
+    ;
+
+operator: 
+    AND { $$ = makeNode("&&"); }
+    | DIVIDE { $$ = makeNode("/"); }
+    | EQUALS { $$ = makeNode("=="); }
+    | GREATER_THAN { $$ = makeNode(">"); }
+    | GREATER_EQUALS { $$ = makeNode(">="); }
+    | LOWER_THAN { $$ = makeNode("<"); }
+    | LOWER_EQUALS { $$ = makeNode("<="); }
+    | SUBSTRACT { $$ = makeNode("-"); }
+    | NOT { $$ = makeNode("!"); }
+    | NOT_EQUALS { $$ = makeNode("!="); }
+    | OR { $$ = makeNode("||"); }
+    | ADD { $$ = makeNode("+"); }
+    | MULTIPLY { $$ = makeNode("*"); }
+    ;
 %%
 
 #include "lex.yy.c"
