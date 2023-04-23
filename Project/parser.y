@@ -223,29 +223,31 @@ if_else_statement:
 
 while_statement: 
     WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
+    {
+        node* while_node = makeNode("WHILE")
+        addNode(&while_node, $3);
+        addNode(&while_node, $5);
+        $$ = while_node;
+    }
 
 do_while_statement: 
     DO statements WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS SEMICOLON
+    {
+        node* do_while_node = makeNode("DO-WHILE")
+        addNode(&do_while_node, $2);
+        addNode(&do_while_node, $5);
+        $$ = do_while_node;
+    }
 
 for_statement:
     FOR START_ROUND_BRACKETS assignment_statement expression SEMICOLON lhs ASSIGNMENT expression END_ROUND_BRACKETS statements
     {
-        
+        //NeEd tO FIX SPEAK TO איילון 
     }
 
 code_block_statement:
-    START_CURLY_BRACKETS code_block_statement1
-
-code_block_statement1:
-    variable_declarations code_block_statement1
-    | code_block_statement2
-
-code_block_statement2: 
-    statements code_block_statement2
-    | code_block_statement3
-
-code_block_statement3:
-    END_CURLY_BRACKETS
+    START_CURLY_BRACKETS body_after_functions_declared END_CURLY_BRACKETS
+    | START_CURLY_BRACKETS body_after_functions_declared END_CURLY_BRACKETS
 
 return_statement:
     RETURN expression SEMICOLON
