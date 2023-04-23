@@ -243,22 +243,22 @@ id:
         $$ = makeNode(yytext);
     };
 
-integer_literal:
-    INTEGER_LITERAL
-    | INTEGER_LITERAL_HEX
+integer_literal: 
+    INTEGER_LITERAL {makeNode("INT");}
+    | INTEGER_LITERAL_HEX {makeNode("INT");}
     ;
                
-bool__literal: 
-    FALSE 
-    | TRUE
+bool__literal:
+    FALSE {makeNode("FALSE");}
+    | TRUE {makeNode("TRUE");}
     ;
              
 literal_lexemes: 
-    bool__literal
-    | CHAR_LITERAL
-    | integer_literal 
-    | REAL_LITERAL 
-    | STRING_LITERAL 
+    bool__literal { $$ = $1; }
+    | CHAR_LITERAL { $$ = $1; }
+    | integer_literal { $$ = $1; }
+    | REAL_LITERAL { $$ = $1; }
+    | STRING_LITERAL { $$ = $1; }
     | id { $$ = $1; }
     ;
 
@@ -278,26 +278,21 @@ variable_helper:
 string:
     STRING string1
 
-string1: 
-    IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS string2 
-    | IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes string2
-
-string2: 
-    COMMA string1 
-    | SEMICOLON
-
 expression: 
     expression operator expression
     {
-    
+        node* operator_node = makeNode($2->token); 
+        addNode(&operator_node,$1);
+        addNode(&operator_node,$3);
     }
     | operator expression
     {
-
+        node* operator_node = makeNode($1->token); 
+        addNode(&operator_node,$2);
     } 
-    | literal_lexemes { $$ = $1; }
+    |   literal_lexemes { $$ = $1; }
     ;
-
+          
 operator: 
     AND { $$ = makeNode("&&"); }
     | DIVIDE { $$ = makeNode("/"); }
