@@ -275,8 +275,14 @@ variable_helper:
     | COLON type SEMICOLON
 
 // String Delarations
-string:
+string: 
     STRING string1
+string1: 
+    IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS string2 
+    | IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes string2
+string2: 
+    COMMA string1 
+    | SEMICOLON
 
 expression: 
     expression operator expression
