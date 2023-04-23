@@ -247,7 +247,7 @@ for_statement:
 
 code_block_statement:
     START_CURLY_BRACKETS body_after_functions_declared END_CURLY_BRACKETS
-    | START_CURLY_BRACKETS body_after_functions_declared END_CURLY_BRACKETS
+    | START_CURLY_BRACKETS END_CURLY_BRACKETS
 
 return_statement:
     RETURN expression SEMICOLON
