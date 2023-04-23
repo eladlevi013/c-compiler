@@ -210,7 +210,6 @@ expression: expression operator expression
           | literal_lexemes { $$ = $1; }
           ;
           
-<<<<<<< HEAD
 operator: AND { $$ = makeNode("&&"); }
         | DIVIDE { $$ = makeNode("/"); }
         | EQUALS { $$ = makeNode("=="); }
@@ -224,21 +223,6 @@ operator: AND { $$ = makeNode("&&"); }
         | OR { $$ = makeNode("||"); }
         | ADD { $$ = makeNode("+"); }
         | MULTIPLY { $$ = makeNode("*"); }
-=======
-operator: AND{makeNode("&&");}
-        | DIVIDE{makeNode("/");}
-        | EQUALS{makeNode("==");}
-        | GREATER_THAN {makeNode(">");}
-        | GREATER_EQUALS{makeNode(">=");}
-        | LOWER_THAN{makeNode("<");}
-        | LOWER_EQUALS{makeNode("<=");}
-        | SUBSTRACT{makeNode("-");}
-        | NOT{makeNode("!");}
-        | NOT_EQUALS{makeNode("!=");}
-        | OR{makeNode("||");}
-        | ADD {makeNode("+");}
-        | MULTIPLY{makeNode("*");}
->>>>>>> 825a8c9e704a96e1d285f7a60dde51d2e410e496
         ;
 %%
 
