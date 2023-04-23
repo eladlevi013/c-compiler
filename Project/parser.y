@@ -225,13 +225,11 @@ id: IDENTIFIER {
     $$ = makeNode(yytext);
 };
 
-integer_literal: 
-                INTEGER_LITERAL
+integer_literal: INTEGER_LITERAL
                | INTEGER_LITERAL_HEX
                ;
                
-bool__literal: 
-            FALSE 
+bool__literal: FALSE 
              | TRUE
              ;
              
@@ -257,15 +255,18 @@ string2: COMMA string1
 | SEMICOLON
 
 expression: expression operator expression
-          {
-
-          }
-          | operator expression
-          {
-
-          } 
-          | literal_lexemes { $$ = $1; }
-          ;
+        {
+            node* operator_node = makeNode($2->token); 
+            addNode(&operator_node,$1);
+            addNode(&operator_node,$3);
+        }
+        | operator expression
+        {
+            node* operator_node = makeNode($1->token); 
+            addNode(&operator_node,$2);
+        } 
+        |   literal_lexemes { $$ = $1; }
+        ;
           
 operator: AND { $$ = makeNode("&&"); }
         | DIVIDE { $$ = makeNode("/"); }
