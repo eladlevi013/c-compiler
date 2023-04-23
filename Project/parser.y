@@ -225,20 +225,31 @@ id: IDENTIFIER {
     $$ = makeNode(yytext);
 };
 
+<<<<<<< HEAD
 integer_literal: INTEGER_LITERAL
                | INTEGER_LITERAL_HEX
                ;
                
 bool__literal: FALSE 
              | TRUE
+=======
+integer_literal: 
+                INTEGER_LITERAL {makeNode("INT");}
+               | INTEGER_LITERAL_HEX {makeNode("INT");}
+               ;
+               
+bool__literal: 
+            FALSE {makeNode("FALSE");}
+             | TRUE {makeNode("TRUE");}
+>>>>>>> cdc77de1fa24f4c7b67a7a355246d0adef08d554
              ;
              
 literal_lexemes: 
-                bool__literal
-               | CHAR_LITERAL
-               | integer_literal 
-               | REAL_LITERAL 
-               | STRING_LITERAL 
+                bool__literal { $$ = $1; }
+               | CHAR_LITERAL { $$ = $1; }
+               | integer_literal { $$ = $1; }
+               | REAL_LITERAL { $$ = $1; }
+               | STRING_LITERAL { $$ = $1; }
                | id { $$ = $1; }
                ;
 
