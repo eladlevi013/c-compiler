@@ -32,9 +32,9 @@ int counter = 0;
 node** parList = NULL;
 int counter_parlist = 0;
 
-// parameter-list
+// var-list
 node** varList = NULL;
-int counter_varlist = 0;
+int counter_varList = 0;
 %}
 
 // Tokens from lex
@@ -229,7 +229,7 @@ if_else_statement:
 while_statement: 
     WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
     {
-        node* while_node = makeNode("WHILE")
+        node* while_node = makeNode("WHILE");
         addNode(&while_node, $3);
         addNode(&while_node, $5);
         $$ = while_node;
@@ -238,7 +238,7 @@ while_statement:
 do_while_statement: 
     DO statements WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS SEMICOLON
     {
-        node* do_while_node = makeNode("DO-WHILE")
+        node* do_while_node = makeNode("DO-WHILE");
         addNode(&do_while_node, $2);
         addNode(&do_while_node, $5);
         $$ = do_while_node;
@@ -306,14 +306,15 @@ literal_lexemes:
 variable_declarations: 
     variable_declare
     {
-        $1->nodes = parList;
-        $1->count = counter_parlist;
+        // printArgsList(&varList, counter_varList);
+        $1->nodes = varList;
+        $1->count = counter_varList;
         addElement(&argsList, $1, counter);
         counter++;
         
         // Resetting
-        parList = NULL;
-        counter_parlist = 0;
+        varList = NULL;
+        counter_varList = 0;
     }
     | variable_declarations variable_declare
     {
@@ -343,23 +344,23 @@ variable_declare:
 // Variable Delarations    
 variable: variable_list COLON type SEMICOLON
         {
-            $3->nodes = varlist;
-            $3->count = counter_varlist;
-            addElement(&varlist, $3, counter);
+            $3->nodes = varList;
+            $3->count = counter_varList;
+            addElement(&varList, $3, counter);
             counter++; // why have counter???
         }
 
 variable_list:
     id
     {
-        addElement(&varlist, $1, counter_varlist);
-        counter_varlist++;
+        addElement(&varList, $1, counter_varList);
+        counter_varList++;
     }
     | id ASSIGNMENT literal_lexemes 
     {
         //to check!
-        addElement(&varlist, $3, counter_varlist);
-        counter_varlist++;
+        addElement(&varList, $3, counter_varList);
+        counter_varList++;
     }
     | variable_list COMMA variable_list
     {
