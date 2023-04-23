@@ -1,2 +1,3 @@
-var a:int;
-var b:int;
+{
+    y = x;
+}
