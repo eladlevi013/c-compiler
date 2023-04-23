@@ -31,6 +31,10 @@ int counter = 0;
 // parameter-list
 node** parList = NULL;
 int counter_parlist = 0;
+
+// parameter-list
+node** varList = NULL;
+int counter_varlist = 0;
 %}
 
 // Tokens from lex
@@ -247,7 +251,13 @@ for_statement:
 
 code_block_statement:
     START_CURLY_BRACKETS body_after_functions_declared END_CURLY_BRACKETS
+    {
+
+    }
     | START_CURLY_BRACKETS END_CURLY_BRACKETS
+    {
+        $$ = makeNode("BLOCK");
+    }
 
 return_statement:
     RETURN expression SEMICOLON
@@ -292,28 +302,48 @@ literal_lexemes:
     | id { $$ = $1; }
     ;
 
-variable_declare:
-    VAR variable_list 
-    {
-        $$ = $1;
-    }
-    | STRING string_list
-    {
-        $$ = $1;
-    }
-
 variable_declarations: 
     variable_declare
     | variable_declarations variable_declare
 
-// Variable Delarations    
-variable_list:
-    IDENTIFIER variable_helper
-    | IDENTIFIER EQUALS literal_lexemes variable_helper
 
-variable_helper: 
-    COMMA variable_list 
-    | COLON type SEMICOLON
+variable_declare:
+    VAR variable 
+    {
+        $$ = makeNode("VAR");
+        addNode(&$$,$2);
+    }
+    | STRING string_list
+    {
+        $$ = makeNode("STRING");
+        addNode(&$$,$2);
+    }
+
+// Variable Delarations    
+variable: variable_list COLON type SEMICOLON
+        {
+            $3->nodes = varlist;
+            $3->count = counter_varlist;
+            addElement(&varlist, $3, counter_varlist);
+            counter++; // why have counter???
+        }
+
+variable_list:
+    id
+    {
+        addElement(&varlist, $1, counter_varlist);
+        counter_varlist++;
+    }
+    | id ASSIGNMENT literal_lexemes 
+    {
+        //to check!
+        addElement(&varlist, $3, counter_varlist);
+        counter_varlist++;
+    }
+    | variable_list COMMA variable_list
+    {
+        
+    }
 
 // String Delarations
 string_list: 
