@@ -305,39 +305,27 @@ literal_lexemes:
 
 variable_declarations: 
     variable_declare
-    {
-        $1->nodes = parList;
-        $1->count = counter_parlist;
-        addElement(&argsList, $1, counter);
-        counter++;
-        
-        // Resetting
-        parList = NULL;
-        counter_parlist = 0;
-    }
     | variable_declarations variable_declare
-    {
-        $2->nodes = parList;
-        $2->count = counter_parlist;
-        addElement(&argsList, $2, counter);
-        counter++;
-
-        // Resetting
-        parList = NULL;
-        counter_parlist = 0;
-    }
 
 
 variable_declare:
     VAR variable 
     {
-        $$ = makeNode("VAR");
-        addNode(&$$,$2);
+        node* temp = makeNode("VAR");
+        temp->nodes = argsList;
+        temp->count = counter;
+        $$ = temp;
+        argsList = NULL;
+        counter=0;
     }
-    | STRING string
+    | STRING variable_list SEMICOLON
     {
-        $$ = makeNode("STRING");
-        addNode(&$$,$2);
+        node* temp = makeNode("STRING");
+        temp->nodes = argsList;
+        temp->count = counter;
+        $$ = temp;
+        argsList = NULL;
+        counter=0;
     }
 
 // Variable Delarations    
@@ -345,8 +333,12 @@ variable: variable_list COLON type SEMICOLON
         {
             $3->nodes = varlist;
             $3->count = counter_varlist;
-            addElement(&varlist, $3, counter);
-            counter++; // why have counter???
+            addElement(&argsList, $4, counter);
+            counter++;
+        
+            // Resetting
+            varlist = NULL;
+            counter_varlist = 0;
         }
 
 variable_list:
@@ -366,9 +358,7 @@ variable_list:
         
     }
 
-// String Delarations
-string: variable_list SEMICOLON
-    
+// String Delarations 
 string_list:
     id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS  
     | id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes 
