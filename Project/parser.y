@@ -139,14 +139,36 @@ parameters_list:
 // Body
 body: 
     functions body
+    {
+        node* body_node = makeNode("BODY");
+        addNode(&body_node, $1);
+        addNode(&body_node, $2);
+        $$ = body_node;
+    }
     | body_after_functions_declared
+    {
+        $$ = $1;
+    }
 
-body_after_functions_declared: 
-    statements
-    | variable_declarations
-
-body_after_delarations:
+body_after_functions_declared:
     variable_declarations
+    {
+        // 
+    }
+	| body_after_delarations
+    {
+        $$ = $1;
+    }
+
+body_after_delarations: 
+    statements
+    {
+        $$ = $1;
+    }
+    | variable_declarations
+    {
+        $$ = $1;
+    }
 
 // Statements
 statements: 
@@ -278,8 +300,16 @@ variable_helper:
     | COLON type SEMICOLON
 
 // String Delarations
-string:
-    STRING string1;
+string: 
+    STRING string1
+
+string1: 
+    IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS string2 
+    | IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes string2
+
+string2: 
+    COMMA string1 
+    | SEMICOLON
 
 expression: 
     expression operator expression
