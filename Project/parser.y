@@ -151,7 +151,7 @@ body:
     }
 
 body_after_functions_declared:
-    variable_declarations
+    variable_declarations 
     {
         // 
     }
@@ -272,13 +272,13 @@ id:
     };
 
 integer_literal: 
-    INTEGER_LITERAL {makeNode("INT");}
-    | INTEGER_LITERAL_HEX {makeNode("INT");}
+    INTEGER_LITERAL { $$ = makeNode("INT");}
+    | INTEGER_LITERAL_HEX { $$ = makeNode("INT");}
     ;
                
 bool__literal:
-    FALSE {makeNode("FALSE");}
-    | TRUE {makeNode("TRUE");}
+    FALSE { $$ = makeNode("FALSE");}
+    | TRUE { $$ = makeNode("TRUE");}
     ;
              
 literal_lexemes: 
