@@ -54,7 +54,8 @@ s: code { printtree($1, 0); };
 
 code: functions { $$ = makeNode("CODE"); addNode(&$$, $1); }
 
-functions: function | procedure
+
+functions: function | procedure | variable_declarations
 
 function: 
     FUNCTION id START_ROUND_BRACKETS args_list END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
@@ -157,7 +158,7 @@ body:
 body_after_functions_declared:
     variable_declarations 
     {
-        // 
+        
     }
 	| body_after_delarations
     {
@@ -215,7 +216,7 @@ if_statement:
         $$ = if_node;
     }
 
-if_else_statement: 
+if_else_statement:
     IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements ELSE statements
     {
         node* if_else_node = makeNode("IF-ELSE");
@@ -304,7 +305,27 @@ literal_lexemes:
 
 variable_declarations: 
     variable_declare
+    {
+        $1->nodes = parList;
+        $1->count = counter_parlist;
+        addElement(&argsList, $1, counter);
+        counter++;
+        
+        // Resetting
+        parList = NULL;
+        counter_parlist = 0;
+    }
     | variable_declarations variable_declare
+    {
+        $2->nodes = parList;
+        $2->count = counter_parlist;
+        addElement(&argsList, $2, counter);
+        counter++;
+
+        // Resetting
+        parList = NULL;
+        counter_parlist = 0;
+    }
 
 
 variable_declare:
