@@ -54,7 +54,7 @@ s: code { printtree($1, 0); };
 
 code: functions { $$ = makeNode("CODE"); addNode(&$$, $1); }
 
-functions: function | procedure | code_block_statement 
+functions: function | procedure | statements
 
 function: 
     FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
@@ -167,24 +167,26 @@ body_after_delarations:
     }
 
 // Statements
-statements: 
-    assignment_statement { $$ = $1; }
-    | function_call_statement { $$ = $1; }
-    | if_statement { $$ = $1; }
-    | if_else_statement { $$ = $1; }
-    | while_statement { $$ = $1; }
-    | do_while_statement { $$ = $1; }
-    | for_statement { $$ = $1; }
-    | code_block_statement { $$ = $1; }
-    | return_statement { $$ = $1; }
+statements:
+    assignment_statement { $$ = $1; printf("ASDASDASD"); } 
+     | function_call_statement { $$ = $1; }
+     | if_statement { $$ = $1; }
+     | if_else_statement { $$ = $1; }
+     | while_statement { $$ = $1; }
+     | do_while_statement { $$ = $1; }
+     | for_statement { $$ = $1; }
+     | code_block_statement { $$ = $1; }
+     | return_statement { $$ = $1; }
     ;
 
 assignment_statement: 
     lhs ASSIGNMENT expression SEMICOLON 
     {
-        $$ = makeNode("=");
-        addNode(&$$,$1);
-        addNode(&$$,$3);
+        node *assignment_node = makeNode("=");
+        addNode(&assignment_node, $1);
+        addNode(&assignment_node, $3);
+        $$ = assignment_node;
+
     }
     | lhs ASSIGNMENT STRING_LITERAL SEMICOLON
     {
@@ -310,7 +312,7 @@ literal_lexemes:
     | integer_literal { $$ = $1; }
     | REAL_LITERAL { $$ = $1; }
     | STRING_LITERAL { $$ = $1; }
-    | id { $$ = $1; }
+    | id { $$ = $1;}
     ;
 
 variable_declarations: 
@@ -360,7 +362,7 @@ variable_list:
         addElement(&varList, $1, counter_varList);
         counter_varList++;
     }
-    | id ASSIGNMENT literal_lexemes 
+    | id ASSIGNMENT literal_lexemes
     {
         //to check!
         addElement(&varList, $3, counter_varList);
