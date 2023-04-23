@@ -8,21 +8,29 @@
 int yylex(void);
 int yyerror();
 char *yytext;
+
 typedef struct node
 {
     char *token;
     struct node **nodes;
     int count;
 } node;
+
+// Tree functions
 node *makeNode(char* token);
 void addNode(node **father, node *descendant);
 void printtree(node* tree, int tab);
 void printArgsList(node** argsList, int argCount);
 void addElement(node ***, node *, int);
 #define YYSTYPE struct node*
+
+// args-list
 node** argsList = NULL;
-int counter=0;
-node* root;
+int counter = 0;
+
+// parameter-list
+node** parList = NULL;
+int counter_parlist = 0;
 %}
 
 // Tokens from lex
@@ -85,6 +93,7 @@ args:
         temp->count = counter;
         $$ = temp;
         argsList = NULL;
+        counter=0;
     }
 	|
     {
@@ -92,18 +101,40 @@ args:
     }
 
 args_list:
-	ARG_ARROW COLON type
+	ARG_ARROW parameters_list COLON type
     {
-        addElement(&argsList, $3, counter);
+        $4->nodes = parList;
+        $4->count = counter_parlist;
+        addElement(&argsList, $4, counter);
         counter++;
+        
+        // resetting
+        parList = NULL;
+        counter_parlist = 0;
     }
-	| args_list SEMICOLON ARG_ARROW COLON type
+	| args_list SEMICOLON ARG_ARROW parameters_list COLON type
     {
-        addElement(&argsList, $5, counter);
+        $6->nodes = parList;
+        $6->count = counter_parlist;
+        addElement(&argsList, $6, counter);
         counter++;
+
+        // resetting
+        parList = NULL;
+        counter_parlist = 0;
     }
 
-
+parameters_list:
+    id
+    {
+        addElement(&parList, $1, counter_parlist);
+        counter_parlist++;
+    }
+    | parameters_list COMMA id
+    {
+        addElement(&parList, $3, counter_parlist);
+        counter_parlist++;
+    }
 
 // Body
 body: functions body | body_after_functions_declared
