@@ -292,8 +292,19 @@ literal_lexemes:
     | id { $$ = $1; }
     ;
 
+variable_declare:
+    VAR variable_list 
+    {
+        $$ = $1;
+    }
+    | STRING string_list
+    {
+        $$ = $1;
+    }
 
-variable_declarations: VAR variable_list | STRING string_list
+variable_declarations: 
+    variable_declare
+    | variable_declarations variable_declare
 
 // Variable Delarations    
 variable_list:
