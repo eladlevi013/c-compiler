@@ -10,7 +10,7 @@ int yyerror();
 char *yytext;
 
 typedef struct node
-{
+{ 
     char *token;
     struct node **nodes;
     int count;
@@ -137,31 +137,43 @@ parameters_list:
     }
 
 // Body
-body: functions body | body_after_functions_declared
-body_after_functions_declared: statements | variable_declarations
+body: functions body
+    | body_after_functions_declared
+
+body_after_functions_declared: 
+    statements
+    | variable_declarations
 
 // Statements
-statements: assignment_statement
-          | function_call_statement 
-          | if_statement
-          | if_else_statement 
-          | while_statement
-          | do_while_statement 
-          | for_statement 
-          | code_block_statement
-          | return_statement
+statements: assignment_statement { $$ = $1; }
+          | function_call_statement { $$ = $1; }
+          | if_statement { $$ = $1; }
+          | if_else_statement { $$ = $1; }
+          | while_statement { $$ = $1; }
+          | do_while_statement { $$ = $1; }
+          | for_statement { $$ = $1; }
+          | code_block_statement { $$ = $1; }
+          | return_statement { $$ = $1; }
           ;
 
-assignment_statement: lhs ASSIGNMENT expression SEMICOLON 
-| lhs ASSIGNMENT STRING_LITERAL SEMICOLON
+assignment_statement: 
+    lhs ASSIGNMENT expression SEMICOLON 
+    | lhs ASSIGNMENT STRING_LITERAL SEMICOLON
 
-lhs: id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS | id
+lhs: 
+    id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS
+    | id
 
-function_call_statement: lhs ASSIGNMENT IDENTIFIER START_ROUND_BRACKETS function_call_statement1
+function_call_statement: 
+    lhs ASSIGNMENT IDENTIFIER START_ROUND_BRACKETS function_call_statement1
 
-function_call_statement1: expression function_call_statement2 | function_call_statement2
+function_call_statement1: 
+    expression function_call_statement2 
+    | function_call_statement2
 
-function_call_statement2: COMMA function_call_statement1 | END_ROUND_BRACKETS SEMICOLON
+function_call_statement2: 
+    COMMA function_call_statement1
+    | END_ROUND_BRACKETS SEMICOLON
 
 if_statement: IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
 
@@ -202,15 +214,18 @@ id: IDENTIFIER {
     $$ = makeNode(yytext);
 };
 
-integer_literal: INTEGER_LITERAL 
+integer_literal: 
+                INTEGER_LITERAL
                | INTEGER_LITERAL_HEX
                ;
                
-bool__literal: FALSE 
+bool__literal: 
+            FALSE 
              | TRUE
              ;
              
-literal_lexemes: bool__literal
+literal_lexemes: 
+                bool__literal
                | CHAR_LITERAL
                | integer_literal 
                | REAL_LITERAL 
