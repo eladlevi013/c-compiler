@@ -54,7 +54,7 @@ s: code { printtree($1, 0); };
 
 code: functions { $$ = makeNode("CODE"); addNode(&$$, $1); }
 
-functions: function | procedure | code_block_statement 
+functions: function | procedure | code_block_statement | assignment_statement
 
 function: 
     FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
@@ -168,7 +168,7 @@ body_after_delarations:
 
 // Statements
 statements: 
-    assignment_statement { $$ = $1; }
+    assignment_statement { $$ = $1;}
     | function_call_statement { $$ = $1; }
     | if_statement { $$ = $1; }
     | if_else_statement { $$ = $1; }
@@ -206,15 +206,16 @@ lhs:
     }
 
 function_call_statement: 
-    lhs ASSIGNMENT IDENTIFIER START_ROUND_BRACKETS function_call_statement1
+    lhs ASSIGNMENT id START_ROUND_BRACKETS function_parms END_ROUND_BRACKETS SEMICOLON
+    {
+        //ADD
+    }
 
-function_call_statement1: 
-    expression function_call_statement2 
-    | function_call_statement2
+function_parms:
+    //ADD
+    expression  
+    | function_parms COMMA expression
 
-function_call_statement2: 
-    COMMA function_call_statement1
-    | END_ROUND_BRACKETS SEMICOLON
 
 if_statement: 
     IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
