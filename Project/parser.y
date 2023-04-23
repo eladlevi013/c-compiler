@@ -346,7 +346,7 @@ variable: variable_list COLON type SEMICOLON
             $3->nodes = varlist;
             $3->count = counter_varlist;
             addElement(&varlist, $3, counter_varlist);
-            counter++; // why have counter???
+            counter_varlist++;
         }
 
 variable_list:
@@ -374,6 +374,7 @@ string_list:
 string_helper:
     COMMA string1 
     | SEMICOLON
+    ;
 
 expression: 
     expression operator expression
