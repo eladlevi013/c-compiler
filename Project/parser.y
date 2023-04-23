@@ -215,21 +215,21 @@ id: IDENTIFIER {
 };
 
 integer_literal: 
-                INTEGER_LITERAL
-               | INTEGER_LITERAL_HEX
+                INTEGER_LITERAL {makeNode("INT");}
+               | INTEGER_LITERAL_HEX {makeNode("INT");}
                ;
                
 bool__literal: 
-            FALSE 
-             | TRUE
+            FALSE {makeNode("FALSE");}
+             | TRUE {makeNode("TRUE");}
              ;
              
 literal_lexemes: 
-                bool__literal
-               | CHAR_LITERAL
-               | integer_literal 
-               | REAL_LITERAL 
-               | STRING_LITERAL 
+                bool__literal { $$ = $1; }
+               | CHAR_LITERAL { $$ = $1; }
+               | integer_literal { $$ = $1; }
+               | REAL_LITERAL { $$ = $1; }
+               | STRING_LITERAL { $$ = $1; }
                | id { $$ = $1; }
                ;
 
