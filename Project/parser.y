@@ -265,10 +265,10 @@ literal_lexemes:
     | id { $$ = $1; }
     ;
 
-// Variable Delarations
-variable_declarations: 
-    VAR variable_list
 
+variable_declarations: VAR variable_list | STRING string_list
+
+// Variable Delarations    
 variable_list:
     IDENTIFIER variable_helper
     | IDENTIFIER EQUALS literal_lexemes variable_helper
@@ -278,12 +278,10 @@ variable_helper:
     | COLON type SEMICOLON
 
 // String Delarations
-string: 
-    STRING string1
-string1: 
+string_list: 
     IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS string2 
     | IDENTIFIER START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes string2
-string2: 
+string_helper: 
     COMMA string1 
     | SEMICOLON
 
