@@ -50,7 +50,7 @@ s: code { printtree($1, 0); };
 
 code: functions { $$ = makeNode("CODE"); addNode(&$$, $1); }
 
-functions: function | procedure | if_statement
+functions: function | procedure
 
 function: 
     FUNCTION id START_ROUND_BRACKETS args_list END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
@@ -144,6 +144,9 @@ body:
 body_after_functions_declared: 
     statements
     | variable_declarations
+
+body_after_delarations:
+    variable_declarations
 
 // Statements
 statements: 
@@ -276,7 +279,7 @@ variable_helper:
 
 // String Delarations
 string:
-    STRING string1
+    STRING string1;
 
 expression: 
     expression operator expression
