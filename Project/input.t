@@ -1,1 +1,1 @@
-arg-> a:int; arg-> b:real; arg-> b:char
+return Muzar;

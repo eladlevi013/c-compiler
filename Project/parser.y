@@ -17,7 +17,12 @@ typedef struct node
 node *makeNode(char* token);
 void addNode(node **father, node *descendant);
 void printtree(node* tree, int tab);
+void printArgsList(node** argsList, int argCount);
+void addElement(node ***, node *, int);
 #define YYSTYPE struct node*
+node** argsList = NULL;
+int counter=0;
+node* root;
 %}
 
 // Tokens from lex
@@ -37,7 +42,7 @@ s: code { printtree($1, 0); };
 
 code: functions { $$ = makeNode("CODE"); addNode(&$$, $1); }
 
-functions: function | procedure | args_list
+functions: function | procedure | args | return_statement
 
 function: 
     FUNCTION id START_ROUND_BRACKETS args_list END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
@@ -72,69 +77,40 @@ procedure: FUNCTION id START_ROUND_BRACKETS args_list END_ROUND_BRACKETS COLON V
     }
 
 // Function args parameters
+args:
+	args_list
+    {
+        node* temp = makeNode("ARGS");
+        temp->nodes = argsList;
+        temp->count = counter;
+        $$ = temp;
+        argsList = NULL;
+    }
+	|
+    {
+        node* temp = makeNode("NO ARGS");
+    }
+
 args_list:
-    single_arg args_list_helper
+	ARG_ARROW COLON type
     {
-        node *args_root = makeNode("ARGS");
-        addNode(&args_root, $1);
-        addNode(&args_root, $2);
-        $$ = args_root;
+        addElement(&argsList, $3, counter);
+        counter++;
     }
-    | single_arg 
+	| args_list SEMICOLON ARG_ARROW COLON type
     {
-        node *args_root = makeNode("ARGS");
-        addNode(&args_root, $1);
-        $$ = args_root;
+        addElement(&argsList, $5, counter);
+        counter++;
     }
-    |
-    {
-        $$ = makeNode("ARGS NONE");
-    };
 
-single_arg: ARG_ARROW args_parameters COLON type
-{
-    node* args_root = makeNode($4->token);
-    addNode(&args_root, $2);
-    $$ = args_root;
-}
 
-args_list_helper: SEMICOLON single_arg args_list_helper
-{
-    node* args_root = $2;
-    addNode(&args_root, $3);
-    $$ = args_root;
-}
-| SEMICOLON single_arg 
-{
-    $$ = $2;
-}
-
-args_parameters: 
-id single_parameter
-{
-    $$ = makeNode($1->token);
-}
-| id
-{
-    $$ = makeNode($1->token);
-}
-
-single_parameter: 
-COMMA id single_parameter
-{
-    $$ = makeNode($2->token);
-}
-| COMMA id
-{
-    $$ = makeNode($2->token);
-}
 
 // Body
 body: functions body | body_after_functions_declared
 body_after_functions_declared: statements | variable_declarations
 
 // Statements
-statements: assignment_statement 
+statements: assignment_statement
           | function_call_statement 
           | if_statement
           | if_else_statement 
@@ -175,6 +151,11 @@ code_block_statement2: statements code_block_statement2 | code_block_statement3
 code_block_statement3: END_CURLY_BRACKETS
 
 return_statement: RETURN expression SEMICOLON
+{
+    node* temp = makeNode("RET");
+    addNode(&temp, $2);
+    $$ = temp;
+}
 
 // Types
 type: BOOL { $$ = makeNode("BOOL"); }
@@ -203,7 +184,7 @@ literal_lexemes: bool__literal
                | integer_literal 
                | REAL_LITERAL 
                | STRING_LITERAL 
-               | IDENTIFIER
+               | id { $$ = $1; }
                ;
 
 // Variable Delarations
@@ -220,7 +201,7 @@ string2: COMMA string1
 
 expression: expression operator expression
           | operator expression 
-          | literal_lexemes
+          | literal_lexemes { $$ = $1; }
           ;
           
 operator: AND
@@ -238,6 +219,7 @@ operator: AND
         | MULTIPLY
         ;
 %%
+
 #include "lex.yy.c"
 int main()
 {
@@ -248,6 +230,17 @@ int yyerror()
 { 
     printf("YOUR ERROR pisher!\n");
     return 0; 
+}
+
+void printArgsList(node** argsList, int argCount) {
+    if (argCount == 0) {
+        printf("No arguments\n");
+        return;
+    }
+    printf("Arguments:\n");
+    for (int i = 0; i < argCount; i++) {
+        printf("arg%d: %s\n", i+1, argsList[i]->token);
+    }
 }
 
 node *makeNode(char *token)
@@ -267,26 +260,31 @@ void addNode(node **father, node *descendant)
     (*father)->nodes[(*father)->count++] = descendant;
 }
 
-void printtree(node* tree, int tab) {
-	int i;
-	char* token = tree->token;
+void addElement(node ***list, node *element, int size) {
+    *list = (node**) realloc(*list, (size+1) * sizeof(node*));
+    (*list)[size] = element;
+}
 
-	if (*token) {
-		for (i = 0; i < tab; i++) {
-			printf("\t");
-		}
-		printf("(%s\n", token);
-	}
-	else
-		tab -= 1;
-	if (tree->nodes) {
-		for (int j = 0; j < tree->count; j++) {
-			printtree(tree->nodes[j], tab + 1);
-		}
-	}
-	for (i = 0; i < tab; i++) {
-		printf("\t");
-	}
-	if (*token)
-		printf(")\n");
+void printtree(node* tree, int tab) {
+    int i;
+    char* token = tree->token;
+
+    if (*token) {
+        for (i = 0; i < tab; i++) {
+            printf("\t");
+        }
+        printf("(%s\n", token);
+    }
+    else
+        tab -= 1;
+    if (tree->nodes) {
+        for (int j = 0; j < tree->count; j++) {
+            printtree(tree->nodes[j], tab + 1);
+        }
+    }
+    for (i = 0; i < tab; i++) {
+        printf("\t");
+    }
+    if (*token)
+        printf(")\n");
 }
