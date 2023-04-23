@@ -164,8 +164,19 @@ function_call_statement1: expression function_call_statement2 | function_call_st
 function_call_statement2: COMMA function_call_statement1 | END_ROUND_BRACKETS SEMICOLON
 
 if_statement: IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
+            {
+                node* if_node = makeNode("IF");
+                addNode(&if_node, $3);
+                addNode(&if_node, $5);
+            }
 
 if_else_statement: IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements ELSE statements
+            {
+                node* if_node = makeNode("IF-ELSE");
+                addNode(&if_node, $3);
+                addNode(&if_node, $5);
+                //FIX
+            }
 
 while_statement: WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
 
