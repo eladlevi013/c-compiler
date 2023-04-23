@@ -124,7 +124,7 @@ statements: assignment_statement
 assignment_statement: lhs ASSIGNMENT expression SEMICOLON 
 | lhs ASSIGNMENT STRING_LITERAL SEMICOLON
 
-lhs: IDENTIFIER '[' expression ']' | IDENTIFIER
+lhs: id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS | id
 
 function_call_statement: lhs ASSIGNMENT IDENTIFIER START_ROUND_BRACKETS function_call_statement1
 
