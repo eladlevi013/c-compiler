@@ -384,6 +384,27 @@ variable_list_helper:
     }
 
 
+variable_list_helper:
+    id
+    {
+    }
+    | id ASSIGNMENT literal_lexemes
+    {
+
+    }
+
+variable_list: 
+    variable_list_helper
+    {
+        $$ = makeNode("");
+        addNode(&$$, $1);
+    }
+    | variable_list COMMA variable_list_helper
+    {
+        addNode(&$$, $3);
+    }
+
+
 // String Delarations 
 string_list:
     string_list_helper
@@ -399,7 +420,7 @@ string_list:
 string_list_helper:
     id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS
     {
-        
+
     }
     | id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes 
     {
