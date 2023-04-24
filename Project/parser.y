@@ -210,7 +210,7 @@ assignment_statement:
     {
         node* assignment_node = makeNode("=");
         addNode(&assignment_node,$1);
-        addNode(&assignment_node,$3);
+        addNode(&assignment_node,makeNode("STRING"));
         $$ = assignment_node; 
     }
 
@@ -218,7 +218,7 @@ lhs:
     id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS
     {
         $$ = $1;
-        addNode(&$$,$3); //TO CHECK!!
+        addNode(&$$,$3); 
     }
     | id 
     {
@@ -228,13 +228,22 @@ lhs:
 function_call_statement: 
     lhs ASSIGNMENT id START_ROUND_BRACKETS function_parms END_ROUND_BRACKETS SEMICOLON
     {
-        //ADD
+        node* function_call_node = makeNode("FUNC-CALL");
+        addNode(&function_call_node, $5);
+        $$ = function_call_node;
+
     }
 
 function_parms:
-    //ADD
-    expression  
+    expression 
+    {
+        $$ = makeNode("");
+        addNode(&$$, $1);
+    } 
     | function_parms COMMA expression
+    {
+        addNode(&$$, $3);
+    }
 
 
 if_statement: 
@@ -277,7 +286,8 @@ do_while_statement:
 for_statement:
     FOR START_ROUND_BRACKETS assignment_statement SEMICOLON expression SEMICOLON assignment_statement END_ROUND_BRACKETS statements
     {
-        // 
+        node* for_node = makeNode("FOR");
+        //ADD
     }
 
 code_block_statement:
@@ -333,6 +343,12 @@ literal_lexemes:
     | id { $$ = $1; }
     ;
 
+literal_lexemes_to_string:
+    CHAR_LITERAL { $$ = makeNode("CHAR");}
+    | STRING_LITERAL { $$ = makeNode("STRING"); }
+    | id { $$ = $1; }
+    ;
+
 variable_declarations:
     variable_declare
     {
@@ -352,8 +368,10 @@ variable_declare:
     }
     STRING string_list SEMICOLON
     {
-        node* string_node = makeNode("STRING")
-        addNode($string_node,&2);
+        printf("here");
+        node* string_node = makeNode("STRING");
+        addNode(&string_node,$2);
+        $$ = string_node;
     }
 
 // Variable Delarations    
@@ -376,34 +394,12 @@ variable_list_helper:
     }
     | id ASSIGNMENT literal_lexemes
     {
-        // Creating the equal node
+        // Creating the ASSIGNMENT node
         node* temp_assinment_node = makeNode("=");
         addNode(&temp_assinment_node, $1);
         addNode(&temp_assinment_node, $3);
         $$ = temp_assinment_node;
     }
-
-
-variable_list_helper:
-    id
-    {
-    }
-    | id ASSIGNMENT literal_lexemes
-    {
-
-    }
-
-variable_list: 
-    variable_list_helper
-    {
-        $$ = makeNode("");
-        addNode(&$$, $1);
-    }
-    | variable_list COMMA variable_list_helper
-    {
-        addNode(&$$, $3);
-    }
-
 
 // String Delarations 
 string_list:
@@ -412,19 +408,24 @@ string_list:
         $$ = makeNode("");
         addNode(&$$, $1);
     }
-    | variable_list COMMA variable_list_helper
+    | string_list COMMA string_list_helper
     {
         addNode(&$$, $3);
     }
 
 string_list_helper:
-    id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS
+    lhs
     {
-
+        temp_node = makeNode(""); 
+        addNode(&temp_node, $1);
     }
-    | id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes 
+    | lhs ASSIGNMENT literal_lexemes_to_string 
     {
-
+        // Creating the ASSIGNMENT node
+        node* temp_assinment_node = makeNode("=");
+        addNode(&temp_assinment_node, $1);
+        addNode(&temp_assinment_node, $3);
+        $$ = temp_assinment_node;
     }
 
 expression: 

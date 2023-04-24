@@ -340,23 +340,11 @@ variable_declare:
     }
 
 // Variable Delarations    
-variable_list:
+variable_list_helper:
     id
     {
         temp_node = makeNode(""); 
         addNode(&temp_node, $1);
-        $$ = temp_node;
-    }
-    | variable_list COMMA id ASSIGNMENT literal_lexemes
-    {
-        // Creating the equal node
-        node* temp_assinment_node = makeNode("=");
-        addNode(&temp_assinment_node, $3);
-        addNode(&temp_assinment_node, $5);
-
-        // Adding 
-        addNode(&temp_node, temp_assinment_node);
-        $$ = temp_node;
     }
     | id ASSIGNMENT literal_lexemes
     {
@@ -364,15 +352,18 @@ variable_list:
         node* temp_assinment_node = makeNode("=");
         addNode(&temp_assinment_node, $1);
         addNode(&temp_assinment_node, $3);
-
-        temp_node = makeNode("");
-        addNode(&temp_node, temp_assinment_node);
-        $$ = temp_node;
+        $$ = temp_assinment_node;
     }
-    | variable_list COMMA id
+
+variable_list: 
+    variable_list_helper
     {
-        addNode(&temp_node, $3);
-        $$ = temp_node;
+        $$ = makeNode("");
+        addNode(&$$, $1);
+    }
+    | variable_list COMMA variable_list_helper
+    {
+        addNode(&$$, $3);
     }
 
 expression: 
@@ -458,7 +449,7 @@ void printtree(node* tree, int tab) {
     char* token = tree->token;
 
     if (*token) {
-        for (i = 0; i < tab; i++) {
+        for (i = 0; i < tab-1; i++) {
             printf("\t");
         }
         printf("(%s\n", token);

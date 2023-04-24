@@ -1,5 +1,3 @@
 {
-var a,b=c:int;
-var itamar=sleeping:char;
-var algo_grade=51:real;
+    a[5+3] = "moshe";
 }
