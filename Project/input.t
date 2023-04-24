@@ -1,3 +1,4 @@
 {
-    a[5+3] = "moshe";
+    var x:int;
+    string e[48]="itamar sleeeepepepep";
 }

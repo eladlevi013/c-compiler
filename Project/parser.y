@@ -56,7 +56,7 @@ s: code { printtree($1, 0); };
 
 code: functions | statements{ $$ = $1; }
 
-function_procedure: function | procedure
+function_procedure: function | procedure | statements
 
 functions: 
     function_procedure
@@ -232,7 +232,7 @@ function_call_statement:
         addNode(&function_call_node, $1);
         addNode(&function_call_node, makeNode($2->token));
         node* args_node = makeNode("ARGS");
-        addNode(&args_node, &5);
+        addNode(&args_node, $5);
         addNode(&function_call_node, args_node);
         $$ = function_call_node;
     }
@@ -355,12 +355,6 @@ literal_lexemes:
     | id { $$ = $1; }
     ;
 
-literal_lexemes_to_string:
-    CHAR_LITERAL { $$ = makeNode("CHAR");}
-    | STRING_LITERAL { $$ = makeNode("STRING"); }
-    | id { $$ = $1; }
-    ;
-
 variable_declarations:
     variable_declare
     {
@@ -377,16 +371,15 @@ variable_declare:
     {
         addNode(&$4, $2);
         $$ = $4;
-    }
-    STRING string_list SEMICOLON
+    }  
+    | STRING string_list SEMICOLON
     {
-        printf("here");
         node* string_node = makeNode("STRING");
         addNode(&string_node,$2);
         $$ = string_node;
     }
 
-// Variable Delarations    
+// Variable Delarations 
 variable_list: 
     variable_list_helper
     {
@@ -413,7 +406,7 @@ variable_list_helper:
         $$ = temp_assinment_node;
     }
 
-// String Delarations 
+// Strings Delarations
 string_list:
     string_list_helper
     {
@@ -426,17 +419,23 @@ string_list:
     }
 
 string_list_helper:
-    lhs
+    id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS
     {
         temp_node = makeNode(""); 
-        addNode(&temp_node, $1);
+        addNode(&temp_node, $1); 
+        node* lenght_node = makeNode("LENGTH");
+        addNode(&lenght_node, $3);
+        addNode(&$$, lenght_node);
     }
-    | lhs ASSIGNMENT literal_lexemes_to_string 
+    | id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS ASSIGNMENT literal_lexemes 
     {
         // Creating the ASSIGNMENT node
         node* temp_assinment_node = makeNode("=");
         addNode(&temp_assinment_node, $1);
-        addNode(&temp_assinment_node, $3);
+        node* lenght_node = makeNode("LENGTH");
+        addNode(&lenght_node, $3);
+        addNode(&$$, lenght_node);
+        addNode(&temp_assinment_node, $6);
         $$ = temp_assinment_node;
     }
 

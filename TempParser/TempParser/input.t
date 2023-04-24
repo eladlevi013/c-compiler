@@ -1,3 +1,1 @@
-var a,b=c:int;
-var itamar=sleeping:char;
-var algo=51:real;
+string a[50], b[30]="muzar";

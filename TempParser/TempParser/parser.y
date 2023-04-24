@@ -333,6 +333,10 @@ variable_declarations:
     }
 
 variable_declare:
+    var_declare
+    | string_declare
+
+var_declare:
     VAR variable_list COLON type SEMICOLON
     {
         addNode(&$4, $2);
@@ -340,21 +344,6 @@ variable_declare:
     }
 
 // Variable Delarations    
-variable_list_helper:
-    id
-    {
-        temp_node = makeNode(""); 
-        addNode(&temp_node, $1);
-    }
-    | id ASSIGNMENT literal_lexemes
-    {
-        // Creating the equal node
-        node* temp_assinment_node = makeNode("=");
-        addNode(&temp_assinment_node, $1);
-        addNode(&temp_assinment_node, $3);
-        $$ = temp_assinment_node;
-    }
-
 variable_list: 
     variable_list_helper
     {
@@ -365,6 +354,62 @@ variable_list:
     {
         addNode(&$$, $3);
     }
+
+variable_list_helper:
+    id
+    {
+        temp_node = makeNode(""); 
+        addNode(&temp_node, $1);
+    }
+    | id ASSIGNMENT literal_lexemes
+    {
+        // Creating the ASSIGNMENT node
+        node* temp_assinment_node = makeNode("=");
+        addNode(&temp_assinment_node, $1);
+        addNode(&temp_assinment_node, $3);
+        $$ = temp_assinment_node;
+    }
+
+string_declare:
+    STRING string_list SEMICOLON
+    {
+        node* string_node = makeNode("STRING");
+        addNode(&string_node,$2);
+        $$ = string_node;
+    }
+  
+string_list:
+    string_list_helper
+    {
+        $$ = makeNode("");
+        addNode(&$$, $1);
+    }
+    | string_list COMMA string_list_helper
+    {
+        addNode(&$$, $3);
+    }
+
+string_list_helper:
+    id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS
+    {
+        temp_node = makeNode(""); 
+        addNode(&temp_node, $1); 
+        node* lenght_node = makeNode("LENGTH");
+        addNode(&lenght_node, $3);
+        addNode(&$$, lenght_node);
+    }
+    | id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS ASSIGNMENT literal_lexemes 
+    {
+        // Creating the ASSIGNMENT node
+        node* temp_assinment_node = makeNode("=");
+        addNode(&temp_assinment_node, $1);
+        node* lenght_node = makeNode("LENGTH");
+        addNode(&lenght_node, $3);
+        addNode(&$$, lenght_node);
+        addNode(&temp_assinment_node, $6);
+        $$ = temp_assinment_node;
+    }
+
 
 expression: 
     operator expression
