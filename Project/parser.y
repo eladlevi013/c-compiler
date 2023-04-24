@@ -23,6 +23,7 @@ void printtree(node* tree, int tab);
 void printArgsList(node** argsList, int argCount);
 void addElement(node ***, node *, int);
 #define YYSTYPE struct node*
+node *temp_node = NULL;
 
 // args-list
 node** argsList = NULL;
@@ -50,9 +51,9 @@ int counter_varList = 0;
         START_ROUND_BRACKETS END_ROUND_BRACKETS START_SQUARE_BRACKETS END_SQUARE_BRACKETS;
 %%
 
-s: variable_list { printtree($1, 0); };  
+s: code { printtree($1, 0); };  
 
-code: functions { $$ = $1; }
+code: functions | variable_declarations { $$ = $1; }
 
 function_procedure: function | procedure
 
@@ -331,56 +332,58 @@ literal_lexemes:
     | id { $$ = $1; }
     ;
 
-variable_declarations: 
+variable_declarations:
     variable_declare
     {
-        node* temp = makeNode("VAR");
-        temp->nodes = argsList;
-        temp->count = counter_argsList;
-        $$ = temp;
-        
-        argsList = NULL;
-        counter_argsList=0;
+        $$ = makeNode("variable_declarations");
+        addNode(&$$, $1);
     }
     | variable_declarations variable_declare
     {
-        $$->nodes = argsList;
-        $$->count = counter_argsList;
-
-        argsList = NULL;
-        counter_argsList=0;
+        addNode(&$$, $2);
     }
 
 variable_declare:
     VAR variable_list COLON type SEMICOLON
     {
-        $3->nodes = varList;
-        $3->count = counter_varList;
-        addElement(&argsList, $3, counter_argsList);
-        counter_argsList++;
-        
-        // Resetting
-        varList = NULL;
-        counter_varList = 0;
-    }
-    | STRING string_list SEMICOLON
-    {
-
+        addNode(&$4, $2);
+        $$ = $4;
     }
 
 // Variable Delarations    
 variable_list:
     id
     {
-        addElement(&varList, $1, counter_varList);
-        counter_varList++;
+        temp_node = makeNode(""); 
+        addNode(&temp_node, $1);
+        $$ = temp_node;
+    }
+    | variable_list COMMA id ASSIGNMENT literal_lexemes
+    {
+        // Creating the equal node
+        node* temp_assinment_node = makeNode("=");
+        addNode(&temp_assinment_node, $3);
+        addNode(&temp_assinment_node, $5);
+
+        // Adding 
+        addNode(&temp_node, temp_assinment_node);
+        $$ = temp_node;
     }
     | id ASSIGNMENT literal_lexemes
     {
+        // Creating the equal node
+        node* temp_assinment_node = makeNode("=");
+        addNode(&temp_assinment_node, $1);
+        addNode(&temp_assinment_node, $3);
+
+        temp_node = makeNode("");
+        addNode(&temp_node, temp_assinment_node);
+        $$ = temp_node;
     }
-    | variable_list COMMA variable_list
+    | variable_list COMMA id
     {
-        
+        addNode(&temp_node, $3);
+        $$ = temp_node;
     }
 
 // String Delarations 
