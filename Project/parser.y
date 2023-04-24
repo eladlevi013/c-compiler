@@ -23,6 +23,7 @@ void printtree(node* tree, int tab);
 void printArgsList(node** argsList, int argCount);
 void addElement(node ***, node *, int);
 #define YYSTYPE struct node*
+
 node *temp_node = NULL;
 
 // args-list
@@ -53,7 +54,7 @@ int counter_varList = 0;
 
 s: code { printtree($1, 0); };  
 
-code: functions | variable_declarations { $$ = $1; }
+code: functions | statements{ $$ = $1; }
 
 function_procedure: function | procedure
 
@@ -335,7 +336,7 @@ literal_lexemes:
 variable_declarations:
     variable_declare
     {
-        $$ = makeNode("variable_declarations");
+        $$ = makeNode("VAR");
         addNode(&$$, $1);
     }
     | variable_declarations variable_declare
@@ -349,25 +350,29 @@ variable_declare:
         addNode(&$4, $2);
         $$ = $4;
     }
+    STRING string_list SEMICOLON
+    {
+        node* string_node = makeNode("STRING")
+        addNode($string_node,&2);
+    }
 
 // Variable Delarations    
-variable_list:
+variable_list: 
+    variable_list_helper
+    {
+        $$ = makeNode("");
+        addNode(&$$, $1);
+    }
+    | variable_list COMMA variable_list_helper
+    {
+        addNode(&$$, $3);
+    }
+
+variable_list_helper:
     id
     {
         temp_node = makeNode(""); 
         addNode(&temp_node, $1);
-        $$ = temp_node;
-    }
-    | variable_list COMMA id ASSIGNMENT literal_lexemes
-    {
-        // Creating the equal node
-        node* temp_assinment_node = makeNode("=");
-        addNode(&temp_assinment_node, $3);
-        addNode(&temp_assinment_node, $5);
-
-        // Adding 
-        addNode(&temp_node, temp_assinment_node);
-        $$ = temp_node;
     }
     | id ASSIGNMENT literal_lexemes
     {
@@ -375,22 +380,31 @@ variable_list:
         node* temp_assinment_node = makeNode("=");
         addNode(&temp_assinment_node, $1);
         addNode(&temp_assinment_node, $3);
+        $$ = temp_assinment_node;
+    }
 
-        temp_node = makeNode("");
-        addNode(&temp_node, temp_assinment_node);
-        $$ = temp_node;
-    }
-    | variable_list COMMA id
-    {
-        addNode(&temp_node, $3);
-        $$ = temp_node;
-    }
 
 // String Delarations 
 string_list:
+    string_list_helper
+    {
+        $$ = makeNode("");
+        addNode(&$$, $1);
+    }
+    | variable_list COMMA variable_list_helper
+    {
+        addNode(&$$, $3);
+    }
+
+string_list_helper:
     id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS
+    {
+        
+    }
     | id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes 
-    | string_list COMMA string_list
+    {
+
+    }
 
 expression: 
     operator expression
