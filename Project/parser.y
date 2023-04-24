@@ -50,11 +50,22 @@ int counter_varList = 0;
         START_ROUND_BRACKETS END_ROUND_BRACKETS START_SQUARE_BRACKETS END_SQUARE_BRACKETS;
 %%
 
-s: code { printtree($1, 0); };  
+s: code | variable_declare { printtree($1, 0); };  
 
-code: functions { $$ = makeNode("CODE"); addNode(&$$, $1); }
+code: functions { $$ = $1; }
 
-functions: function | procedure
+function_procedure: function | procedure
+
+functions:
+    function_procedure
+    {
+        $$ = makeNode("CODE");
+        addNode(&$$, $1);
+    }
+    | functions function_procedure
+    {
+        addNode(&$$, $2);
+    }
 
 function: 
     FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
@@ -153,7 +164,7 @@ body:
 body_after_functions_declared:
     variable_declarations 
     {
-
+        $$ = $1;
     }
 	| body_after_delarations
     {
@@ -163,16 +174,17 @@ body_after_functions_declared:
 body_after_delarations: 
     statements
     {
-       $$ = $1;
+        $$ = makeNode("");
+        addNode(&$$, $1);
     }
     | body_after_delarations statements
     {
-       addNode(&$$,$2);
+       addNode(&$$, $2);
     }
 
 // Statements
-statements: 
-    assignment_statement { $$ = $1;}
+statements:
+    assignment_statement SEMICOLON { $$ = $1;}
     | function_call_statement { $$ = $1; }
     | if_statement { $$ = $1; }
     | if_else_statement { $$ = $1; }
@@ -184,7 +196,7 @@ statements:
     ;
 
 assignment_statement: 
-    lhs ASSIGNMENT expression SEMICOLON 
+    lhs ASSIGNMENT expression 
     {
         node *assignment_node = makeNode("=");
         addNode(&assignment_node, $1);
@@ -192,7 +204,7 @@ assignment_statement:
         $$ = assignment_node;
 
     }
-    | lhs ASSIGNMENT STRING_LITERAL SEMICOLON
+    | lhs ASSIGNMENT STRING_LITERAL
     {
         node* assignment_node = makeNode("=");
         addNode(&assignment_node,$1);
@@ -261,9 +273,9 @@ do_while_statement:
     }
 
 for_statement:
-    FOR START_ROUND_BRACKETS assignment_statement expression SEMICOLON lhs ASSIGNMENT expression END_ROUND_BRACKETS statements
+    FOR START_ROUND_BRACKETS assignment_statement SEMICOLON expression SEMICOLON assignment_statement END_ROUND_BRACKETS statements
     {
-        //NeEd tO FIX SPEAK TO איילון 
+        // 
     }
 
 code_block_statement:
@@ -326,7 +338,7 @@ variable_declarations:
         temp->nodes = argsList;
         temp->count = counter_argsList;
         $$ = temp;
-        argssList = NULL;
+        argsList = NULL;
         counter_argsList=0;
     }
     | variable_declarations variable_declare
@@ -351,12 +363,14 @@ variable_declare:
     }
     | STRING variable_list SEMICOLON
     {
-        // node* temp = makeNode("STRING");
-        // temp->nodes = argsList;
-        // temp->count = counter_argsList;
-        // $$ = temp;
-        // argsList = NULL;
-        // counter_argsList=0;
+        node* temp = makeNode("STRING");
+        temp->nodes = argsList;
+        temp->count = counter_argsList;
+        $$ = temp;
+        
+        // Resetting
+        argsList = NULL;
+        counter_argsList=0;
     }
 
 // Variable Delarations    
@@ -368,8 +382,12 @@ variable_list:
     }
     | id ASSIGNMENT literal_lexemes
     {
-        //to check!
-        addElement(&varList, $3, counter_varList);
+        // creating the assignment node
+        node* temp = makeNode("=");
+        addNode(&temp, $1);
+        addNode(&temp, $3);
+
+        addElement(&varList, temp, counter_varList);
         counter_varList++;
     }
     | variable_list COMMA variable_list
@@ -379,7 +397,10 @@ variable_list:
 
 // String Delarations 
 string_list:
-    id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS  
+    id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS
+    {
+
+    }
     | id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes 
     | string_list COMMA string_list
 
