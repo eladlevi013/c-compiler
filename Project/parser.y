@@ -229,7 +229,18 @@ function_call_statement:
     lhs ASSIGNMENT id START_ROUND_BRACKETS function_parms END_ROUND_BRACKETS SEMICOLON
     {
         node* function_call_node = makeNode("FUNC-CALL");
+        addNode(&function_call_node, $1);
+        addNode(&function_call_node, makeNode($2->token));
+        node* type_node = makeNode("ARGS");
         addNode(&function_call_node, $5);
+        $$ = function_call_node;
+    }
+    | lhs ASSIGNMENT id START_ROUND_BRACKETS END_ROUND_BRACKETS SEMICOLON
+    {
+        node* function_call_node = makeNode("FUNC-CALL");
+        addNode(&function_call_node, $1);
+        addNode(&function_call_node, makeNode($2->token));
+        node* type_node = makeNode("ARGS NONE");
         $$ = function_call_node;
     }
 
