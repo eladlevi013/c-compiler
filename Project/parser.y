@@ -50,11 +50,11 @@ int counter_varList = 0;
         START_ROUND_BRACKETS END_ROUND_BRACKETS START_SQUARE_BRACKETS END_SQUARE_BRACKETS;
 %%
 
-s: code { printtree($1, 0); };  
+s: variable_list { printtree($1, 0); };  
 
 code: functions { $$ = $1; }
 
-function_procedure: function | procedure | variable_declarations
+function_procedure: function | procedure
 
 functions: 
     function_procedure
@@ -338,6 +338,7 @@ variable_declarations:
         temp->nodes = argsList;
         temp->count = counter_argsList;
         $$ = temp;
+        
         argsList = NULL;
         counter_argsList=0;
     }

@@ -1,1 +1,1 @@
-var x:int;
+a,b,c,d
