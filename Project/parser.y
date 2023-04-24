@@ -166,7 +166,9 @@ body:
 body_after_functions_declared:
     variable_declarations body_after_delarations
     {
-        $$ = $1;
+        $$ = makeNode("");
+        addNode(&$$,$1);
+        addNode(&$$,$2);
     }
 
 body_after_delarations: 
