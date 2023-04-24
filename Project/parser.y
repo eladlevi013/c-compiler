@@ -231,7 +231,6 @@ function_call_statement:
         node* function_call_node = makeNode("FUNC-CALL");
         addNode(&function_call_node, $5);
         $$ = function_call_node;
-
     }
 
 function_parms:
