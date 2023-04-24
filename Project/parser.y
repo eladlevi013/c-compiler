@@ -72,7 +72,7 @@ functions:
 function: 
     FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
     {
-        node* func_node = makeNode("FUNCTION");
+        node* func_node = makeNode("FUNC");
         addNode(&func_node, makeNode($2->token));
         addNode(&func_node, $4);
         node* type_node = makeNode("TYPE");
@@ -86,7 +86,7 @@ function:
 
 procedure: FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON VOID START_CURLY_BRACKETS body END_CURLY_BRACKETS
     {
-        node* func_node = makeNode("FUNCTION");
+        node* func_node = makeNode("FUNC");
         addNode(&func_node, makeNode($2->token));
         addNode(&func_node, $4);
         node* type_node = makeNode("RET VOID");
@@ -166,7 +166,7 @@ body:
 body_after_functions_declared:
     variable_declarations body_after_delarations
     {
-        $$ = makeNode("");
+        $$ = makeNode("")
         addNode(&$$,$1);
         addNode(&$$,$2);
     }
@@ -367,7 +367,7 @@ variable_declarations:
     {
         addNode(&$$, $2);
     }
-    | { $$ = makeNode(""); };
+    | { $$=  makeNode(""); };
 
 variable_declare:
     VAR variable_list COLON type SEMICOLON

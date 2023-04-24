@@ -2492,7 +2492,12 @@ void printtree(node* tree, int tab) {
     else
         tab -= 1;
     if (tree->nodes) {
-        for (int j = 0; j < tree->count; j++) {
+        for (int j = 0; j < tree->count; j++) 
+        {
+            if(tree->nodes[j]->token=="")
+            {
+              printtree(tree->nodes[j], tab );  
+            }
             printtree(tree->nodes[j], tab + 1);
         }
     }
