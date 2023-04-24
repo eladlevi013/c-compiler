@@ -54,7 +54,7 @@ s: code { printtree($1, 0); };
 
 code: functions { $$ = makeNode("CODE"); addNode(&$$, $1); }
 
-functions: function | procedure | code_block_statement | assignment_statement
+functions: function | procedure
 
 function: 
     FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
@@ -97,7 +97,7 @@ args:
     }
 	|
     {
-        node* temp = makeNode("NO ARGS");
+        $$ = makeNode("ARGS NONE");
     }
 
 args_list:
@@ -164,6 +164,10 @@ body_after_delarations:
     statements
     {
        $$ = $1;
+    }
+    | body_after_delarations statements
+    {
+       addNode(&$$,$2);
     }
 
 // Statements
@@ -276,9 +280,8 @@ code_block_statement:
 return_statement:
     RETURN expression SEMICOLON
     {
-        node* temp = makeNode("RET");
-        addNode(&temp, $2);
-        $$ = temp;
+        $$ = makeNode("RET");
+        addNode(&$$, $2);
     }
 
 // Types
@@ -309,11 +312,11 @@ bool__literal:
              
 literal_lexemes: 
     bool__literal { $$ = $1; }
-    | CHAR_LITERAL { $$ = $1; }
-    | integer_literal { $$ = $1; }
-    | REAL_LITERAL { $$ = $1; }
-    | STRING_LITERAL { $$ = $1; }
-    | id { $$ = $1;}
+    | CHAR_LITERAL { $$ = makeNode("CHAR");}
+    | integer_literal { $$ = $1;}
+    | REAL_LITERAL { $$ = makeNode("REAL"); }
+    | STRING_LITERAL { $$ = makeNode("STRING"); }
+    | id { $$ = $1; }
     ;
 
 variable_declarations: 
@@ -323,7 +326,7 @@ variable_declarations:
         temp->nodes = argsList;
         temp->count = counter_argsList;
         $$ = temp;
-        argsList = NULL;
+        argssList = NULL;
         counter_argsList=0;
     }
     | variable_declarations variable_declare
@@ -394,7 +397,7 @@ expression:
         addNode(&operator_node,$3);
         $$ = operator_node;
     }
-    |   literal_lexemes { $$ = $1; }
+    |   literal_lexemes { $$ = $1;}
           
 operator: 
     AND { $$ = makeNode("&&"); }
