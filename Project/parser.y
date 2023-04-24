@@ -75,7 +75,7 @@ function:
         node* func_node = makeNode("FUNC");
         addNode(&func_node, makeNode($2->token));
         addNode(&func_node, $4);
-        node* type_node = makeNode("TYPE");
+        node* type_node = makeNode("RET");
         addNode(&type_node, $7);
         addNode(&func_node, type_node);
         node* body_node = makeNode("BODY");
@@ -166,7 +166,7 @@ body:
 body_after_functions_declared:
     variable_declarations body_after_delarations
     {
-        $$ = makeNode("")
+        $$ = makeNode("");
         addNode(&$$,$1);
         addNode(&$$,$2);
     }

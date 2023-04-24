@@ -1,4 +1,4 @@
-function a(): void
+function ret(): char
 {
-    p[5] = 'd';
+    return 'a';
 }

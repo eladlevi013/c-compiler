@@ -1526,10 +1526,10 @@ yyreduce:
   case 8: /* function: FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS  */
 #line 74 "parser.y"
     {
-        node* func_node = makeNode("FUNCTION");
+        node* func_node = makeNode("FUNC");
         addNode(&func_node, makeNode(yyvsp[-8]->token));
         addNode(&func_node, yyvsp[-6]);
-        node* type_node = makeNode("TYPE");
+        node* type_node = makeNode("RET");
         addNode(&type_node, yyvsp[-3]);
         addNode(&func_node, type_node);
         node* body_node = makeNode("BODY");
@@ -1543,7 +1543,7 @@ yyreduce:
   case 9: /* procedure: FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON VOID START_CURLY_BRACKETS body END_CURLY_BRACKETS  */
 #line 88 "parser.y"
     {
-        node* func_node = makeNode("FUNCTION");
+        node* func_node = makeNode("FUNC");
         addNode(&func_node, makeNode(yyvsp[-8]->token));
         addNode(&func_node, yyvsp[-6]);
         node* type_node = makeNode("RET VOID");
@@ -2027,7 +2027,7 @@ yyreduce:
 
   case 67: /* variable_declarations: %empty  */
 #line 370 "parser.y"
-      { yyval = makeNode(""); }
+      { yyval=  makeNode(""); }
 #line 2032 "y.tab.c"
     break;
 
@@ -2492,12 +2492,7 @@ void printtree(node* tree, int tab) {
     else
         tab -= 1;
     if (tree->nodes) {
-        for (int j = 0; j < tree->count; j++) 
-        {
-            if(tree->nodes[j]->token=="")
-            {
-              printtree(tree->nodes[j], tab );  
-            }
+        for (int j = 0; j < tree->count; j++) {
             printtree(tree->nodes[j], tab + 1);
         }
     }
