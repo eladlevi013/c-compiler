@@ -1,1 +1,1 @@
-var a: bool;
+var x:int;

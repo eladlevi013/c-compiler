@@ -50,13 +50,13 @@ int counter_varList = 0;
         START_ROUND_BRACKETS END_ROUND_BRACKETS START_SQUARE_BRACKETS END_SQUARE_BRACKETS;
 %%
 
-s: code | variable_declare { printtree($1, 0); };  
+s: code { printtree($1, 0); };  
 
 code: functions { $$ = $1; }
 
-function_procedure: function | procedure
+function_procedure: function | procedure | variable_declarations
 
-functions:
+functions: 
     function_procedure
     {
         $$ = makeNode("CODE");
@@ -345,6 +345,7 @@ variable_declarations:
     {
         $$->nodes = argsList;
         $$->count = counter_argsList;
+
         argsList = NULL;
         counter_argsList=0;
     }
@@ -361,16 +362,9 @@ variable_declare:
         varList = NULL;
         counter_varList = 0;
     }
-    | STRING variable_list SEMICOLON
+    | STRING string_list SEMICOLON
     {
-        node* temp = makeNode("STRING");
-        temp->nodes = argsList;
-        temp->count = counter_argsList;
-        $$ = temp;
-        
-        // Resetting
-        argsList = NULL;
-        counter_argsList=0;
+
     }
 
 // Variable Delarations    
@@ -382,13 +376,6 @@ variable_list:
     }
     | id ASSIGNMENT literal_lexemes
     {
-        // creating the assignment node
-        node* temp = makeNode("=");
-        addNode(&temp, $1);
-        addNode(&temp, $3);
-
-        addElement(&varList, temp, counter_varList);
-        counter_varList++;
     }
     | variable_list COMMA variable_list
     {
@@ -398,9 +385,6 @@ variable_list:
 // String Delarations 
 string_list:
     id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS
-    {
-
-    }
     | id START_SQUARE_BRACKETS integer_literal END_SQUARE_BRACKETS EQUALS literal_lexemes 
     | string_list COMMA string_list
 
