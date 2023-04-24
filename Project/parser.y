@@ -54,9 +54,9 @@ int counter_varList = 0;
 
 s: code { printtree($1, 0); };  
 
-code: functions | statements{ $$ = $1; }
+code: functions { $$ = $1; }
 
-function_procedure: function | procedure | statements
+function_procedure: function | procedure 
 
 functions: 
     function_procedure
@@ -164,13 +164,9 @@ body:
     }
 
 body_after_functions_declared:
-    variable_declarations 
+    variable_declarations body_after_delarations
     {
         $$ = $1;
-    }
-	| body_after_delarations
-    {
-       $$ = $1;
     }
 
 body_after_delarations: 
@@ -183,6 +179,7 @@ body_after_delarations:
     {
        addNode(&$$, $2);
     }
+    | { $$ = makeNode(""); };
 
 // Statements
 statements:
@@ -217,8 +214,11 @@ assignment_statement:
 lhs: 
     id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS
     {
-        $$ = $1;
-        addNode(&$$,$3); 
+        temp_node = makeNode(""); 
+        addNode(&temp_node, $1); 
+        node* lenght_node = makeNode("INDEX");
+        addNode(&lenght_node, $3);
+        addNode(&$$, lenght_node);
     }
     | id 
     {
@@ -365,6 +365,7 @@ variable_declarations:
     {
         addNode(&$$, $2);
     }
+    | { $$ = makeNode(""); };
 
 variable_declare:
     VAR variable_list COLON type SEMICOLON

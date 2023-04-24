@@ -1,4 +1,4 @@
+function a(): void
 {
-    var x:int;
-    string e[48]="itamar sleeeepepepep";
+    p[5] = 'd';
 }
