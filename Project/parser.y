@@ -19,10 +19,11 @@ typedef struct node
 // Tree functions
 node *makeNode(char* token);
 void addNode(node **father, node *descendant);
-void printTree(node* tree, int tab);
 void printArgsList(node** argsList, int argCount);
 void addElement(node ***, node *, int);
 void printTabs(int tabs);
+int help_function(char* token);
+void printTree(node* tree, int tab,int options);
 #define YYSTYPE struct node*
 
 node *temp_node = NULL;
@@ -53,7 +54,7 @@ int counter_varList = 0;
         START_ROUND_BRACKETS END_ROUND_BRACKETS START_SQUARE_BRACKETS END_SQUARE_BRACKETS;
 %%
 
-s: code { printTree($1, 0); };
+s: code { printTree($1, 0, 0);};  
 
 code: functions { $$ = $1; }
 
@@ -530,9 +531,27 @@ void printTabs(int tabs)
     }
 }
 
-void printTree(node* tree, int tab) {
-    int special_token_flag = 0;
+int help_function(char* token)
+{
+    return (strcmp(token, "RET") == 0 || strcmp(token, "BOOL") == 0 
+         || strcmp(token, "CHAR") == 0 || strcmp(token, "INT") == 0
+         || strcmp(token, "REAL") == 0 || strcmp(token, "INT_POINTER") == 0
+         || strcmp(token, "CHAR_POINTER") == 0 || strcmp(token, "REAL_POINTER") == 0
+    );
+         /*
+         || strcmp(token, "&&") == 0
+         || strcmp(token, "/") == 0 || strcmp(token, "=") == 0 
+         || strcmp(token, "==") == 0 || strcmp(token, ">") == 0 
+         || strcmp(token, ">=") == 0 || strcmp(token, "<") == 0 
+         || strcmp(token, "<=") == 0 || strcmp(token, "-") == 0 
+         || strcmp(token, "!") == 0 || strcmp(token, "!=") == 0 
+         || strcmp(token, "||") == 0 || strcmp(token, "+") == 0 
+         || strcmp(token, "*") == 0);
+        */
+}
 
+//options: 0 noraml | 1 - | 2-
+void printTree(node* tree, int tab,int options) {
     // return if its null
     if(tree == NULL)
         return;
@@ -540,8 +559,30 @@ void printTree(node* tree, int tab) {
     // print token if valid
     if(strcmp(tree->token, "") != 0)
     {
-        printTabs(tab);
-        printf("(%s\n", tree->token);
+        if(options==3)
+        {
+            printf(" %s", tree->token);
+        }
+        else
+        {
+            printTabs(tab);        
+            if(help_function(tree->token))
+            {
+                printf("(%s", tree->token);
+            }
+            else if(options==1)
+            {
+                printf("%s\n", tree->token);
+            }
+            else if(options==2)
+            {
+                printf("(%s)\n", tree->token);
+            }
+            else
+            {
+                printf("(%s\n", tree->token);
+            }
+        }
     }
 
     // Iterating over node sons
@@ -550,18 +591,40 @@ void printTree(node* tree, int tab) {
         // token is valid
         if(strcmp(tree->nodes[i]->token, "") == 0)
         {
-            printTree(tree->nodes[i], tab);
+            printTree(tree->nodes[i], tab,0);
         }
         else 
         {
-            printTree(tree->nodes[i], tab + 1);
+            if(strcmp(tree->token, "FUNC") == 0 && i==0)
+            {
+                printTree(tree->nodes[i], tab + 1,1);
+            }
+            else if(strcmp(tree->token, "FUNC") == 0 && tree->nodes[i]->count == 0)//ARGS NONE
+            {
+                printTree(tree->nodes[i], tab + 1,2);
+            }
+            else if(help_function(tree->token))
+            {
+                printTree(tree->nodes[i], tab + 1,3);
+            }
+            else
+            {
+                printTree(tree->nodes[i], tab + 1,0);
+            }
         }
     }
 
     // Closing paranthesis
     if(strcmp(tree->token, "") != 0)
     {
-        printTabs(tab);
-        printf(")\n");
+        if(help_function(tree->token))
+        {
+            printf(")\n");
+        }
+        else if(options==0)
+        {
+            printTabs(tab);
+            printf(")\n");
+        }
     }
 }
