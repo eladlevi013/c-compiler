@@ -1,4 +1,4 @@
-function ret(): char
+function function_name(): char
 {
     return 'a';
 }

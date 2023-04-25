@@ -19,9 +19,10 @@ typedef struct node
 // Tree functions
 node *makeNode(char* token);
 void addNode(node **father, node *descendant);
-void printtree(node* tree, int tab);
+void printTree(node* tree, int tab);
 void printArgsList(node** argsList, int argCount);
 void addElement(node ***, node *, int);
+void printTabs(int tabs);
 #define YYSTYPE struct node*
 
 node *temp_node = NULL;
@@ -52,7 +53,7 @@ int counter_varList = 0;
         START_ROUND_BRACKETS END_ROUND_BRACKETS START_SQUARE_BRACKETS END_SQUARE_BRACKETS;
 %%
 
-s: code { printtree($1, 0); };  
+s: code { printTree($1, 0); };
 
 code: functions { $$ = $1; }
 
@@ -520,26 +521,47 @@ void addElement(node ***list, node *element, int size) {
     (*list)[size] = element;
 }
 
-void printtree(node* tree, int tab) {
-    int i;
-    char* token = tree->token;
-
-    if (*token) {
-        for (i = 0; i < tab; i++) {
-            printf("\t");
-        }
-        printf("(%s\n", token);
-    }
-    else
-        tab -= 1;
-    if (tree->nodes) {
-        for (int j = 0; j < tree->count; j++) {
-            printtree(tree->nodes[j], tab + 1);
-        }
-    }
-    for (i = 0; i < tab; i++) {
+void printTabs(int tabs)
+{
+    // Generating tabs
+    for(int i=0; i<tabs; i++)
+    {
         printf("\t");
     }
-    if (*token)
+}
+
+void printTree(node* tree, int tab) {
+    int special_token_flag = 0;
+
+    // return if its null
+    if(tree == NULL)
+        return;
+
+    // print token if valid
+    if(strcmp(tree->token, "") != 0)
+    {
+        printTabs(tab);
+        printf("(%s\n", tree->token);
+    }
+
+    // Iterating over node sons
+    for(int i=0; i<tree->count; i++)
+    {        
+        // token is valid
+        if(strcmp(tree->nodes[i]->token, "") == 0)
+        {
+            printTree(tree->nodes[i], tab);
+        }
+        else 
+        {
+            printTree(tree->nodes[i], tab + 1);
+        }
+    }
+
+    // Closing paranthesis
+    if(strcmp(tree->token, "") != 0)
+    {
+        printTabs(tab);
         printf(")\n");
+    }
 }
