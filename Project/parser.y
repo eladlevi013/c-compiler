@@ -6,7 +6,7 @@
 
 // Function declarations
 int yylex(void);
-int yyerror();
+int yyerror(char* error);
 char *yytext;
 
 typedef struct node
@@ -19,8 +19,6 @@ typedef struct node
 // Tree functions
 node *makeNode(char* token);
 void addNode(node **father, node *descendant);
-void printArgsList(node** argsList, int argCount);
-void addElement(node ***, node *, int);
 void printTabs(int tabs);
 int printTree_helper(char* token);
 void printTree(node* tree, int tab,int print_style);
@@ -33,17 +31,6 @@ const int ONLY_TOKEN_PRINT = 1;
 const int TOKEN_WITH_PARENTHESES_PRINT = 2;
 const int PARAMETER_PRINT = 3;
 
-// args-list
-node** argsList = NULL;
-int counter_argsList = 0;
-
-// parameter-list
-node** parList = NULL;
-int counter_parlist = 0;
-
-// var-list
-node** varList = NULL;
-int counter_varList = 0;
 %}
 
 // Tokens from lex
@@ -476,21 +463,11 @@ int main()
     return yyparse();
 }
 
-int yyerror() 
+int yyerror(char* error) 
 { 
-    printf("YOUR ERROR pisher!\n");
-    return 0; 
-}
-
-void printArgsList(node** argsList, int argCount) {
-    if (argCount == 0) {
-        printf("No arguments\n");
-        return;
-    }
-    printf("Arguments:\n");
-    for (int i = 0; i < argCount; i++) {
-        printf("arg%d: %s\n", i+1, argsList[i]->token);
-    }
+    //fprintf(stderr, "%s at line:%d\nParser does not expect %s\n", error, yylineno+1,yytext);
+   printf("YOUR ERROR pisher!\n");
+   return 0; 
 }
 
 node *makeNode(char *token)
@@ -508,11 +485,6 @@ void addNode(node **father, node *descendant)
 {
     (*father)->nodes = (node**) realloc((*father)->nodes, ((*father)->count + 1) * sizeof(node*));
     (*father)->nodes[(*father)->count++] = descendant;
-}
-
-void addElement(node ***list, node *element, int size) {
-    *list = (node**) realloc(*list, (size+1) * sizeof(node*));
-    (*list)[size] = element;
 }
 
 void printTabs(int tabs)

@@ -1,3 +1,12 @@
-function goo(): char{
-return 'a';
+function foo(): int{
+    var x:int;{
+        var y:int;;
+        x=1;
+        y = 2;
+        {
+            x=2;
+        }
+        y = 3;
+    }
+    return 0;
 }
