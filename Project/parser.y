@@ -59,7 +59,7 @@ int counter_varList = 0;
         START_ROUND_BRACKETS END_ROUND_BRACKETS START_SQUARE_BRACKETS END_SQUARE_BRACKETS;
 %%
 
-s: code { printTree($1, 0, 0);};  
+s: code { printTree($1, 0,0); };  
 
 code: functions { $$ = $1; }
 
@@ -104,56 +104,37 @@ procedure: FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON VOID S
         $$ = func_node;
     }
 
-// Function args parameters
 args:
-	args_list
+	arg_declare
     {
-        node* temp = makeNode("ARGS");
-        temp->nodes = argsList;
-        temp->count = counter_argsList;
-        $$ = temp;
-        argsList = NULL;
-        counter_argsList=0;
+        $$ = makeNode("ARGS");
+        addNode(&$$,$1);
+    }
+    | args SEMICOLON arg_declare
+    {
+        addNode(&$$,$3);
     }
 	|
     {
         $$ = makeNode("ARGS NONE");
     }
 
+arg_declare:
+    ARG_ARROW args_list COLON type
+    {
+        addNode(&$4,$2);
+        $$ = $4;
+    }
+
 args_list:
-    ARG_ARROW parameters_list COLON type
-    {
-        $4->nodes = parList;
-        $4->count = counter_parlist;
-        addElement(&argsList, $4, counter_argsList);
-        counter_argsList++;
-        
-        // Resetting
-        parList = NULL;
-        counter_parlist = 0;
-    }
-    | args_list SEMICOLON ARG_ARROW parameters_list COLON type
-    {
-        $6->nodes = parList;
-        $6->count = counter_parlist;
-        addElement(&argsList, $6, counter_argsList);
-        counter_argsList++;
-
-        // Resetting
-        parList = NULL;
-        counter_parlist = 0;
-    }
-
-parameters_list:
     id
     {
-        addElement(&parList, $1, counter_parlist);
-        counter_parlist++;
+        $$ = makeNode("");
+        addNode(&$$,$1);
     }
-    | parameters_list COMMA id
+    | args_list COMMA id
     {
-        addElement(&parList, $3, counter_parlist);
-        counter_parlist++;
+        addNode(&$$,$3);
     }
 
 // Body
@@ -340,27 +321,34 @@ type:
     | INT_POINTER { $$ = makeNode("INT_POINTER"); }
     ;
 
-id: 
-    IDENTIFIER {
-        $$ = makeNode(yytext);
-    };
+bool__literal:
+    FALSE { $$ = makeNode("false");}
+    | TRUE { $$ = makeNode("true");}
+    ;
+
+char_literal:
+    CHAR_LITERAL { $$ = makeNode(yytext);}
 
 integer_literal: 
-    INTEGER_LITERAL { $$ = makeNode("INT");}
-    | INTEGER_LITERAL_HEX { $$ = makeNode("INT");}
+    INTEGER_LITERAL { $$ = makeNode(yytext);}
+    | INTEGER_LITERAL_HEX { $$ = makeNode(yytext);}
     ;
-               
-bool__literal:
-    FALSE { $$ = makeNode("FALSE");}
-    | TRUE { $$ = makeNode("TRUE");}
-    ;
-             
+
+real_literal:
+    REAL_LITERAL { $$ = makeNode(yytext); }
+
+string_literal: 
+    STRING_LITERAL { $$ = makeNode(yytext); }
+
+id: 
+    IDENTIFIER { $$ = makeNode(yytext);};
+
 literal_lexemes: 
     bool__literal { $$ = $1; }
-    | CHAR_LITERAL { $$ = makeNode("CHAR");}
+    | char_literal { $$ = $1; }
     | integer_literal { $$ = $1;}
-    | REAL_LITERAL { $$ = makeNode("REAL"); }
-    | STRING_LITERAL { $$ = makeNode("STRING"); }
+    | real_literal { $$ = $1; }
+    | string_literal { $$ = $1; }
     | id { $$ = $1; }
     ;
 
@@ -545,13 +533,14 @@ int printTree_helper(char* token)
     );
 }
 
-void printTree(node* tree, int tab, int print_style) {
+void printTree(node* tree, int tab, int print_style)
+ {
     // return if its null
     if(tree == NULL)
         return;
 
     // print token if valid
-    if(strcmp(tree->token, "") > 0)
+    if(strcmp(tree->token, "") != 0)//token != "";
     {
         if(print_style == PARAMETER_PRINT)
         {
@@ -560,7 +549,6 @@ void printTree(node* tree, int tab, int print_style) {
         else
         {
             printTabs(tab);
-
             if(printTree_helper(tree->token))
             {
                 printf("(%s", tree->token);
@@ -582,11 +570,18 @@ void printTree(node* tree, int tab, int print_style) {
 
     // Iterating over node sons
     for(int i=0; i<tree->count; i++)
-    {        
+    {    
         // token is valid
-        if(strcmp(tree->nodes[i]->token, "") == 0)
+        if(strcmp(tree->token, "") == 0)
         {
-            printTree(tree->nodes[i], tab, DEFAULT_PRINT);
+            if(print_style == PARAMETER_PRINT)
+            {
+                printTree(tree->nodes[i], tab+1, PARAMETER_PRINT);
+            }
+            else
+            {
+                printTree(tree->nodes[i], tab, DEFAULT_PRINT);
+            }
         }
         else 
         {
@@ -612,7 +607,7 @@ void printTree(node* tree, int tab, int print_style) {
     // Closing paranthesis
     if(strcmp(tree->token, "") != 0)
     {
-        if(printTree_helper(tree->token))
+        if(printTree_helper(tree->token) && print_style != PARAMETER_PRINT)
         {
             printf(")\n");
         }
