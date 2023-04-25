@@ -22,11 +22,16 @@ void addNode(node **father, node *descendant);
 void printArgsList(node** argsList, int argCount);
 void addElement(node ***, node *, int);
 void printTabs(int tabs);
-int help_function(char* token);
-void printTree(node* tree, int tab,int options);
+int printTree_helper(char* token);
+void printTree(node* tree, int tab,int print_style);
 #define YYSTYPE struct node*
-
 node *temp_node = NULL;
+
+// Consts for printing function
+const int DEFAULT_PRINT = 0;
+const int ONLY_TOKEN_PRINT = 1;
+const int TOKEN_WITH_PARENTHESES_PRINT = 2;
+const int PARAMETER_PRINT = 3;
 
 // args-list
 node** argsList = NULL;
@@ -531,50 +536,40 @@ void printTabs(int tabs)
     }
 }
 
-int help_function(char* token)
+int printTree_helper(char* token)
 {
     return (strcmp(token, "RET") == 0 || strcmp(token, "BOOL") == 0 
          || strcmp(token, "CHAR") == 0 || strcmp(token, "INT") == 0
          || strcmp(token, "REAL") == 0 || strcmp(token, "INT_POINTER") == 0
          || strcmp(token, "CHAR_POINTER") == 0 || strcmp(token, "REAL_POINTER") == 0
     );
-         /*
-         || strcmp(token, "&&") == 0
-         || strcmp(token, "/") == 0 || strcmp(token, "=") == 0 
-         || strcmp(token, "==") == 0 || strcmp(token, ">") == 0 
-         || strcmp(token, ">=") == 0 || strcmp(token, "<") == 0 
-         || strcmp(token, "<=") == 0 || strcmp(token, "-") == 0 
-         || strcmp(token, "!") == 0 || strcmp(token, "!=") == 0 
-         || strcmp(token, "||") == 0 || strcmp(token, "+") == 0 
-         || strcmp(token, "*") == 0);
-        */
 }
 
-//options: 0 noraml | 1 - | 2-
-void printTree(node* tree, int tab,int options) {
+void printTree(node* tree, int tab, int print_style) {
     // return if its null
     if(tree == NULL)
         return;
 
     // print token if valid
-    if(strcmp(tree->token, "") != 0)
+    if(strcmp(tree->token, "") > 0)
     {
-        if(options==3)
+        if(print_style == PARAMETER_PRINT)
         {
             printf(" %s", tree->token);
         }
         else
         {
-            printTabs(tab);        
-            if(help_function(tree->token))
+            printTabs(tab);
+
+            if(printTree_helper(tree->token))
             {
                 printf("(%s", tree->token);
             }
-            else if(options==1)
+            else if(print_style == ONLY_TOKEN_PRINT)
             {
                 printf("%s\n", tree->token);
             }
-            else if(options==2)
+            else if(print_style == TOKEN_WITH_PARENTHESES_PRINT )
             {
                 printf("(%s)\n", tree->token);
             }
@@ -591,25 +586,25 @@ void printTree(node* tree, int tab,int options) {
         // token is valid
         if(strcmp(tree->nodes[i]->token, "") == 0)
         {
-            printTree(tree->nodes[i], tab,0);
+            printTree(tree->nodes[i], tab, DEFAULT_PRINT);
         }
         else 
         {
             if(strcmp(tree->token, "FUNC") == 0 && i==0)
             {
-                printTree(tree->nodes[i], tab + 1,1);
+                printTree(tree->nodes[i], tab + 1, ONLY_TOKEN_PRINT);
             }
             else if(strcmp(tree->token, "FUNC") == 0 && tree->nodes[i]->count == 0)//ARGS NONE
             {
-                printTree(tree->nodes[i], tab + 1,2);
+                printTree(tree->nodes[i], tab + 1, TOKEN_WITH_PARENTHESES_PRINT);
             }
-            else if(help_function(tree->token))
+            else if(printTree_helper(tree->token))
             {
-                printTree(tree->nodes[i], tab + 1,3);
+                printTree(tree->nodes[i], tab + 1, PARAMETER_PRINT);
             }
             else
             {
-                printTree(tree->nodes[i], tab + 1,0);
+                printTree(tree->nodes[i], tab + 1, DEFAULT_PRINT);
             }
         }
     }
@@ -617,11 +612,11 @@ void printTree(node* tree, int tab,int options) {
     // Closing paranthesis
     if(strcmp(tree->token, "") != 0)
     {
-        if(help_function(tree->token))
+        if(printTree_helper(tree->token))
         {
             printf(")\n");
         }
-        else if(options==0)
+        else if(print_style == DEFAULT_PRINT)
         {
             printTabs(tab);
             printf(")\n");
