@@ -64,7 +64,7 @@ int printTree_helper(char* token)
 }
 
 void printTree(node* tree, int tab, int print_style)
- {
+{
     // return if its null
     if(tree == NULL)
         return;
