@@ -1,6 +1,6 @@
 function foo(): int{
     var x:int;{
-        var y:int;;
+        var y:int;
         x=1;
         y = 2;
         {
