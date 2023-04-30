@@ -11,6 +11,11 @@ const int ONLY_TOKEN_PRINT = 1;
 const int TOKEN_WITH_PARENTHESES_PRINT = 2;
 const int PARAMETER_PRINT = 3;
 
+#define DEFAULT_PRINT 0
+const int ONLY_TOKEN_PRINT 1
+const int TOKEN_WITH_PARENTHESES_PRINT 2
+const int PARAMETER_PRINT 3
+
 // Defines
 #define YYSTYPE struct node*
 

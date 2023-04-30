@@ -54,9 +54,9 @@ int counter_varList = 0;
 
 s: code { printtree($1, 0); };  
 
-code: functions { $$ = makeNode("CODE"); addNode(&$$, $1); }
+code: functions | args{ $$ = makeNode("CODE"); addNode(&$$, $1); }
 
-functions: function | procedure | variable_declarations
+functions: function | procedure | args
 
 function: 
     FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
@@ -88,54 +88,36 @@ procedure: FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON VOID S
 
 // Function args parameters
 args:
-	args_list
+	arg_declare
     {
-        node* temp = makeNode("ARGS");
-        temp->nodes = argsList;
-        temp->count = counter_argsList;
-        $$ = temp;
-        argsList = NULL;
-        counter_argsList=0;
+        $$ = makeNode("ARGS");
+        addNode(&$$,$1);
+    }
+    | args SEMICOLON arg_declare
+    {
+        addNode(&$$,$3);
     }
 	|
     {
         $$ = makeNode("ARGS NONE");
     }
 
+arg_declare:
+    ARG_ARROW args_list COLON type
+    {
+        addNode(&$4,$2);
+        $$ = $4;
+    }
+
 args_list:
-    ARG_ARROW parameters_list COLON type
-    {
-        $4->nodes = parList;
-        $4->count = counter_parlist;
-        addElement(&argsList, $4, counter_argsList);
-        counter_argsList++;
-        
-        // Resetting
-        parList = NULL;
-        counter_parlist = 0;
-    }
-    | args_list SEMICOLON ARG_ARROW parameters_list COLON type
-    {
-        $6->nodes = parList;
-        $6->count = counter_parlist;
-        addElement(&argsList, $6, counter_argsList);
-        counter_argsList++;
-
-        // Resetting
-        parList = NULL;
-        counter_parlist = 0;
-    }
-
-parameters_list:
     id
     {
-        addElement(&parList, $1, counter_parlist);
-        counter_parlist++;
+        $$ = makeNode("");
+        addNode(&$$,$1);
     }
-    | parameters_list COMMA id
+    | args_list COMMA id
     {
-        addElement(&parList, $3, counter_parlist);
-        counter_parlist++;
+        addNode(&$$,$3);
     }
 
 // Body

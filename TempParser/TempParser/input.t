@@ -1,1 +1,1 @@
-string a[50], b[30]="muzar";
+arg-> ab,c,d:int; arg->zys:real;
