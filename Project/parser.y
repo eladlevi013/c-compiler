@@ -44,7 +44,7 @@ functions:
         addNode(&$$, $2);
     }
 
-function: 
+function:
     FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
     {
         node* func_node = makeNode("FUNC");
