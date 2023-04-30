@@ -4,9 +4,9 @@ char { return CHAR; }
 int { return INT; }
 real { return REAL; }
 string { return STRING; }
-int* { return INT_POINTER; }
-char* { return CHAR_POINTER; }
-real* { return REAL_POINTER; }
+int\* { return INT_POINTER; }
+char\* { return CHAR_POINTER; }
+real\* { return REAL_POINTER; }
 if { return IF; }
 else { return ELSE; }
 while { return WHILE; }
@@ -40,7 +40,7 @@ true { return TRUE; }
 0[x|X]([0-9A-F])+ {  return INTEGER_LITERAL_HEX; }
 [+|-]?([0-9]*[\.][0-9]*[e|E][+|-]?[0-9]+|[0-9]+[e|E][+|-]?[0-9]+|[0-9]*[.][0-9]+) {  return REAL_LITERAL; }
 \"[^"]*\" {  return STRING_LITERAL; }
-[a-zA-Z][a-zA-Z0-9_]* {  return IDENTIFIER; }
+[\*]?[a-zA-Z][a-zA-Z0-9_]* {  return IDENTIFIER; }
 \; { return SEMICOLON; }
 \, { return COMMA; }
 \| { return VERTICAL_BAR; }

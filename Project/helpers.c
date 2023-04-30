@@ -5,18 +5,11 @@
 #include<stdlib.h>
 #include<string.h>
 
-// Consts for printing function
-const int DEFAULT_PRINT = 0;
-const int ONLY_TOKEN_PRINT = 1;
-const int TOKEN_WITH_PARENTHESES_PRINT = 2;
-const int PARAMETER_PRINT = 3;
-
-#define DEFAULT_PRINT 0
-const int ONLY_TOKEN_PRINT 1
-const int TOKEN_WITH_PARENTHESES_PRINT 2
-const int PARAMETER_PRINT 3
-
 // Defines
+#define DEFAULT_PRINT 0
+#define ONLY_TOKEN_PRINT 1
+#define TOKEN_WITH_PARENTHESES_PRINT 2
+#define PARAMETER_PRINT 3
 #define YYSTYPE struct node*
 
 // Signatures
@@ -56,8 +49,8 @@ int printTree_helper(char* token)
 {
     return (strcmp(token, "RET") == 0 || strcmp(token, "BOOL") == 0 
          || strcmp(token, "CHAR") == 0 || strcmp(token, "INT") == 0
-         || strcmp(token, "REAL") == 0 || strcmp(token, "INT_POINTER") == 0
-         || strcmp(token, "CHAR_POINTER") == 0 || strcmp(token, "REAL_POINTER") == 0
+         || strcmp(token, "REAL") == 0 || strcmp(token, "INT*") == 0
+         || strcmp(token, "CHAR*") == 0 || strcmp(token, "REAL*") == 0
     );
 }
 

@@ -25,6 +25,13 @@ node *temp_node = NULL;
         STRING_LITERAL IDENTIFIER;
 %token COMMENT COLON SEMICOLON COMMA VERTICAL_BAR START_CURLY_BRACKETS END_CURLY_BRACKETS 
         START_ROUND_BRACKETS END_ROUND_BRACKETS START_SQUARE_BRACKETS END_SQUARE_BRACKETS;
+
+%right ASSIGNMENT NOT SEMICOLON
+
+%left AND OR
+%left EQUAL GREATER_THAN GREATER_EQUALS LOWER_THAN LOWER_EQUALS NOT_EQUALS 
+%left SUBSTRACT ADD
+%left MULTIPLY DIVIDE 
 %%
 
 s: code { printTree($1, 0,0); };  
@@ -257,7 +264,11 @@ for_statement:
     FOR START_ROUND_BRACKETS assignment_statement SEMICOLON expression SEMICOLON assignment_statement END_ROUND_BRACKETS statements
     {
         node* for_node = makeNode("FOR");
-        //ADD
+        addNode(&for_node, $3);
+        addNode(&for_node, $5);
+        addNode(&for_node, $7);
+        addNode(&for_node, $9);
+        $$ = for_node;
     }
 
 code_block_statement:
@@ -284,40 +295,9 @@ type:
     | CHAR { $$ = makeNode("CHAR"); }
     | INT { $$ = makeNode("INT"); }
     | REAL { $$ = makeNode("REAL"); }
-    | CHAR_POINTER { $$ = makeNode("CHAR_POINTER"); }
-    | REAL_POINTER { $$ = makeNode("REAL_POINTER"); }
-    | INT_POINTER { $$ = makeNode("INT_POINTER"); }
-    ;
-
-bool__literal:
-    FALSE { $$ = makeNode("false");}
-    | TRUE { $$ = makeNode("true");}
-    ;
-
-char_literal:
-    CHAR_LITERAL { $$ = makeNode(yytext);}
-
-integer_literal: 
-    INTEGER_LITERAL { $$ = makeNode(yytext);}
-    | INTEGER_LITERAL_HEX { $$ = makeNode(yytext);}
-    ;
-
-real_literal:
-    REAL_LITERAL { $$ = makeNode(yytext); }
-
-string_literal: 
-    STRING_LITERAL { $$ = makeNode(yytext); }
-
-id: 
-    IDENTIFIER { $$ = makeNode(yytext);};
-
-literal_lexemes: 
-    bool__literal { $$ = $1; }
-    | char_literal { $$ = $1; }
-    | integer_literal { $$ = $1;}
-    | real_literal { $$ = $1; }
-    | string_literal { $$ = $1; }
-    | id { $$ = $1; }
+    | CHAR_POINTER { $$ = makeNode("CHAR*"); }
+    | REAL_POINTER { $$ = makeNode("REAL*"); }
+    | INT_POINTER { $$ = makeNode("INT*"); }
     ;
 
 variable_declarations:
@@ -406,36 +386,48 @@ string_list_helper:
     }
 
 expression: 
-    operator expression
-    {
-        node* operator_node = makeNode($1->token); 
-        addNode(&operator_node,$2);
-        $$ = operator_node;
-    } 
-    | expression operator expression
-    {
-        node* operator_node = makeNode($2->token); 
-        addNode(&operator_node,$1);
-        addNode(&operator_node,$3);
-        $$ = operator_node;
-    }
-    |   literal_lexemes { $$ = $1;}
-          
-operator: 
-    AND { $$ = makeNode("&&"); }
-    | DIVIDE { $$ = makeNode("/"); }
-    | EQUALS { $$ = makeNode("=="); }
-    | GREATER_THAN { $$ = makeNode(">"); }
-    | GREATER_EQUALS { $$ = makeNode(">="); }
-    | LOWER_THAN { $$ = makeNode("<"); }
-    | LOWER_EQUALS { $$ = makeNode("<="); }
-    | SUBSTRACT { $$ = makeNode("-"); }
-    | NOT { $$ = makeNode("!"); }
-    | NOT_EQUALS { $$ = makeNode("!="); }
-    | OR { $$ = makeNode("||"); }
-    | ADD { $$ = makeNode("+"); }
-    | MULTIPLY { $$ = makeNode("*"); }
+    expression AND expression{ $$ = makeNode("&&"); addNode(&$$,$1); addNode(&$$,$3); }
+    | expression DIVIDE expression{ $$ = makeNode("/"); addNode(&$$,$1); addNode(&$$,$3); }
+    | expression EQUALS expression{ $$ = makeNode("=="); addNode(&$$,$1); addNode(&$$,$3); }
+    | expression GREATER_THAN expression{ $$ = makeNode(">"); addNode(&$$,$1); addNode(&$$,$3); }
+    | expression GREATER_EQUALS expression{ $$ = makeNode(">="); addNode(&$$,$1); addNode(&$$,$3); }
+    | expression LOWER_THAN expression{ $$ = makeNode("<"); addNode(&$$,$1); addNode(&$$,$3); }
+    | expression LOWER_EQUALS expression { $$ = makeNode("<="); addNode(&$$,$1); addNode(&$$,$3); }
+    | expression SUBSTRACT expression { $$ = makeNode("-"); addNode(&$$,$1); addNode(&$$,$3); }
+    | NOT expression { $$ = makeNode("!"); addNode(&$$,$2); }
+    | expression NOT_EQUALS expression { $$ = makeNode("!="); addNode(&$$,$1); addNode(&$$,$3); }
+    | expression OR expression { $$ = makeNode("||"); addNode(&$$,$1); addNode(&$$,$3); }
+    | expression ADD expression { $$ = makeNode("+"); addNode(&$$,$1); addNode(&$$,$3); }
+    | expression MULTIPLY expression { $$ = makeNode("*"); addNode(&$$,$1); addNode(&$$,$3); }
+    | START_ROUND_BRACKETS expression END_ROUND_BRACKETS { $$ = $2; }
+    | ADDRESS lhs { $$ = makeNode("&"); addNode(&$$,$2); }
+    | literal_lexemes { $$ = $1;}
     ;
+
+literal_lexemes: 
+    bool__literal { $$ = $1; }
+    | CHAR_LITERAL { $$ = makeNode(yytext);}
+    | integer_literal { $$ = $1;}
+    | REAL_LITERAL { $$ = makeNode(yytext); }
+    | STRING_LITERAL { $$ = makeNode(yytext); }
+    | NULL_TOKEN { $$ = makeNode(yytext); }
+    | id { $$ = $1; }
+    ;
+
+bool__literal:
+    FALSE { $$ = makeNode("false");}
+    | TRUE { $$ = makeNode("true");}
+    ;
+
+integer_literal: 
+    INTEGER_LITERAL { $$ = makeNode(yytext);}
+    | INTEGER_LITERAL_HEX { $$ = makeNode(yytext);}
+    ;
+
+id: 
+    IDENTIFIER { $$ = makeNode(yytext);};
+
+
 %%
 
 #include "lex.yy.c"
