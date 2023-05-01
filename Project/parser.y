@@ -23,7 +23,7 @@ node *temp_node = NULL;
 %token SUBSTRACT ADD MULTIPLY DIVIDE;
 %token TRUE FALSE CHAR_LITERAL INTEGER_LITERAL INTEGER_LITERAL_HEX REAL_LITERAL
         STRING_LITERAL IDENTIFIER;
-%token COMMENT COLON SEMICOLON COMMA VERTICAL_BAR START_CURLY_BRACKETS END_CURLY_BRACKETS 
+%token COLON SEMICOLON COMMA VERTICAL_BAR START_CURLY_BRACKETS END_CURLY_BRACKETS 
         START_ROUND_BRACKETS END_ROUND_BRACKETS START_SQUARE_BRACKETS END_SQUARE_BRACKETS;
 
 %right ASSIGNMENT NOT SEMICOLON
@@ -385,7 +385,7 @@ string_list_helper:
         $$ = temp_assinment_node;
     }
 
-expression: 
+expression:
     expression AND expression{ $$ = makeNode("&&"); addNode(&$$,$1); addNode(&$$,$3); }
     | expression DIVIDE expression{ $$ = makeNode("/"); addNode(&$$,$1); addNode(&$$,$3); }
     | expression EQUALS expression{ $$ = makeNode("=="); addNode(&$$,$1); addNode(&$$,$3); }
@@ -404,7 +404,7 @@ expression:
     | literal_lexemes { $$ = $1;}
     ;
 
-literal_lexemes: 
+literal_lexemes:
     bool__literal { $$ = $1; }
     | CHAR_LITERAL { $$ = makeNode(yytext);}
     | integer_literal { $$ = $1;}
@@ -419,7 +419,7 @@ bool__literal:
     | TRUE { $$ = makeNode("true");}
     ;
 
-integer_literal: 
+integer_literal:
     INTEGER_LITERAL { $$ = makeNode(yytext);}
     | INTEGER_LITERAL_HEX { $$ = makeNode(yytext);}
     ;
@@ -438,7 +438,7 @@ int main()
 
 int yyerror(char* error) 
 {
-    //fprintf(stderr, "%s at line:%d\nParser does not expect %s\n", error, yylineno+1,yytext);
-   printf("YOUR ERROR pisher!\n");
-   return 0; 
+    // printf("\nerror in line: %d\nYOUR ERROR pisher!\n", error_line_counter);
+    printf("your error pisher!\n");
+    return 0;
 }
