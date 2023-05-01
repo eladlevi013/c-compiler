@@ -168,6 +168,15 @@ assignment_statement:
         $$ = assignment_node;
 
     }
+    |lhs ASSIGNMENT MULTIPLY expression 
+    {
+        node *assignment_node = makeNode("=");
+        addNode(&assignment_node, $1);
+        addNode(&assignment_node, $3);
+        $$ = assignment_node;
+
+    }
+    /* CHECK IF CAN DELETE!!!!!!!!! :)
     | lhs ASSIGNMENT STRING_LITERAL
     {
         node* assignment_node = makeNode("=");
@@ -175,6 +184,7 @@ assignment_statement:
         addNode(&assignment_node,makeNode("STRING"));
         $$ = assignment_node; 
     }
+    */
 
 lhs: 
     id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS
@@ -193,22 +203,24 @@ lhs:
 function_call_statement: 
     lhs ASSIGNMENT id START_ROUND_BRACKETS function_parms END_ROUND_BRACKETS SEMICOLON
     {
+        node *assignment_node = makeNode("=");
+        addNode(&assignment_node, $1);
         node* function_call_node = makeNode("FUNC-CALL");
-        addNode(&function_call_node, $1);
-        addNode(&function_call_node, makeNode($2->token));
         node* args_node = makeNode("ARGS");
         addNode(&args_node, $5);
         addNode(&function_call_node, args_node);
-        $$ = function_call_node;
+        addNode(&assignment_node, function_call_node);
+        $$ = assignment_node;     
     }
     | lhs ASSIGNMENT id START_ROUND_BRACKETS END_ROUND_BRACKETS SEMICOLON
     {
+        node *assignment_node = makeNode("=");
+        addNode(&assignment_node, $1);
         node* function_call_node = makeNode("FUNC-CALL");
-        addNode(&function_call_node, $1);
-        addNode(&function_call_node, makeNode($2->token));
         node* args_node = makeNode("ARGS NONE");
         addNode(&function_call_node, args_node);
-        $$ = function_call_node;
+        addNode(&assignment_node, function_call_node);
+        $$ = assignment_node;        
     }
 
 function_parms:
