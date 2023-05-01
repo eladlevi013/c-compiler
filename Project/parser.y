@@ -149,7 +149,7 @@ body_after_delarations:
 // Statements
 statements:
     assignment_statement SEMICOLON { $$ = $1;}
-    | function_call_statement { $$ = $1; }
+    | functions_call_statement { $$ = $1; }
     | if_statement { $$ = $1; }
     | if_else_statement { $$ = $1; }
     | while_statement { $$ = $1; }
@@ -168,23 +168,6 @@ assignment_statement:
         $$ = assignment_node;
 
     }
-    |lhs ASSIGNMENT MULTIPLY expression 
-    {
-        node *assignment_node = makeNode("=");
-        addNode(&assignment_node, $1);
-        addNode(&assignment_node, $3);
-        $$ = assignment_node;
-
-    }
-    /* CHECK IF CAN DELETE!!!!!!!!! :)
-    | lhs ASSIGNMENT STRING_LITERAL
-    {
-        node* assignment_node = makeNode("=");
-        addNode(&assignment_node,$1);
-        addNode(&assignment_node,makeNode("STRING"));
-        $$ = assignment_node; 
-    }
-    */
 
 lhs: 
     id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS
@@ -200,38 +183,38 @@ lhs:
         $$ = $1;
     }
 
-function_call_statement: 
-    lhs ASSIGNMENT id START_ROUND_BRACKETS function_parms END_ROUND_BRACKETS SEMICOLON
+functions_call_statement: 
+    lhs ASSIGNMENT id START_ROUND_BRACKETS functions_args END_ROUND_BRACKETS SEMICOLON
     {
         node *assignment_node = makeNode("=");
         addNode(&assignment_node, $1);
         node* function_call_node = makeNode("FUNC-CALL");
-        node* args_node = makeNode("ARGS");
-        addNode(&args_node, $5);
-        addNode(&function_call_node, args_node);
+        addNode(&function_call_node, $3);
+        addNode(&function_call_node, $5);
         addNode(&assignment_node, function_call_node);
         $$ = assignment_node;     
     }
-    | lhs ASSIGNMENT id START_ROUND_BRACKETS END_ROUND_BRACKETS SEMICOLON
+    | id START_ROUND_BRACKETS functions_args END_ROUND_BRACKETS SEMICOLON
     {
-        node *assignment_node = makeNode("=");
-        addNode(&assignment_node, $1);
         node* function_call_node = makeNode("FUNC-CALL");
-        node* args_node = makeNode("ARGS NONE");
-        addNode(&function_call_node, args_node);
-        addNode(&assignment_node, function_call_node);
-        $$ = assignment_node;        
+        addNode(&function_call_node, $1);
+        addNode(&function_call_node, $3);
+        $$ = function_call_node;
     }
 
-function_parms:
+functions_args:
     expression 
     {
-        $$ = makeNode(EMPTY_STRING);
+        $$ = makeNode("ARGS");
         addNode(&$$, $1);
     } 
-    | function_parms COMMA expression
+    | functions_args COMMA expression
     {
         addNode(&$$, $3);
+    }
+    |
+    {
+        $$ = makeNode("ARGS NONE");
     }
 
 
@@ -451,6 +434,7 @@ int main()
 int yyerror(char* error) 
 {
     // printf("\nerror in line: %d\nYOUR ERROR pisher!\n", error_line_counter);
+    // printf("%s: does not accept %s\n", error, yytext);
     printf("your error pisher!\n");
     return 0;
 }

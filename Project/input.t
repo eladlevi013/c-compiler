@@ -1,7 +1,7 @@
-function foo(): int
-{ 
-    /*
-    * This is a comment
-    */
-    var x=0,y=5:int;
+function foo(): int{
+ return 0;
+}
+function main(): void{
+ var a: int;
+ foo();
 }
