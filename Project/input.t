@@ -1,10 +1,4 @@
 function foo(): int
 {
-    var x:int;
-    {
-        x=1;
-        var y:int;
-
-    }
-    return 0;
+    var x=0,y=5:int;
 }

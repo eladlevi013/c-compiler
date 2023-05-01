@@ -104,7 +104,7 @@ arg_declare:
 args_list:
     id
     {
-        $$ = makeNode("");
+        $$ = makeNode(EMPTY_STRING);
         addNode(&$$,$1);
     }
     | args_list COMMA id
@@ -129,7 +129,7 @@ body:
 body_after_functions_declared:
     variable_declarations body_after_delarations
     {
-        $$ = makeNode("");
+        $$ = makeNode(EMPTY_STRING);
         addNode(&$$,$1);
         addNode(&$$,$2);
     }
@@ -137,14 +137,14 @@ body_after_functions_declared:
 body_after_delarations: 
     statements
     {
-        $$ = makeNode("");
+        $$ = makeNode(EMPTY_STRING);
         addNode(&$$, $1);
     }
     | body_after_delarations statements
     {
        addNode(&$$, $2);
     }
-    | { $$ = makeNode(""); };
+    | { $$ = makeNode(EMPTY_STRING); };
 
 // Statements
 statements:
@@ -179,7 +179,7 @@ assignment_statement:
 lhs: 
     id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS
     {
-        temp_node = makeNode(""); 
+        temp_node = makeNode(EMPTY_STRING); 
         addNode(&temp_node, $1); 
         node* lenght_node = makeNode("INDEX");
         addNode(&lenght_node, $3);
@@ -214,7 +214,7 @@ function_call_statement:
 function_parms:
     expression 
     {
-        $$ = makeNode("");
+        $$ = makeNode(EMPTY_STRING);
         addNode(&$$, $1);
     } 
     | function_parms COMMA expression
@@ -310,7 +310,7 @@ variable_declarations:
     {
         addNode(&$$, $2);
     }
-    | { $$=  makeNode(""); };
+    | { $$=  makeNode(EMPTY_STRING); };
 
 variable_declare:
     VAR variable_list COLON type SEMICOLON
@@ -329,7 +329,7 @@ variable_declare:
 variable_list: 
     variable_list_helper
     {
-        $$ = makeNode("");
+        $$ = makeNode(EMPTY_STRING);
         addNode(&$$, $1);
     }
     | variable_list COMMA variable_list_helper
@@ -340,7 +340,7 @@ variable_list:
 variable_list_helper:
     id
     {
-        temp_node = makeNode(""); 
+        temp_node = makeNode(EMPTY_STRING); 
         addNode(&temp_node, $1);
     }
     | id ASSIGNMENT literal_lexemes
@@ -356,7 +356,7 @@ variable_list_helper:
 string_list:
     string_list_helper
     {
-        $$ = makeNode("");
+        $$ = makeNode(EMPTY_STRING);
         addNode(&$$, $1);
     }
     | string_list COMMA string_list_helper
@@ -367,7 +367,7 @@ string_list:
 string_list_helper:
     id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS
     {
-        temp_node = makeNode(""); 
+        temp_node = makeNode(EMPTY_STRING); 
         addNode(&temp_node, $1); 
         node* lenght_node = makeNode("LENGTH");
         addNode(&lenght_node, $3);

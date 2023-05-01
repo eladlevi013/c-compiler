@@ -10,6 +10,7 @@
 #define ONLY_TOKEN_PRINT 1
 #define TOKEN_WITH_PARENTHESES_PRINT 2
 #define PARAMETER_PRINT 3
+#define EMPTY_STRING ""
 #define YYSTYPE struct node*
 
 // Signatures
@@ -56,14 +57,21 @@ int printTree_helper(char* token)
 
 void printTree(node* tree, int tab, int print_style)
 {
+    int flag=0;
     // return if its null
     if(tree == NULL)
         return;
 
+    
     // print token if valid
-    if(strcmp(tree->token, "") != 0)//token != "";
+    if(strcmp(tree->token, EMPTY_STRING) != 0)//token != "";
     {
-        if(print_style == PARAMETER_PRINT)
+        if(strcmp(tree->token, "=")==0 && print_style == PARAMETER_PRINT)
+        {
+            printf(" %s%s%s", tree->nodes[0]->token,tree->token,tree->nodes[1]->token);
+            flag=1;
+        }
+        else if(print_style == PARAMETER_PRINT)
         {
             printf(" %s", tree->token);
         }
@@ -89,44 +97,47 @@ void printTree(node* tree, int tab, int print_style)
         }
     }
 
-    // Iterating over node sons
-    for(int i=0; i<tree->count; i++)
-    {    
-        // token is valid
-        if(strcmp(tree->token, "") == 0)
-        {
-            if(print_style == PARAMETER_PRINT)
+    if(!flag)
+    {
+        // Iterating over node sons
+        for(int i=0; i<tree->count; i++)
+        {    
+            // token is valid
+            if(strcmp(tree->token, EMPTY_STRING) == 0)
             {
-                printTree(tree->nodes[i], tab+1, PARAMETER_PRINT);
+                if(print_style == PARAMETER_PRINT)
+                {
+                    printTree(tree->nodes[i], tab+1, PARAMETER_PRINT);
+                }
+                else
+                {
+                    printTree(tree->nodes[i], tab, DEFAULT_PRINT);
+                }
             }
-            else
+            else 
             {
-                printTree(tree->nodes[i], tab, DEFAULT_PRINT);
-            }
-        }
-        else 
-        {
-            if(strcmp(tree->token, "FUNC") == 0 && i==0)
-            {
-                printTree(tree->nodes[i], tab + 1, ONLY_TOKEN_PRINT);
-            }
-            else if(strcmp(tree->token, "FUNC") == 0 && tree->nodes[i]->count == 0)//ARGS NONE
-            {
-                printTree(tree->nodes[i], tab + 1, TOKEN_WITH_PARENTHESES_PRINT);
-            }
-            else if(printTree_helper(tree->token))
-            {
-                printTree(tree->nodes[i], tab + 1, PARAMETER_PRINT);
-            }
-            else
-            {
-                printTree(tree->nodes[i], tab + 1, DEFAULT_PRINT);
+                if(strcmp(tree->token, "FUNC") == 0 && i==0)
+                {
+                    printTree(tree->nodes[i], tab + 1, ONLY_TOKEN_PRINT);
+                }
+                else if(strcmp(tree->token, "FUNC") == 0 && tree->nodes[i]->count == 0)//ARGS NONE
+                {
+                    printTree(tree->nodes[i], tab + 1, TOKEN_WITH_PARENTHESES_PRINT);
+                }
+                else if(printTree_helper(tree->token))
+                {
+                    printTree(tree->nodes[i], tab + 1, PARAMETER_PRINT);
+                }
+                else
+                {
+                    printTree(tree->nodes[i], tab + 1, DEFAULT_PRINT);
+                }
             }
         }
     }
 
     // Closing paranthesis
-    if(strcmp(tree->token, "") != 0)
+    if(strcmp(tree->token, EMPTY_STRING) != 0)
     {
         if(printTree_helper(tree->token) && print_style != PARAMETER_PRINT)
         {
