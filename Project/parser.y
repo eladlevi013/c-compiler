@@ -3,7 +3,6 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
-#include<string.h>
 
 // Function declarations
 int yylex(void);
@@ -181,6 +180,11 @@ lhs:
     | id 
     {
         $$ = $1;
+    }
+    | MULTIPLY id
+    {
+        $$ = makeNode("*");
+        addNode(&$$,$2);
     }
 
 functions_call_statement: 
@@ -395,7 +399,9 @@ expression:
     | expression ADD expression { $$ = makeNode("+"); addNode(&$$,$1); addNode(&$$,$3); }
     | expression MULTIPLY expression { $$ = makeNode("*"); addNode(&$$,$1); addNode(&$$,$3); }
     | START_ROUND_BRACKETS expression END_ROUND_BRACKETS { $$ = $2; }
+    | MULTIPLY expression { $$ = makeNode("*"); addNode(&$$,$2); }
     | ADDRESS lhs { $$ = makeNode("&"); addNode(&$$,$2); }
+    | VERTICAL_BAR id VERTICAL_BAR { $$ = makeNode("LENGTH OF"); addNode(&$$,$2); }
     | literal_lexemes { $$ = $1;}
     ;
 
