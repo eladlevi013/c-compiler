@@ -161,11 +161,9 @@ statements:
 assignment_statement: 
     lhs ASSIGNMENT expression 
     {
-        node *assignment_node = makeNode("=");
-        addNode(&assignment_node, $1);
-        addNode(&assignment_node, $3);
-        $$ = assignment_node;
-
+        $$ = makeNode("=");
+        addNode(& $$, $1);
+        addNode(& $$, $3);
     }
 
 lhs: 
