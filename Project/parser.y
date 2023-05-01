@@ -53,29 +53,27 @@ functions:
 function:
     FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
     {
-        node* func_node = makeNode("FUNC");
-        addNode(&func_node, makeNode($2->token));
-        addNode(&func_node, $4);
+        $$ = makeNode("FUNC");
+        addNode(&$$, makeNode($2->token));
+        addNode(&$$, $4);
         node* type_node = makeNode("RET");
         addNode(&type_node, $7);
-        addNode(&func_node, type_node);
+        addNode(&$$, type_node);
         node* body_node = makeNode("BODY");
         addNode(&body_node, $9);
-        addNode(&func_node, body_node);
-        $$ = func_node;
+        addNode(&$$, body_node);
     }
 
 procedure: FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON VOID START_CURLY_BRACKETS body END_CURLY_BRACKETS
     {
-        node* func_node = makeNode("FUNC");
-        addNode(&func_node, makeNode($2->token));
-        addNode(&func_node, $4);
+        $$ = makeNode("FUNC");
+        addNode(&$$, makeNode($2->token));
+        addNode(&$$, $4);
         node* type_node = makeNode("RET VOID");
-        addNode(&func_node, type_node);
+        addNode(&$$, type_node);
         node* body_node = makeNode("BODY");
         addNode(&body_node, $9);
-        addNode(&func_node, body_node);
-        $$ = func_node;
+        addNode(&$$, body_node);
     }
 
 args:
@@ -115,10 +113,9 @@ args_list:
 body: 
     functions body
     {
-        node* body_node = makeNode("BODY");
-        addNode(&body_node, $1);
-        addNode(&body_node, $2);
-        $$ = body_node;
+        $$ = makeNode("BODY");
+        addNode(&$$, $1);
+        addNode(&$$, $2);
     }
     | body_after_functions_declared
     {
@@ -188,20 +185,18 @@ lhs:
 functions_call_statement: 
     lhs ASSIGNMENT id START_ROUND_BRACKETS functions_args END_ROUND_BRACKETS SEMICOLON
     {
-        node *assignment_node = makeNode("=");
-        addNode(&assignment_node, $1);
+        $$ = makeNode("=");
+        addNode(&$$, $1);
         node* function_call_node = makeNode("FUNC-CALL");
         addNode(&function_call_node, $3);
         addNode(&function_call_node, $5);
-        addNode(&assignment_node, function_call_node);
-        $$ = assignment_node;     
+        addNode(&$$, function_call_node);   
     }
     | id START_ROUND_BRACKETS functions_args END_ROUND_BRACKETS SEMICOLON
     {
-        node* function_call_node = makeNode("FUNC-CALL");
-        addNode(&function_call_node, $1);
-        addNode(&function_call_node, $3);
-        $$ = function_call_node;
+        $$ = makeNode("FUNC-CALL");
+        addNode(&$$, $1);
+        addNode(&$$, $3);
     }
 
 functions_args:
@@ -223,49 +218,44 @@ functions_args:
 if_statement: 
     IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
     {
-        node* if_node = makeNode("IF");
-        addNode(&if_node, $3);
-        addNode(&if_node, $5);
-        $$ = if_node;
+        $$ = makeNode("IF");
+        addNode(&$$, $3);
+        addNode(&$$, $5);
     }
 
 if_else_statement:
     IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements ELSE statements
     {
-        node* if_else_node = makeNode("IF-ELSE");
-        addNode(&if_else_node, $3);
-        addNode(&if_else_node, $5);
-        addNode(&if_else_node, $7);
-        $$ = if_else_node;
+        $$ = makeNode("IF-ELSE");
+        addNode(&$$, $3);
+        addNode(&$$, $5);
+        addNode(&$$, $7);
     }
 
 while_statement: 
     WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
     {
-        node* while_node = makeNode("WHILE");
-        addNode(&while_node, $3);
-        addNode(&while_node, $5);
-        $$ = while_node;
+        $$ = makeNode("WHILE");
+        addNode(&$$, $3);
+        addNode(&$$, $5);
     }
 
 do_while_statement: 
     DO statements WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS SEMICOLON
     {
-        node* do_while_node = makeNode("DO-WHILE");
-        addNode(&do_while_node, $2);
-        addNode(&do_while_node, $5);
-        $$ = do_while_node;
+        $$ = makeNode("DO-WHILE");
+        addNode(&$$, $2);
+        addNode(&$$, $5);
     }
 
 for_statement:
     FOR START_ROUND_BRACKETS assignment_statement SEMICOLON expression SEMICOLON assignment_statement END_ROUND_BRACKETS statements
     {
-        node* for_node = makeNode("FOR");
-        addNode(&for_node, $3);
-        addNode(&for_node, $5);
-        addNode(&for_node, $7);
-        addNode(&for_node, $9);
-        $$ = for_node;
+        $$ = makeNode("FOR");
+        addNode(&$$, $3);
+        addNode(&$$, $5);
+        addNode(&$$, $7);
+        addNode(&$$, $9);
     }
 
 code_block_statement:
@@ -343,10 +333,9 @@ variable_list_helper:
     | id ASSIGNMENT literal_lexemes
     {
         // Creating the ASSIGNMENT node
-        node* temp_assinment_node = makeNode("=");
-        addNode(&temp_assinment_node, $1);
-        addNode(&temp_assinment_node, $3);
-        $$ = temp_assinment_node;
+        $$ = makeNode("=");
+        addNode(&$$, $1);
+        addNode(&$$, $3);
     }
 
 // Strings Delarations
