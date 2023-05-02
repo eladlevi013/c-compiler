@@ -390,6 +390,12 @@ expression:
     | MULTIPLY expression { $$ = makeNode("*"); addNode(&$$,$2); }
     | ADDRESS lhs { $$ = makeNode("&"); addNode(&$$,$2); }
     | VERTICAL_BAR id VERTICAL_BAR { $$ = makeNode("LENGTH OF"); addNode(&$$,$2); }
+    | id START_ROUND_BRACKETS functions_args END_ROUND_BRACKETS
+    {
+        $$ = makeNode("FUNC-CALL");
+        addNode(&$$, $1);
+        addNode(&$$, $3);
+    }
     | literal_lexemes { $$ = $1;}
     ;
 
