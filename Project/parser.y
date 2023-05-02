@@ -35,14 +35,14 @@ node *temp_node = NULL;
 
 s: code { printTree($1, 0,0); };  
 
-code: functions { $$ = $1; }
+code: functions { $$ = makeNode("CODE"); addNode(&$$,$1); }
 
 function_procedure: function | procedure 
 
 functions: 
     function_procedure
     {
-        $$ = makeNode("CODE");
+        $$ = makeNode(EMPTY_STRING);
         addNode(&$$, $1);
     }
     | functions function_procedure
@@ -113,7 +113,7 @@ args_list:
 body: 
     functions body
     {
-        $$ = makeNode("BODY");
+        $$ = makeNode(EMPTY_STRING);
         addNode(&$$, $1);
         addNode(&$$, $2);
     }
@@ -385,6 +385,7 @@ expression:
     | expression OR expression { $$ = makeNode("||"); addNode(&$$,$1); addNode(&$$,$3); }
     | expression ADD expression { $$ = makeNode("+"); addNode(&$$,$1); addNode(&$$,$3); }
     | expression MULTIPLY expression { $$ = makeNode("*"); addNode(&$$,$1); addNode(&$$,$3); }
+    | SUBSTRACT expression { $$ = makeNode("-"); addNode(&$$,$2); }
     | START_ROUND_BRACKETS expression END_ROUND_BRACKETS { $$ = $2; }
     | MULTIPLY expression { $$ = makeNode("*"); addNode(&$$,$2); }
     | ADDRESS lhs { $$ = makeNode("&"); addNode(&$$,$2); }
@@ -426,8 +427,7 @@ int main()
 
 int yyerror(char* error) 
 {
-    // printf("\nerror in line: %d\nYOUR ERROR pisher!\n", error_line_counter);
-    // printf("%s: does not accept %s\n", error, yytext);
+    printf("%s in line:%d does not accept %s\n", error,yylineno, yytext);
     printf("your error pisher!\n");
     return 0;
 }

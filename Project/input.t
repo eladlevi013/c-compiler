@@ -1,4 +1,11 @@
-function foo(): void
+function foo_3(): int 
 {
-   string a[30], b[100] = "moshe";
+
+var x: char*;
+string y[10];
+var z: char;
+y = "foobar";
+x = &y[5]; 
+z = *(x - 5); 
+y = "barfoo"; 
 }
