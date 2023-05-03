@@ -51,7 +51,7 @@ true { printf("TRUE\n"); }
 \[ { printf("START_SQUARE_BRACKETS\n"); }
 \] { printf("END_SQUARE_BRACKETS\n"); }
 \: printf("COLON\n");
-
 "/*"([/]*)(([*]+[^/*]+)?[^*]*)*([*]*)"*/" { printf("COMMENT\n"); }
 [\n] ;
+. { printf("ILLEGAL"); };
 %%
