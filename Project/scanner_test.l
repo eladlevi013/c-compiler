@@ -51,6 +51,7 @@ true { printf("TRUE\n"); }
 \[ { printf("START_SQUARE_BRACKETS\n"); }
 \] { printf("END_SQUARE_BRACKETS\n"); }
 \: printf("COLON\n");
-"/*"[a-zA-Z0-9\n\t ]*"*/"
+
+"/*"([/]*)(([*]+[^/*]+)?[^*]*)*([*]*)"*/" { printf("COMMENT\n"); }
 [\n] ;
 %%
