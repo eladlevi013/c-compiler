@@ -25,12 +25,13 @@ node *temp_node = NULL;
 %token COLON SEMICOLON COMMA VERTICAL_BAR START_CURLY_BRACKETS END_CURLY_BRACKETS 
         START_ROUND_BRACKETS END_ROUND_BRACKETS START_SQUARE_BRACKETS END_SQUARE_BRACKETS;
 
-%right ASSIGNMENT NOT
+%right ASSIGNMENT
 
 %left AND OR
-%left EQUAL GREATER_THAN GREATER_EQUALS LOWER_THAN LOWER_EQUALS NOT_EQUALS 
+%left EQUALS GREATER_THAN GREATER_EQUALS LOWER_THAN LOWER_EQUALS NOT_EQUALS 
+%left NOT
 %left SUBSTRACT ADD
-%left MULTIPLY DIVIDE
+%left MULTIPLY DIVIDE 
 %%
 
 s: code { printTree($1, 0,0); };  
@@ -384,6 +385,7 @@ expression:
         addNode(&$$, $3);
     }
     | literal_lexemes { $$ = $1;}
+    | lhs { $$ = $1; }
     ;
 
 literal_lexemes:

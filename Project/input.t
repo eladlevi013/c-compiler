@@ -1,8 +1,4 @@
-function foo(arg-> i,j,k: int): void
- { 
-{
-    {
-        
-    }
+function foo_3(): int {
+    x = &(&y);
 }
- } 
+
