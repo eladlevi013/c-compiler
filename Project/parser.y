@@ -30,7 +30,7 @@ node *temp_node = NULL;
 %left AND OR
 %left EQUAL GREATER_THAN GREATER_EQUALS LOWER_THAN LOWER_EQUALS NOT_EQUALS 
 %left SUBSTRACT ADD
-%left MULTIPLY DIVIDE 
+%left MULTIPLY DIVIDE
 %%
 
 s: code { printTree($1, 0,0); };  
