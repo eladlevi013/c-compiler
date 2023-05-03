@@ -52,7 +52,8 @@ true { return TRUE; }
 \[ { return START_SQUARE_BRACKETS; }
 \] { return END_SQUARE_BRACKETS; }
 \: return COLON;
-\. { return DOT; }
 "/*"([/]*)(([*]+[^/*]+)?[^*]*)*([*]*)"*/" { /*COMMENT*/ }
 \n ;
+[ \t\r]+ ;
+. { return yytext[0]; } 
 %%
