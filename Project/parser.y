@@ -111,7 +111,7 @@ args_list:
 
 // Body
 body: 
-    functions body
+    functions body_after_functions_declared
     {
         $$ = makeNode(EMPTY_STRING);
         addNode(&$$, $1);
