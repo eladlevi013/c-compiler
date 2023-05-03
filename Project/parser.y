@@ -255,10 +255,6 @@ code_block_statement:
         $$ = makeNode("BLOCK");
         addNode(&$$, $2);
     }
-    | START_CURLY_BRACKETS END_CURLY_BRACKETS
-    {
-        $$ = makeNode("BLOCK");
-    }
 
 return_statement:
     RETURN expression SEMICOLON
@@ -288,7 +284,7 @@ variable_declarations:
     {
         addNode(&$$, $2);
     }
-    | { $$=  makeNode(EMPTY_STRING); };
+    | { $$ = makeNode(EMPTY_STRING); };
 
 variable_declare:
     VAR variable_list COLON type SEMICOLON

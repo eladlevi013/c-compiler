@@ -1,6 +1,8 @@
-function foo(arg-> i, j, k: int): int
+function foo(arg-> i,j,k: int): void
+ { 
 {
-
-
-     
-}  
+    {
+        
+    }
+}
+ } 
