@@ -4,6 +4,15 @@ function foo(arg-> i, j, k: int): int
 
 
 
+asdasda
+asdasd
     */
-    var x=45.E5:real;
+
+
+
+
+
+
+
+    s;
 }
