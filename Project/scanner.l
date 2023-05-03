@@ -53,7 +53,6 @@ true { return TRUE; }
 \] { return END_SQUARE_BRACKETS; }
 \: return COLON;
 "/*"([/]*)(([*]+[^/*]+)?[^*]*)*([*]*)"*/" { /*COMMENT*/ }
-\n ;
-[ \t\r]+ ;
+[ \t\r\n]+ ;
 . { return yytext[0]; } 
 %%
