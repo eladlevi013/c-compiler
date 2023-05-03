@@ -47,7 +47,7 @@ void printTabs(int tabs)
 
 int printTree_helper(char* token)
 {
-    return (strcmp(token, "RET") == 0 || strcmp(token, "BOOL") == 0 
+    return (strcmp(token, "BOOL") == 0 
          || strcmp(token, "CHAR") == 0 || strcmp(token, "INT") == 0
          || strcmp(token, "REAL") == 0 || strcmp(token, "INT*") == 0
          || strcmp(token, "CHAR*") == 0 || strcmp(token, "REAL*") == 0
