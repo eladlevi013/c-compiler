@@ -13,11 +13,16 @@
 #define YYSTYPE struct node*
 
 // Signatures
+//PART1
 node *makeNode(char* token);
 void addNode(node **father, node *descendant);
 void printTabs(int tabs);
 int printTree_helper(char* token);
 void printTree(node* tree, int tab,int print_style);
+
+//PART2
+void semanticAnalysis(node* root);
+
 
 // Funcs
 node *makeNode(char *token)
@@ -148,4 +153,10 @@ void printTree(node* tree, int tab, int print_style)
             printf(")\n");
         }
     }
+}
+
+void semanticAnalysis(node* root)
+{
+    printf("semanticAnalysis\n");
+	
 }
