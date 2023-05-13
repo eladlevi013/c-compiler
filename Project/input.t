@@ -1,3 +1,7 @@
-function foo_3(): int {
-    x = 5;
- }
+function d(): void
+{
+    
+}
+function main(): void 
+{
+}

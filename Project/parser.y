@@ -15,7 +15,7 @@ node *temp_node = NULL;
 
 // Tokens from lex
 %token BOOL CHAR INT REAL STRING INT_POINTER CHAR_POINTER REAL_POINTER ADDRESS;
-%token IF ELSE WHILE DO FOR FUNCTION ;
+%token IF ELSE WHILE DO FOR FUNCTION MAIN;
 %token VAR ARG_ARROW RETURN NULL_TOKEN VOID;
 %token AND ASSIGNMENT EQUALS GREATER_THAN GREATER_EQUALS LOWER_THAN LOWER_EQUALS 
         NOT NOT_EQUALS OR;
@@ -34,12 +34,12 @@ node *temp_node = NULL;
 %left MULTIPLY DIVIDE 
 %%
 
-//s: code { printTree($1, 0,0); };  
-s: code { semanticAnalysis($1); };  
+s: code { printTree($1, 0,0); };  
+//s: code { semanticAnalysis($1); };  
 
-code: functions { $$ = makeNode("CODE"); addNode(&$$,$1); }
-
-function_procedure: function | procedure 
+code: 
+    functions Main { $$ = makeNode("CODE"); addNode(&$$,$1); addNode(&$$,$2); }
+    | Main {$$ = makeNode("CODE"); addNode(&$$, $1); }
 
 functions: 
     function_procedure
@@ -50,6 +50,17 @@ functions:
     | functions function_procedure
     {
         addNode(&$$, $2);
+    }
+
+function_procedure: function | procedure 
+
+Main:
+    FUNCTION MAIN START_ROUND_BRACKETS END_ROUND_BRACKETS COLON VOID START_CURLY_BRACKETS body END_CURLY_BRACKETS
+    {
+        $$ = makeNode("MAIN");
+        node* body_node = makeNode("BODY");
+        addNode(&body_node, $8);
+        addNode(&$$, body_node);
     }
 
 function:

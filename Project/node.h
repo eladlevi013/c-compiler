@@ -7,6 +7,8 @@
 typedef struct node
 { 
     char *token;
-    struct node **nodes;
     int count;
+    struct node **nodes;
+    char* type;
+
 } node;
