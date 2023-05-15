@@ -1,1 +1,0 @@
-lex scanner.l && yacc parser.y && cc -o parser y.tab.c -ll -Ly && ./parser < input.t
