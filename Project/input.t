@@ -1,7 +1,6 @@
-function d(): void
-{
-    
-}
 function main(): void 
+{
+}
+function aa(): void 
 {
 }

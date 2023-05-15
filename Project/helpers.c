@@ -12,7 +12,7 @@
 #define EMPTY_STRING ""
 #define YYSTYPE struct node*
 
-// Signatures
+// Function declarations
 //PART1
 node *makeNode(char* token);
 void addNode(node **father, node *descendant);
@@ -23,6 +23,8 @@ void printTree(node* tree, int tab,int print_style);
 //PART2
 void semanticAnalysis(node* root);
 
+// Variables
+int GlobalScope = 0;
 
 // Funcs
 node *makeNode(char *token)
@@ -160,3 +162,82 @@ void semanticAnalysis(node* root)
     printf("semanticAnalysis\n");
 	
 }
+
+void semanticAnalysisRecognizeScope(node* root,int depth_level)
+{
+    if(root == NULL)
+    {
+        return;
+    }
+    else if (!strcmp(root->token, "CODE"))
+    {
+        pushNewScope();
+        depth_level++;
+    }
+    else if(!strcmp(root->token, "MAIN"))
+    {
+        pushNewScope();
+    }
+    else if(!strcmp(root->token,"FUNC"))
+    {
+        pushNewScope();
+    }
+    else if (!strcmp(root->token, "IF"))
+    {
+        pushNewScope();
+    }
+        else if(!strcmp(root->token,"IF-ELSE"))
+    {
+        pushNewScope();
+    }
+    else if (!strcmp(root->token, "WHILE"))
+    {
+        pushNewScope();
+    }
+    else if(!strcmp(root->token, "DO-WHILE"))
+    {
+        pushNewScope();
+    }
+	else if (!strcmp(root->token, "FOR"))
+    {
+        pushNewScope();
+    }
+    else if (!strcmp(root->token, "BLOCK"))
+    {
+        pushNewScope();
+	}
+    for (int i = 0; i < root->count; i++)//more brother in the same level
+    {
+		semanticAnalysisRecognizeScope(root->nodes[i], depth_level);
+	}
+}
+
+pushNewScope()
+{
+
+    makeSymbolTable()
+}
+
+makeSymbolTable(node** statements, int size)
+{
+    for (int i = 0;i < size;i++)
+    {
+        if(!strcmp(statements[i]->token, "VAR")
+        {
+			pushToSymbolTable();
+		}
+        else if (!strcmp(statements[i]->token, "FUNC"))
+        {
+			pushToSymbolTable();
+        }
+        else if (!strcmp(statements[i]->token, "FUNC-CALL"))
+        {
+		}
+        else if(else if(!strcmp(statements[i]->token, "=")))
+        {
+
+        }
+    }
+}
+
+
