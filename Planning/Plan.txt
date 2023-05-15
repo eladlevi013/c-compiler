@@ -1,5 +1,0 @@
-statement: if, for, while, return
-operator: &&, /, =, ==, >, >=, <, <=, -, !, !=, ||, +, *, &
-expression: expression operator expression | operator expression | value
-literal_lexemes: bool_literal, char_literal, integer_litearal, real_literal, string_literal, 
-value: literal_lexemes | identifier
