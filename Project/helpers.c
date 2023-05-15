@@ -22,6 +22,26 @@ void printTree(node* tree, int tab,int print_style);
 
 //PART2
 void semanticAnalysis(node* root);
+Scope* head = NULL;
+
+/*
+    How to use the stackScopes functions for noobies,
+    
+    // Scope to insert
+    Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+    new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+    push_scope(&head, new_scope);
+
+    // Creating a new symbol record
+    Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+    new_symbol->name = "x";
+    new_symbol->type = "int";
+    new_symbol->next = NULL;
+    push_symbol_record_to_current_scope(new_symbol, &head);
+
+    // Printing the contents of all symbol tables
+    print_scopes(head);
+*/
 
 // Variables
 int GlobalScope = 0;
@@ -222,7 +242,7 @@ makeSymbolTable(node** statements, int size)
 {
     for (int i = 0;i < size;i++)
     {
-        if(!strcmp(statements[i]->token, "VAR")
+        if(!strcmp(statements[i]->token, "VAR"))
         {
 			pushToSymbolTable();
 		}
@@ -240,4 +260,85 @@ makeSymbolTable(node** statements, int size)
     }
 }
 
+// --------------------------------------------------
+//                ~ Semantic Related
+// --------------------------------------------------
+typedef struct Symbol {
+    char* name;
+    char* type;
+    struct Symbol* next;
+} Symbol;
 
+typedef struct Scope {
+    Symbol* symbolTable;
+    struct Scope* nextScope;
+} Scope;
+
+void push_scope(Scope** head, Scope* new_scope)
+{
+    new_scope->nextScope = *head;
+    *head = new_scope;
+}
+
+void pop_scope(Scope** head)
+{
+    if (*head == NULL)
+    {
+        printf("No scope exists\n");
+        return;
+    }
+    else
+    {
+        Scope* temp = *head;
+        *head = (*head)->nextScope;
+        free(temp);
+        return;
+    }
+}
+
+void push_symbol_record_to_current_scope(Symbol* symbol, Scope** head)
+{
+    if (*head == NULL)
+    {
+        printf("No scope exists\n");
+        return;
+    }
+    else
+    {
+        if ((*head)->symbolTable == NULL)
+        {
+            (*head)->symbolTable = symbol;
+            return;
+        }
+        else
+        {
+            Symbol* current_symbol = (*head)->symbolTable;
+            while (current_symbol->next != NULL) {
+                current_symbol = current_symbol->next;
+            }
+            current_symbol->next = symbol;
+            return;
+        }
+    }
+}
+
+void print_symbol_table(Scope* scope)
+{
+    Symbol* current = scope->symbolTable;
+    while (current != NULL) {
+        printf("Name: %s, Type: %s\n", current->name, current->type);
+        current = current->next;
+    }
+}
+
+void print_scopes(Scope* head)
+{
+    Scope* current_scope = head;
+    int counter = 1;
+    while (current_scope != NULL) {
+        printf("Scope %d:\n", counter);
+        print_symbol_table(current_scope);
+        current_scope = current_scope->nextScope;
+        counter++;
+    }
+}
