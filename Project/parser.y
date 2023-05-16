@@ -35,7 +35,7 @@ node *temp_node = NULL;
 %%
 
 //s: code { printTree($1, 0,0); };  
-s: code { semanticAnalysis($1); printTree($1, 0,0);};  
+s: code { printTree($1, 0,0); semanticAnalysis($1); };  
 
 code: 
     functions Main { $$ = makeNode("CODE"); addNode(&$$,$1); addNode(&$$,$2); }
@@ -402,26 +402,26 @@ expression:
 
 literal_lexemes:
     bool__literal { $$ = $1; }
-    | CHAR_LITERAL { $$ = makeNode(yytext);}
+    | CHAR_LITERAL { $$ = makeNode(yytext); $$->type = "CHAR";}
     | integer_literal { $$ = $1;}
-    | REAL_LITERAL { $$ = makeNode(yytext); }
-    | STRING_LITERAL { $$ = makeNode(yytext); }
-    | NULL_TOKEN { $$ = makeNode(yytext); }
+    | REAL_LITERAL { $$ = makeNode(yytext); $$->type = "REAL"; }
+    | STRING_LITERAL { $$ = makeNode(yytext); $$->type = "STRING"; }
+    | NULL_TOKEN { $$ = makeNode(yytext); $$->type = "NULL"; }
     | id { $$ = $1; }
     ;
 
 bool__literal:
-    FALSE { $$ = makeNode("false");}
-    | TRUE { $$ = makeNode("true");}
+    FALSE { $$ = makeNode("false"); $$->type = "BOOL"; }
+    | TRUE { $$ = makeNode("true"); $$->type = "BOOL"; }
     ;
 
 integer_literal:
-    INTEGER_LITERAL { $$ = makeNode(yytext);}
-    | INTEGER_LITERAL_HEX { $$ = makeNode(yytext);}
+    INTEGER_LITERAL { $$ = makeNode(yytext); $$->type = "INT"; }
+    | INTEGER_LITERAL_HEX { $$ = makeNode(yytext); $$->type = "INT_HEX"; }
     ;
 
 id: 
-    IDENTIFIER { $$ = makeNode(yytext);};
+    IDENTIFIER { $$ = makeNode(yytext); $$->type = "ID";};
 
 
 %%

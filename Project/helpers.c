@@ -22,12 +22,6 @@ void printTree(node* tree, int tab,int print_style);
 
 //PART2
 void semanticAnalysis(node* root);
-void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
-void push_scope(Scope** head, Scope* new_scope);
-void pop_scope(Scope** head);
-void push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
-void print_symbol_table(Scope* scope);
-void print_scopes(Scope* head);
 
 /*
     How to use the stackScopes functions for noobies,
@@ -183,14 +177,12 @@ void printTree(node* tree, int tab, int print_style)
     }
 }
 
-
 void semanticAnalysis(node* root)
 {
     printf("semanticAnalysis\n");
 	semanticAnalysisRecognizeScope(root, head);
     print_scopes(head);
 }
-
 
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
 {
@@ -237,57 +229,36 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
 /*
 char* checkExpression(node* exp)
 {
+    
     if (!strcmp(exp->token,"+")||!strcmp(exp->token,"-")||!strcmp(exp->token,"*")||!strcmp(exp->token,"/")){
 		char* left, *right;
-        left = EvaluateExp(exp->nodes[0]);
-        right = EvaluateExp(exp->nodes[1]);
+        left = checkExpression(exp->nodes[0]);
+        right = checkExpression(exp->nodes[1]);
 		if (!strcmp(left, "NULL") || !strcmp(right,"NULL"))
+        {
 			return "NULL";
+        }
         if (!strcmp(left,"INT") && !strcmp(right,"INT"))
+        {
 			return "INT";
+        }
 		else if (!strcmp(left,"REAL") && !strcmp(right,"REAL"))
+        {
 			return "REAL";
+        }
 		else if ((!strcmp(left,"REAL") && !strcmp(right,"INT")) || (!strcmp(left,"INT") && !strcmp(right,"REAL")))
-			return "REAL";
-		else if (((!strcmp(left,"INT*") && !strcmp(right,"INT")) || (!strcmp(left,"INT") && !strcmp(right,"INT*"))) && strcmp(exp->token,"*") && strcmp(exp->token,"/"))
-			return "INT*";
-		else if (((!strcmp(left,"CHAR*") && !strcmp(right,"INT")) || (!strcmp(left,"INT") && !strcmp(right,"CHAR*"))) && strcmp(exp->token,"*") && strcmp(exp->token,"/"))
-			return "CHAR*";
-		else if (((!strcmp(left,"REAL*") && !strcmp(right,"INT")) || (!strcmp(left,"INT") && !strcmp(right,"REAL*"))) && strcmp(exp->token,"*") && strcmp(exp->token,"/"))
-			return "REAL*";
-		else {
+		{
+            return "REAL";
+        }
+		else 
+        {
 			printf(" Can not perform [%s] between [%s] and [%s] - [%s %s %s]\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
 		}
 	}
-}
 
-pushNewScope()
-{
-    makeSymbolTable()
-}
-
-makeSymbolTable(node** statements, int size)
-{
-    for (int i = 0;i < size;i++)
-    {
-        if(!strcmp(statements[i]->token, "VAR"))
-        {
-			pushToSymbolTable();
-		}
-        else if (!strcmp(statements[i]->token, "FUNC"))
-        {
-			pushToSymbolTable();
-        }
-        else if (!strcmp(statements[i]->token, "FUNC-CALL"))
-        {
-		}
-        else if(else if(!strcmp(statements[i]->token, "=")))
-        {
-
-        }
-    }
 }
 */
+
 
 // --------------------------------------------------
 //                ~ Semantic Related
