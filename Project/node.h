@@ -15,6 +15,7 @@ typedef struct node
 typedef struct Symbol {
     char* id;
     char* type;
+    char* data;
     struct Symbol* next;
 } Symbol;
 

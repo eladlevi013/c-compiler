@@ -23,9 +23,14 @@ void printTree(node* tree, int tab,int print_style);
 //PART2
 void semanticAnalysis(node* root);
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
+void pushSymbols(node* decleration);
+void pushNodesToSymbolTable(char* type, node** vars, int size);
+void pushSymbolToTable(Scope** head, char* id, char* type, char* data);
+
+
 void pushScope(Scope** head,node** statements,int statements_size);
 Symbol* searchIdInScopes(char* id);
-
+char* checkExpression(node* exp);
 void push_scope(Scope** head, Scope* new_scope);
 void pop_scope(Scope** head);
 void push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
@@ -196,38 +201,125 @@ void semanticAnalysis(node* root)
 
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
 {
-
     if(root == NULL)
     {
         return;
     }
-    else if (!strcmp(root->token, "CODE"))
+    else if (
+            !strcmp(root->token, "FUNC")
+        || !strcmp(root->token, "CODE")
+        || !strcmp(root->token, "MAIN")
+        || !strcmp(root->token, "IF")
+        || !strcmp(root->token, "IF-ELSE")
+        || !strcmp(root->token, "WHILE")
+        || !strcmp(root->token, "DO-WHILE")
+        || !strcmp(root->token, "FOR")
+        || !strcmp(root->token, "BLOCK")
+    )
     {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+        curr_scope = new_scope;
     }
-    else if(!strcmp(root->token, "MAIN"))
+    else
     {
+        if(strcmp(root->token, "") != 0
+        && root->type != NULL
+        && strcmp(root->type, "ID") == 0)
+        {
+            Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+            new_symbol->id = root->token;
+            new_symbol->type = root->token;
+            new_symbol->next = NULL;
+            push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+        }
     }
-    else if(!strcmp(root->token, "FUNC"))
+
+    // Recursion, the functions are for this scope
+    for (int i = 0; i < root->count; i++) //more brother in the same level
     {
+        if(!strcmp(root->nodes[i]->token, "FUNC"))
+        {
+            // if its function, get the function name and put it on the curr scope
+            Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+            new_symbol->id = root->nodes[i]->nodes[1]->token;
+            new_symbol->type = root->nodes[i]->nodes[0]->token;
+            new_symbol->next = NULL;
+            push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+        }
+        else if(!strcmp(root->nodes[i]->token, "MAIN"))
+        {
+            // if its function, get the function name and put it on the curr scope
+            Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+            new_symbol->id = (char*)malloc(sizeof(char) * 5);
+            strcpy(new_symbol->id, "main");
+            new_symbol->type = (char*)malloc(sizeof(char) * 5);
+            strcpy(new_symbol->type, "void");
+            new_symbol->next = NULL;
+            push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+        }
+        semanticAnalysisRecognizeScope(root->nodes[i], curr_scope);
     }
-    else if(!strcmp(root->token, "IF"))
+
+    ///eyalon add 
+    /*
+    if(!strcmp(root->nodes[i]->token, "VAR"))
     {
+        pushSymbols(root->nodes[i]);
     }
-    else if(!strcmp(root->token, "IF-ELSE"))
+    */
+}
+
+void pushSymbols(node* decleration)
+{
+	for(int i = 0; i<decleration->count;i++)
     {
-    }
-    else if(!strcmp(root->token, "WHILE"))
+		pushNodesToSymbolTable(decleration->nodes[i]->token, decleration->nodes[i]->nodes,decleration->nodes[i]->count);
+	}
+}
+
+void pushNodesToSymbolTable(char* type, node** vars, int size)
+{
+    for(int i = 0;i < size; i++)
     {
-    }
-    else if(!strcmp(root->token, "DO-WHILE"))
+		if (strcmp(vars[i]->token, "="))
+        {
+			pushSymbolToTable(&head, vars[i]->token, type, NULL);
+        }
+		else
+        {
+			char* exp = checkExpression(vars[i]->nodes[1]);
+			if (!strcmp(type,exp))
+            {
+				pushSymbolToTable(&head, vars[i]->nodes[0]->token, type, vars[i]->nodes[1]->token);
+            }
+            else 
+            {
+				isError++;
+				printf("Assignment Error mismatch: can not assign %s to %s\n", exp, type);
+			}	
+		}
+	}
+}
+
+void pushSymbolToTable(Scope** head, char* id, char* type, char* data)
+{
+	Symbol* newSymbol = (Symbol*) malloc(sizeof(Symbol));
+	newSymbol->id = (char*)(malloc (sizeof(id) + 1));
+	strncpy(newSymbol->id, id, sizeof(id)+1);
+	if (data != NULL) 
     {
-    }
-    else if(!strcmp(root->token, "FOR"))
+		newSymbol->data = (char*)(malloc (sizeof(data) + 1));
+		strncpy(newSymbol->data, data, sizeof(data)+1);
+	}
+	else
     {
+		newSymbol->data = NULL;
     }
-    else if(!strcmp(root->token, "BLOCK"))
-    {    
-    }    
+    newSymbol->type = (char*)(malloc (sizeof(type) + 1));
+	strncpy(newSymbol->type, type, sizeof(type)+1);
+	push_symbol_record_to_current_scope(newSymbol, &head);
 }
 
 char* checkExpression(node* exp)
@@ -460,7 +552,6 @@ Symbol* searchIdInScopes(char* id)
     return NULL;
 }
 
-/*
 void push_scope(Scope** head, Scope* new_scope)
 {
     if(*head == NULL)
@@ -534,4 +625,3 @@ void print_scopes(Scope* head)
         counter++;
     }
 }
-*/

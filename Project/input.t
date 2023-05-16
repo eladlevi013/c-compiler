@@ -1,7 +1,8 @@
 function test():void
 {
-    var c:int;
+    var c="dsds":int;
     var d:real;
+    string x[80];
 }
 
 function main():void
