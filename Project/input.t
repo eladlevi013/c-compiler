@@ -1,4 +1,7 @@
-function main(): void
+function main():void
 {
-    return 'a';
+    if(x>5)
+    {
+        x = x+5;
+    }
 }

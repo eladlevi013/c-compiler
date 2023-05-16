@@ -37,7 +37,7 @@ node *temp_node = NULL;
 //s: code { printTree($1, 0,0); };  
 s: code { printTree($1, 0,0); semanticAnalysis($1); };  
 
-code: 
+code:
     functions Main { $$ = makeNode("CODE"); addNode(&$$,$1); addNode(&$$,$2); }
     | Main {$$ = makeNode("CODE"); addNode(&$$, $1); }
 
