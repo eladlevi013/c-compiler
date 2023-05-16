@@ -37,7 +37,7 @@ node *temp_node = NULL;
 //s: code { printTree($1, 0,0); };  
 s: code { semanticAnalysis($1); printTree($1, 0,0);};  
 
-code: 
+code:
     functions Main { $$ = makeNode("CODE"); addNode(&$$,$1); addNode(&$$,$2); }
     | Main {$$ = makeNode("CODE"); addNode(&$$, $1); }
 
@@ -330,7 +330,7 @@ variable_list_helper:
         temp_node = makeNode(EMPTY_STRING); 
         addNode(&temp_node, $1);
     }
-    | id ASSIGNMENT literal_lexemes
+    | id ASSIGNMENT expression
     {
         // Creating the ASSIGNMENT node
         $$ = makeNode("=");
