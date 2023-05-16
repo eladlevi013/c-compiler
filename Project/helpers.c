@@ -22,7 +22,14 @@ void printTree(node* tree, int tab,int print_style);
 
 //PART2
 void semanticAnalysis(node* root);
+void pushScope(Scope** head,node** statements,int statements_size);
+Symbol* searchIdInScopes(char* id);
 
+void push_scope(Scope** head, Scope* new_scope);
+void pop_scope(Scope** head)
+void push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
+void print_symbol_table(Scope* scope);
+void print_scopes(Scope* head);
 
 /*
     How to use the stackScopes functions for noobies,
@@ -445,6 +452,11 @@ char* checkExpression(node* exp)
 void pushScope(Scope** head,node** statements,int statements_size)
 {
     
+}
+
+Symbol* searchIdInScopes(char* id)
+{
+    return NULL;
 }
 
 /*
