@@ -23,8 +23,9 @@ void printTree(node* tree, int tab,int print_style);
 //PART2
 void semanticAnalysis(node* root);
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
+void pushScopeStatements(node** statements, int size);
 void pushSymbols(node* decleration);
-void pushNodesToSymbolTable(char* type, node** vars, int size);
+void pushVariablesToSymbolTable(char* type, node** vars, int size);
 void pushSymbolToTable(char* id, char* type, char* data);
 
 void pushScope(Scope** head,node** statements,int statements_size);
@@ -248,6 +249,7 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             new_symbol->type = root->nodes[i]->nodes[0]->token;
             new_symbol->next = NULL;
             push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+            pushScopeStatements()
         }
         else if(!strcmp(root->nodes[i]->token, "MAIN"))
         {
@@ -259,17 +261,21 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             strcpy(new_symbol->type, "void");
             new_symbol->next = NULL;
             push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+            pushScopeStatements( root->nodes,root->count);
         }
         semanticAnalysisRecognizeScope(root->nodes[i], curr_scope);
     }
+}
 
-    ///eyalon add 
-    /*
-    if(!strcmp(root->nodes[i]->token, "VAR"))
+pushScopeStatements(node** statements, int size)
+{
+    for (int i = 0;i < size;i++)
     {
-        pushSymbols(root->nodes[i]);
-    }
-    */
+		if(!strcmp(statements[i]->token, "VAR"))
+        {
+			pushSymbols(statements[i]);
+        }
+	}
 }
 
 void pushSymbols(node* decleration)
@@ -280,7 +286,7 @@ void pushSymbols(node* decleration)
 	}
 }
 
-void pushNodesToSymbolTable(char* type, node** vars, int size)
+void pushVariablesToSymbolTable(char* type, node** vars, int size)
 {
     for(int i = 0;i < size; i++)
     {
