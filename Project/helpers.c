@@ -27,13 +27,13 @@ void pushSymbols(node* decleration);
 void pushNodesToSymbolTable(char* type, node** vars, int size);
 void pushSymbolToTable(char* id, char* type, char* data);
 
-
 void pushScope(Scope** head,node** statements,int statements_size);
 Symbol* searchIdInScopes(char* id);
 char* checkExpression(node* exp);
 void push_scope(Scope** head, Scope* new_scope);
 void pop_scope(Scope** head);
-void push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
+int push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
+int symbol_exists_in_scope(Symbol* symbol, Scope* head);
 void print_symbol_table(Scope* scope);
 void print_scopes(Scope* head);
 
@@ -186,9 +186,9 @@ void printTree(node* tree, int tab, int print_style)
 //PART 2
 void semanticAnalysis(node* root)
 {
-    printf("semanticAnalysis\n");
+    printf("semanticAnalysis:\n");
 	semanticAnalysisRecognizeScope(root, head);
-    //print_scopes(head);
+    print_scopes(head);
     if (isError)
     {
 		printf("%d Errors found\n",isError);
@@ -580,30 +580,45 @@ void pop_scope(Scope** head)
     }
 }
 
-void push_symbol_record_to_current_scope(Symbol* symbol, Scope** head)
-{
-    if (*head == NULL)
-    {
+int symbol_exists_in_scope(Symbol* symbol, Scope* head) {
+    if (head == NULL || head->symbolTable == NULL) {
+        return 0;  // No scope or symbol table is empty, so symbol doesn't exist
+    }
+
+    Symbol* current_symbol = head->symbolTable;
+    while (current_symbol != NULL) {
+        if (strcmp(current_symbol->id,symbol->id)==0  ) {
+            return 1;  // Symbol found in the scope's symbol table
+        }
+        current_symbol = current_symbol->next;
+    }
+
+    return 0;  // Symbol not found in the scope's symbol table
+}
+
+int push_symbol_record_to_current_scope(Symbol* symbol, Scope** head) {
+    if (*head == NULL) {
         printf("No scope exists\n");
-        return;
+        return 0;
     }
-    else
-    {
-        if ((*head)->symbolTable == NULL)
-        {
-            (*head)->symbolTable = symbol;
-            return;
-        }
-        else
-        {
-            Symbol* current_symbol = (*head)->symbolTable;
-            while (current_symbol->next != NULL) {
-                current_symbol = current_symbol->next;
-            }
-            current_symbol->next = symbol;
-            return;
-        }
+
+    if (symbol_exists_in_scope(symbol, *head)==1) {
+        
+        return 0;
     }
+
+    if ((*head)->symbolTable == NULL) {
+        (*head)->symbolTable = symbol;
+        return 0;
+    } else {
+        Symbol* current_symbol = (*head)->symbolTable;
+        while (current_symbol->next != NULL) {
+            current_symbol = current_symbol->next;
+        }
+        current_symbol->next = symbol;
+        return 1;
+    }
+
 }
 
 void print_symbol_table(Scope* scope)
