@@ -22,11 +22,12 @@ void printTree(node* tree, int tab,int print_style);
 
 //PART2
 void semanticAnalysis(node* root);
+void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
 void pushScope(Scope** head,node** statements,int statements_size);
 Symbol* searchIdInScopes(char* id);
 
 void push_scope(Scope** head, Scope* new_scope);
-void pop_scope(Scope** head)
+void pop_scope(Scope** head);
 void push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
 void print_symbol_table(Scope* scope);
 void print_scopes(Scope* head);
@@ -182,7 +183,7 @@ void semanticAnalysis(node* root)
 {
     printf("semanticAnalysis\n");
 	semanticAnalysisRecognizeScope(root, head);
-    print_scopes(head);
+    //print_scopes(head);
     if (isError)
     {
 		printf("%d Errors found\n",isError);
