@@ -1,6 +1,5 @@
 function main(): void 
 {
-}
-function aa(): void 
-{
+    if(x>5) x=x+1;
+    
 }

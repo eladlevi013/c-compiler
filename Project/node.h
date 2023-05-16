@@ -12,3 +12,16 @@ typedef struct node
     char* type;
 
 } node;
+
+typedef struct Symbol {
+    char* id;
+    char* type;
+    struct Symbol* next;
+} Symbol;
+
+typedef struct Scope {
+    Symbol* symbolTable;
+    struct Scope* nextScope;
+} Scope;
+
+//rename from node!!!

@@ -22,7 +22,6 @@ void printTree(node* tree, int tab,int print_style);
 
 //PART2
 void semanticAnalysis(node* root);
-Scope* head = NULL;
 
 /*
     How to use the stackScopes functions for noobies,
@@ -34,7 +33,7 @@ Scope* head = NULL;
 
     // Creating a new symbol record
     Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
-    new_symbol->name = "x";
+    new_symbol->id = "x";
     new_symbol->type = "int";
     new_symbol->next = NULL;
     push_symbol_record_to_current_scope(new_symbol, &head);
@@ -44,6 +43,7 @@ Scope* head = NULL;
 */
 
 // Variables
+Scope* head = NULL;
 int GlobalScope = 0;
 
 // Funcs
@@ -177,11 +177,13 @@ void printTree(node* tree, int tab, int print_style)
     }
 }
 
+
 void semanticAnalysis(node* root)
 {
     printf("semanticAnalysis\n");
 	
 }
+
 
 void semanticAnalysisRecognizeScope(node* root,int depth_level)
 {
@@ -191,20 +193,28 @@ void semanticAnalysisRecognizeScope(node* root,int depth_level)
     }
     else if (!strcmp(root->token, "CODE"))
     {
+        printf("GLOBAL");
         pushNewScope();
         depth_level++;
     }
     else if(!strcmp(root->token, "MAIN"))
     {
-        pushNewScope();
+        printf("MAIN");
+        pushNewScope(); 
     }
     else if(!strcmp(root->token,"FUNC"))
     {
+
         pushNewScope();
     }
     else if (!strcmp(root->token, "IF"))
     {
+
         pushNewScope();
+        if(strcmp("BOOL" ,checkExpression(root->nodes[0])))
+        {
+			printf("IF-condition must return type BOOL\n");
+		}
     }
         else if(!strcmp(root->token,"IF-ELSE"))
     {
@@ -224,13 +234,41 @@ void semanticAnalysisRecognizeScope(node* root,int depth_level)
     }
     else if (!strcmp(root->token, "BLOCK"))
     {
-        pushNewScope();
+        pushNewScope(&head,);
 	}
     for (int i = 0; i < root->count; i++)//more brother in the same level
     {
 		semanticAnalysisRecognizeScope(root->nodes[i], depth_level);
 	}
 }
+
+char* checkExpression(node* exp)
+{
+    if (!strcmp(exp->token,"+")||!strcmp(exp->token,"-")||!strcmp(exp->token,"*")||!strcmp(exp->token,"/")){
+		char* left, *right;
+        left = EvaluateExp(exp->nodes[0]);
+        right = EvaluateExp(exp->nodes[1]);
+		if (!strcmp(left, "NULL") || !strcmp(right,"NULL"))
+			return "NULL";
+        if (!strcmp(left,"INT") && !strcmp(right,"INT"))
+			return "INT";
+		else if (!strcmp(left,"REAL") && !strcmp(right,"REAL"))
+			return "REAL";
+		else if ((!strcmp(left,"REAL") && !strcmp(right,"INT")) || (!strcmp(left,"INT") && !strcmp(right,"REAL")))
+			return "REAL";
+		else if (((!strcmp(left,"INT*") && !strcmp(right,"INT")) || (!strcmp(left,"INT") && !strcmp(right,"INT*"))) && strcmp(exp->token,"*") && strcmp(exp->token,"/"))
+			return "INT*";
+		else if (((!strcmp(left,"CHAR*") && !strcmp(right,"INT")) || (!strcmp(left,"INT") && !strcmp(right,"CHAR*"))) && strcmp(exp->token,"*") && strcmp(exp->token,"/"))
+			return "CHAR*";
+		else if (((!strcmp(left,"REAL*") && !strcmp(right,"INT")) || (!strcmp(left,"INT") && !strcmp(right,"REAL*"))) && strcmp(exp->token,"*") && strcmp(exp->token,"/"))
+			return "REAL*";
+		else {
+			printf(" Can not perform [%s] between [%s] and [%s] - [%s %s %s]\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
+		}
+	}
+}
+
+/*
 
 pushNewScope()
 {
@@ -263,16 +301,7 @@ makeSymbolTable(node** statements, int size)
 // --------------------------------------------------
 //                ~ Semantic Related
 // --------------------------------------------------
-typedef struct Symbol {
-    char* name;
-    char* type;
-    struct Symbol* next;
-} Symbol;
 
-typedef struct Scope {
-    Symbol* symbolTable;
-    struct Scope* nextScope;
-} Scope;
 
 void push_scope(Scope** head, Scope* new_scope)
 {
@@ -326,7 +355,7 @@ void print_symbol_table(Scope* scope)
 {
     Symbol* current = scope->symbolTable;
     while (current != NULL) {
-        printf("Name: %s, Type: %s\n", current->name, current->type);
+        printf("id: %s, Type: %s\n", current->id, current->type);
         current = current->next;
     }
 }
@@ -342,3 +371,4 @@ void print_scopes(Scope* head)
         counter++;
     }
 }
+*/
