@@ -330,7 +330,7 @@ variable_list_helper:
         temp_node = makeNode(EMPTY_STRING); 
         addNode(&temp_node, $1);
     }
-    | id ASSIGNMENT literal_lexemes
+    | id ASSIGNMENT expression
     {
         // Creating the ASSIGNMENT node
         $$ = makeNode("=");
