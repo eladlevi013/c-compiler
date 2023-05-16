@@ -23,7 +23,7 @@ void printTree(node* tree, int tab,int print_style);
 //PART2
 void semanticAnalysis(node* root);
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
-void pushScopeStatements(node** statements, int size);
+void pushStatements(node** statements, int size);
 void pushSymbols(node* decleration);
 void pushVariablesToSymbolTable(char* type, node** vars, int size);
 void pushSymbolToTable(char* id, char* type, char* data);
@@ -59,7 +59,7 @@ void print_scopes(Scope* head);
 
 // Variables
 Scope* head = NULL;
-int GlobalScope = 0;
+Scope currScope = NULL;
 int isError = 0;
 
 // Funcs
@@ -249,7 +249,7 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             new_symbol->type = root->nodes[i]->nodes[0]->token;
             new_symbol->next = NULL;
             push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-            pushScopeStatements()
+            //pushStatements()
         }
         else if(!strcmp(root->nodes[i]->token, "MAIN"))
         {
@@ -261,13 +261,13 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             strcpy(new_symbol->type, "void");
             new_symbol->next = NULL;
             push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-            pushScopeStatements( root->nodes,root->count);
+            pushStatements( root->nodes,root->count);
         }
         semanticAnalysisRecognizeScope(root->nodes[i], curr_scope);
     }
 }
 
-pushScopeStatements(node** statements, int size)
+void pushStatements(node** statements, int size)
 {
     for (int i = 0;i < size;i++)
     {
@@ -282,7 +282,7 @@ void pushSymbols(node* decleration)
 {
 	for(int i = 0; i<decleration->count;i++)
     {
-		pushNodesToSymbolTable(decleration->nodes[i]->token, decleration->nodes[i]->nodes,decleration->nodes[i]->count);
+		pushVariablesToSymbolTable(decleration->nodes[i]->token, decleration->nodes[i]->nodes,decleration->nodes[i]->count);
 	}
 }
 
