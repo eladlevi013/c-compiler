@@ -25,7 +25,7 @@ void semanticAnalysis(node* root);
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
 void pushSymbols(node* decleration);
 void pushNodesToSymbolTable(char* type, node** vars, int size);
-void pushSymbolToTable(Scope** head, char* id, char* type, char* data);
+void pushSymbolToTable(char* id, char* type, char* data);
 
 
 void pushScope(Scope** head,node** statements,int statements_size);
@@ -231,6 +231,7 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
             new_symbol->id = root->token;
             new_symbol->type = root->token;
+            new_symbol->data = NULL;
             new_symbol->next = NULL;
             push_symbol_record_to_current_scope(new_symbol, &curr_scope);
         }
@@ -285,14 +286,14 @@ void pushNodesToSymbolTable(char* type, node** vars, int size)
     {
 		if (strcmp(vars[i]->token, "="))
         {
-			pushSymbolToTable(&head, vars[i]->token, type, NULL);
+			pushSymbolToTable(vars[i]->token, type, NULL);
         }
 		else
         {
 			char* exp = checkExpression(vars[i]->nodes[1]);
 			if (!strcmp(type,exp))
             {
-				pushSymbolToTable(&head, vars[i]->nodes[0]->token, type, vars[i]->nodes[1]->token);
+				pushSymbolToTable(vars[i]->nodes[0]->token, type, vars[i]->nodes[1]->token);
             }
             else 
             {
@@ -303,7 +304,7 @@ void pushNodesToSymbolTable(char* type, node** vars, int size)
 	}
 }
 
-void pushSymbolToTable(Scope** head, char* id, char* type, char* data)
+void pushSymbolToTable(char* id, char* type, char* data)
 {
 	Symbol* newSymbol = (Symbol*) malloc(sizeof(Symbol));
 	newSymbol->id = (char*)(malloc (sizeof(id) + 1));
