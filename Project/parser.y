@@ -34,8 +34,8 @@ node *temp_node = NULL;
 %left MULTIPLY DIVIDE 
 %%
 
-//s: code { printTree($1, 0,0); };  
-s: code { printTree($1, 0,0); semanticAnalysis($1); };  
+s: code { printTree($1, 0,0); };  
+//s: code { printTree($1, 0,0); semanticAnalysis($1); };  
 
 code:
     functions Main { $$ = makeNode("CODE"); addNode(&$$,$1); addNode(&$$,$2); }
