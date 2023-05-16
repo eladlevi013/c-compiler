@@ -10,7 +10,6 @@ typedef struct node
     int count;
     struct node **nodes;
     char* type;
-
 } node;
 
 typedef struct Symbol {

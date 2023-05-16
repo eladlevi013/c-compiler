@@ -23,6 +23,7 @@ void printTree(node* tree, int tab,int print_style);
 //PART2
 void semanticAnalysis(node* root);
 
+
 /*
     How to use the stackScopes functions for noobies,
     
@@ -187,9 +188,81 @@ void semanticAnalysis(node* root)
 
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
 {
+
     if(root == NULL)
     {
         return;
+    }
+    else if (!strcmp(root->token, "CODE"))
+    {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+    }
+    else if(!strcmp(root->token, "MAIN"))
+    {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+    }
+    else if(!strcmp(root->token, "FUNC"))
+    {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+    }
+    else if(!strcmp(root->token, "IF"))
+    {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+    }
+    else if(!strcmp(root->token, "IF"))
+    {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+    }
+    else if(!strcmp(root->token, "IF-ELSE"))
+    {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+    }
+    else if(!strcmp(root->token, "WHILE"))
+    {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+    }
+    else if(!strcmp(root->token, "DO-WHILE"))
+    {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+    }
+    else if(!strcmp(root->token, "FOR"))
+    {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+    }
+    else if(!strcmp(root->token, "BLOCK"))
+    {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+    }
+    else
+    {
+        if(strcmp(root->token, "") != 0)
+        {
+            Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+            new_symbol->id = root->token;
+            new_symbol->type = root->token;
+            new_symbol->next = NULL;
+            push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+        }
     }
     
 }
@@ -415,8 +488,14 @@ char* checkExpression(node* exp)
 // -------------------------------------------------- //
 
 
+
 void push_scope(Scope** head, Scope* new_scope)
 {
+    if(*head == NULL)
+    {
+        *head = new_scope;
+        return;
+    }
     new_scope->nextScope = *head;
     *head = new_scope;
 }

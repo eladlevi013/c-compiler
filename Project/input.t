@@ -1,7 +1,11 @@
+function test():void
+{
+    var c:int;
+    var d:real;
+}
+
 function main():void
 {
-    if(x>5)
-    {
-        x = X[5];
-    }
+    var a:int;
+    var b:real;
 }
