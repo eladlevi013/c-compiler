@@ -22,6 +22,12 @@ void printTree(node* tree, int tab,int print_style);
 
 //PART2
 void semanticAnalysis(node* root);
+void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
+void push_scope(Scope** head, Scope* new_scope);
+void pop_scope(Scope** head);
+void push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
+void print_symbol_table(Scope* scope);
+void print_scopes(Scope* head);
 
 /*
     How to use the stackScopes functions for noobies,
@@ -181,67 +187,54 @@ void printTree(node* tree, int tab, int print_style)
 void semanticAnalysis(node* root)
 {
     printf("semanticAnalysis\n");
-	
+	semanticAnalysisRecognizeScope(root, head);
+    print_scopes(head);
 }
 
 
-void semanticAnalysisRecognizeScope(node* root,int depth_level)
+void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
 {
     if(root == NULL)
     {
         return;
     }
-    else if (!strcmp(root->token, "CODE"))
+    else if (
+           !strcmp(root->token, "CODE")
+        || !strcmp(root->token, "MAIN")
+        || !strcmp(root->token, "FUNC")
+        || !strcmp(root->token, "IF")
+        || !strcmp(root->token, "IF-ELSE")
+        || !strcmp(root->token, "WHILE")
+        || !strcmp(root->token, "DO-WHILE")
+        || !strcmp(root->token, "FOR")
+        || !strcmp(root->token, "BLOCK")
+    )
     {
-        printf("GLOBAL");
-        pushNewScope();
-        depth_level++;
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+        curr_scope = new_scope;
     }
-    else if(!strcmp(root->token, "MAIN"))
+    else
     {
-        printf("MAIN");
-        pushNewScope(); 
-    }
-    else if(!strcmp(root->token,"FUNC"))
-    {
-
-        pushNewScope();
-    }
-    else if (!strcmp(root->token, "IF"))
-    {
-
-        pushNewScope();
-        if(strcmp("BOOL" ,checkExpression(root->nodes[0])))
+        if(strcmp(root->token, "") != 0)
         {
-			printf("IF-condition must return type BOOL\n");
-		}
+            Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+            new_symbol->id = root->token;
+            new_symbol->type = root->token;
+            new_symbol->next = NULL;
+            push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+        }
     }
-        else if(!strcmp(root->token,"IF-ELSE"))
+    
+    // recursion of all the nodes
+    for (int i = 0; i < root->count; i++) //more brother in the same level
     {
-        pushNewScope();
-    }
-    else if (!strcmp(root->token, "WHILE"))
-    {
-        pushNewScope();
-    }
-    else if(!strcmp(root->token, "DO-WHILE"))
-    {
-        pushNewScope();
-    }
-	else if (!strcmp(root->token, "FOR"))
-    {
-        pushNewScope();
-    }
-    else if (!strcmp(root->token, "BLOCK"))
-    {
-        pushNewScope(&head,);
-	}
-    for (int i = 0; i < root->count; i++)//more brother in the same level
-    {
-		semanticAnalysisRecognizeScope(root->nodes[i], depth_level);
+		semanticAnalysisRecognizeScope(root->nodes[i], curr_scope);
 	}
 }
 
+/*
 char* checkExpression(node* exp)
 {
     if (!strcmp(exp->token,"+")||!strcmp(exp->token,"-")||!strcmp(exp->token,"*")||!strcmp(exp->token,"/")){
@@ -268,11 +261,8 @@ char* checkExpression(node* exp)
 	}
 }
 
-/*
-
 pushNewScope()
 {
-
     makeSymbolTable()
 }
 
@@ -297,6 +287,7 @@ makeSymbolTable(node** statements, int size)
         }
     }
 }
+*/
 
 // --------------------------------------------------
 //                ~ Semantic Related
@@ -371,4 +362,3 @@ void print_scopes(Scope* head)
         counter++;
     }
 }
-*/
