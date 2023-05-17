@@ -23,7 +23,6 @@ void printTree(node* tree, int tab,int print_style);
 //PART2
 void semanticAnalysis(node* root);
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
-void pushStatements(node** statements, int size);
 void pushSymbols(node* decleration);
 void pushVariablesToSymbolTable(char* type, node** vars, int size);
 void pushSymbolToTable(char* id, char* type, char* data);
@@ -59,7 +58,7 @@ void print_scopes(Scope* head);
 
 // Variables
 Scope* head = NULL;
-Scope currScope = NULL;
+Scope* currScope = NULL;
 int isError = 0;
 
 // Funcs
@@ -236,6 +235,15 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             new_symbol->next = NULL;
             push_symbol_record_to_current_scope(new_symbol, &curr_scope);
         }
+        /*
+        for (int i = 0;i < size;i++)
+        {
+		if(!strcmp(statements[i]->token, "VAR"))
+        {
+			pushSymbols(statements[i]);
+        }
+	}
+        */
     }
 
     // Recursion, the functions are for this scope
@@ -249,7 +257,6 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             new_symbol->type = root->nodes[i]->nodes[0]->token;
             new_symbol->next = NULL;
             push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-            //pushStatements()
         }
         else if(!strcmp(root->nodes[i]->token, "MAIN"))
         {
@@ -261,21 +268,10 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             strcpy(new_symbol->type, "void");
             new_symbol->next = NULL;
             push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-            pushStatements( root->nodes,root->count);
+            currScope = curr_scope;
         }
         semanticAnalysisRecognizeScope(root->nodes[i], curr_scope);
     }
-}
-
-void pushStatements(node** statements, int size)
-{
-    for (int i = 0;i < size;i++)
-    {
-		if(!strcmp(statements[i]->token, "VAR"))
-        {
-			pushSymbols(statements[i]);
-        }
-	}
 }
 
 void pushSymbols(node* decleration)
@@ -326,7 +322,7 @@ void pushSymbolToTable(char* id, char* type, char* data)
     }
     newSymbol->type = (char*)(malloc (sizeof(type) + 1));
 	strncpy(newSymbol->type, type, sizeof(type)+1);
-	push_symbol_record_to_current_scope(newSymbol, &head);
+	push_symbol_record_to_current_scope(newSymbol, &currScope);
 }
 
 char* checkExpression(node* exp)
