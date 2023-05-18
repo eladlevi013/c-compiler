@@ -224,26 +224,14 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
     }
     else
     {
-        if(strcmp(root->token, "") != 0
-        && root->type != NULL
-        && strcmp(root->type, "ID") == 0)
+        currScope = curr_scope;
+        if(strcmp(root->token, "") != 0)
         {
-            Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
-            new_symbol->id = root->token;
-            new_symbol->type = root->token;
-            new_symbol->data = NULL;
-            new_symbol->next = NULL;
-            push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+            if(!strcmp(root->token, "VAR"))
+            {
+                pushSymbols(root);
+            }
         }
-        /*
-        for (int i = 0;i < size;i++)
-        {
-		if(!strcmp(statements[i]->token, "VAR"))
-        {
-			pushSymbols(statements[i]);
-        }
-	}
-        */
     }
 
     // Recursion, the functions are for this scope
@@ -268,7 +256,6 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             strcpy(new_symbol->type, "void");
             new_symbol->next = NULL;
             push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-            currScope = curr_scope;
         }
         semanticAnalysisRecognizeScope(root->nodes[i], curr_scope);
     }
@@ -278,7 +265,7 @@ void pushSymbols(node* decleration)
 {
 	for(int i = 0; i<decleration->count;i++)
     {
-		pushVariablesToSymbolTable(decleration->nodes[i]->token, decleration->nodes[i]->nodes,decleration->nodes[i]->count);
+		pushVariablesToSymbolTable(decleration->nodes[i]->token, decleration->nodes[i]->nodes[0]->nodes,decleration->nodes[i]->nodes[0]->count);
 	}
 }
 
@@ -627,7 +614,7 @@ void print_symbol_table(Scope* scope)
 {
     Symbol* current = scope->symbolTable;
     while (current != NULL) {
-        printf("id: %s, Type: %s\n", current->id, current->type);
+        printf("id: %s, Type: %s, data: %s\n", current->id, current->type, current->data);
         current = current->next;
     }
 }

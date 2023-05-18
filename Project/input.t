@@ -1,5 +1,6 @@
 function main():void
 {
-    var a:int;
-    var b:real;
+    var x:int;
+    var isItamarSllleeping=false: bool;
+    string s[50]="elad";
 }
