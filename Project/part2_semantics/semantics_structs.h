@@ -3,15 +3,6 @@
 #include<string.h>
 #include<stdlib.h>
 
-// Structs
-typedef struct node
-{ 
-    char *token;
-    int count;
-    struct node **nodes;
-    char* type;
-} node;
-
 typedef struct Symbol {
     char* id;
     char* type;
@@ -23,5 +14,3 @@ typedef struct Scope {
     Symbol* symbolTable;
     struct Scope* nextScope;
 } Scope;
-
-//rename from node!!!

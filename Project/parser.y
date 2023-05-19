@@ -1,5 +1,6 @@
 %{
-#include "helpers.c"  
+#include "part1_ast/ast_helpers.c"
+#include "part2_semantics/semantics.c"
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>

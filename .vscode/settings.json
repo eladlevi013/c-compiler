@@ -1,6 +1,8 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "*.y": "c"
+        "*.y": "c",
+        "semantics_structs.h": "c",
+        "ast_structs.h": "c"
     }
 }
