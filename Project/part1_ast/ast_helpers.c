@@ -12,15 +12,13 @@
 #define EMPTY_STRING ""
 #define YYSTYPE struct node*
 
-// Function declarations
-//PART1
+// Part1 - Abstract Syntax Tree
 node *makeNode(char* token);
 void addNode(node **father, node *descendant);
 void printTabs(int tabs);
 int printTree_helper(char* token);
 void printTree(node* tree, int tab,int print_style);
 
-// Funcs
 node *makeNode(char *token)
 {
     node *newnode = (node*)malloc(sizeof(node));
@@ -61,7 +59,6 @@ void printTree(node* tree, int tab, int print_style)
     if(tree == NULL)
         return;
 
-    
     // print token if valid
     if(strcmp(tree->token, EMPTY_STRING) != 0)//token != "";
     {

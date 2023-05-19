@@ -35,12 +35,26 @@ node *temp_node = NULL;
 %left MULTIPLY DIVIDE 
 %%
 
-//s: code { printTree($1, 0,0); };  
-s: code { semanticAnalysis($1); };  
+s: 
+    code 
+    {
+        semanticAnalysis($1);
+    }
+    ;
 
 code:
-    functions Main { $$ = makeNode("CODE"); addNode(&$$,$1); addNode(&$$,$2); }
-    | Main {$$ = makeNode("CODE"); addNode(&$$, $1); }
+    functions Main 
+    {
+        $$ = makeNode("CODE");
+        addNode(&$$,$1);
+        addNode(&$$,$2);
+    }
+    | Main
+    {
+        $$ = makeNode("CODE");
+        addNode(&$$, $1);
+    }
+    ;
 
 functions: 
     function_procedure
@@ -52,8 +66,11 @@ functions:
     {
         addNode(&$$, $2);
     }
+    ;
 
-function_procedure: function | procedure 
+function_procedure: 
+    function
+    | procedure 
 
 Main:
     FUNCTION MAIN START_ROUND_BRACKETS END_ROUND_BRACKETS COLON VOID START_CURLY_BRACKETS body END_CURLY_BRACKETS
@@ -63,6 +80,7 @@ Main:
         addNode(&body_node, $8);
         addNode(&$$, body_node);
     }
+    ;
 
 function:
     FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON type START_CURLY_BRACKETS body END_CURLY_BRACKETS
@@ -77,6 +95,7 @@ function:
         addNode(&body_node, $9);
         addNode(&$$, body_node);
     }
+    ;
 
 procedure: FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON VOID START_CURLY_BRACKETS body END_CURLY_BRACKETS
     {
@@ -89,6 +108,7 @@ procedure: FUNCTION id START_ROUND_BRACKETS args END_ROUND_BRACKETS COLON VOID S
         addNode(&body_node, $9);
         addNode(&$$, body_node);
     }
+    ;
 
 args:
 	arg_declare
@@ -104,6 +124,7 @@ args:
     {
         $$ = makeNode("ARGS NONE");
     }
+    ;
 
 arg_declare:
     ARG_ARROW args_list COLON type
@@ -111,6 +132,7 @@ arg_declare:
         addNode(&$4,$2);
         $$ = $4;
     }
+    ;
 
 args_list:
     id
@@ -122,8 +144,8 @@ args_list:
     {
         addNode(&$$,$3);
     }
+    ;
 
-// Body
 body: 
     functions body_after_functions_declared
     {
@@ -135,6 +157,7 @@ body:
     {
         $$ = $1;
     }
+    ;
 
 body_after_functions_declared:
     variable_declarations body_after_delarations
@@ -143,6 +166,7 @@ body_after_functions_declared:
         addNode(&$$,$1);
         addNode(&$$,$2);
     }
+    ;
 
 body_after_delarations: 
     statements
@@ -154,19 +178,49 @@ body_after_delarations:
     {
        addNode(&$$, $2);
     }
-    | { $$ = makeNode(EMPTY_STRING); };
+    |
+    {
+        $$ = makeNode(EMPTY_STRING);
+    }
+    ;
 
-// Statements
 statements:
-    assignment_statement SEMICOLON { $$ = $1;}
-    | functions_call_statement { $$ = $1; }
-    | if_statement { $$ = $1; }
-    | if_else_statement { $$ = $1; }
-    | while_statement { $$ = $1; }
-    | do_while_statement { $$ = $1; }
-    | for_statement { $$ = $1; }
-    | code_block_statement { $$ = $1; }
-    | return_statement { $$ = $1; }
+    assignment_statement SEMICOLON 
+    {
+        $$ = $1;
+    }
+    | functions_call_statement 
+    { 
+        $$ = $1; 
+    }
+    | if_statement 
+    { 
+        $$ = $1;
+    }
+    | if_else_statement
+    {
+        $$ = $1;
+    }
+    | while_statement 
+    { 
+        $$ = $1;
+    }
+    | do_while_statement 
+    { 
+        $$ = $1; 
+    }
+    | for_statement 
+    { 
+        $$ = $1;
+    }
+    | code_block_statement 
+    {
+         $$ = $1;
+    }
+    | return_statement 
+    { 
+        $$ = $1;
+    }
     ;
 
 assignment_statement: 
@@ -176,6 +230,7 @@ assignment_statement:
         addNode(& $$, $1);
         addNode(& $$, $3);
     }
+    ;
 
 lhs: 
     id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS
@@ -195,6 +250,7 @@ lhs:
         $$ = makeNode("*");
         addNode(&$$,$2);
     }
+    ;
 
 functions_call_statement: 
     id START_ROUND_BRACKETS functions_args END_ROUND_BRACKETS SEMICOLON
@@ -203,6 +259,7 @@ functions_call_statement:
         addNode(&$$, $1);
         addNode(&$$, $3);
     }
+    ;
 
 functions_args:
     expression 
@@ -218,7 +275,7 @@ functions_args:
     {
         $$ = makeNode("ARGS NONE");
     }
-
+    ;
 
 if_statement: 
     IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
@@ -227,6 +284,7 @@ if_statement:
         addNode(&$$, $3);
         addNode(&$$, $5);
     }
+    ;
 
 if_else_statement:
     IF START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements ELSE statements
@@ -236,6 +294,7 @@ if_else_statement:
         addNode(&$$, $5);
         addNode(&$$, $7);
     }
+    ;
 
 while_statement: 
     WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS statements
@@ -244,6 +303,7 @@ while_statement:
         addNode(&$$, $3);
         addNode(&$$, $5);
     }
+    ;
 
 do_while_statement: 
     DO statements WHILE START_ROUND_BRACKETS expression END_ROUND_BRACKETS SEMICOLON
@@ -252,6 +312,7 @@ do_while_statement:
         addNode(&$$, $2);
         addNode(&$$, $5);
     }
+    ;
 
 for_statement:
     FOR START_ROUND_BRACKETS assignment_statement SEMICOLON expression SEMICOLON assignment_statement END_ROUND_BRACKETS statements
@@ -262,6 +323,7 @@ for_statement:
         addNode(&$$, $7);
         addNode(&$$, $9);
     }
+    ;
 
 code_block_statement:
     START_CURLY_BRACKETS body_after_functions_declared END_CURLY_BRACKETS
@@ -269,6 +331,7 @@ code_block_statement:
         $$ = makeNode("BLOCK");
         addNode(&$$, $2);
     }
+    ;
 
 return_statement:
     RETURN expression SEMICOLON
@@ -276,16 +339,37 @@ return_statement:
         $$ = makeNode("RET");
         addNode(&$$, $2);
     }
+    ;
 
-// Types
 type: 
-    BOOL { $$ = makeNode("BOOL"); }
-    | CHAR { $$ = makeNode("CHAR"); }
-    | INT { $$ = makeNode("INT"); }
-    | REAL { $$ = makeNode("REAL"); }
-    | CHAR_POINTER { $$ = makeNode("CHAR*"); }
-    | REAL_POINTER { $$ = makeNode("REAL*"); }
-    | INT_POINTER { $$ = makeNode("INT*"); }
+    BOOL 
+    {
+        $$ = makeNode("BOOL");
+    }
+    | CHAR 
+    {
+        $$ = makeNode("CHAR");
+    }
+    | INT 
+    {
+        $$ = makeNode("INT");
+    }
+    | REAL 
+    {
+        $$ = makeNode("REAL");
+    }
+    | CHAR_POINTER 
+    {
+        $$ = makeNode("CHAR*");
+    }
+    | REAL_POINTER 
+    {
+        $$ = makeNode("REAL*");
+    }
+    | INT_POINTER 
+    {
+        $$ = makeNode("INT*");
+    }
     ;
 
 variable_declarations:
@@ -298,7 +382,11 @@ variable_declarations:
     {
         addNode(&$$, $2);
     }
-    | { $$ = makeNode(EMPTY_STRING); };
+    | 
+    {
+        $$ = makeNode(EMPTY_STRING);
+    }
+    ;
 
 variable_declare:
     VAR variable_list COLON type SEMICOLON
@@ -312,9 +400,9 @@ variable_declare:
         addNode(&string_node,$2);
         $$ = string_node;
     }
+    ;
 
-// Variable Delarations 
-variable_list: 
+variable_list:
     variable_list_helper
     {
         $$ = makeNode(EMPTY_STRING);
@@ -324,6 +412,7 @@ variable_list:
     {
         addNode(&$$, $3);
     }
+    ;
 
 variable_list_helper:
     id
@@ -333,13 +422,12 @@ variable_list_helper:
     }
     | id ASSIGNMENT expression
     {
-        // Creating the ASSIGNMENT node
         $$ = makeNode("=");
         addNode(&$$, $1);
         addNode(&$$, $3);
     }
+    ;
 
-// Strings Delarations
 string_list:
     string_list_helper
     {
@@ -350,6 +438,7 @@ string_list:
     {
         addNode(&$$, $3);
     }
+    ;
 
 string_list_helper:
     id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS
@@ -362,7 +451,6 @@ string_list_helper:
     }
     | id START_SQUARE_BRACKETS expression END_SQUARE_BRACKETS ASSIGNMENT literal_lexemes 
     {
-        // Creating the ASSIGNMENT node
         node* temp_assinment_node = makeNode("=");
         addNode(&temp_assinment_node, $1);
         node* lenght_node = makeNode("LENGTH");
@@ -371,60 +459,191 @@ string_list_helper:
         addNode(&temp_assinment_node, $6);
         $$ = temp_assinment_node;
     }
+    ;
 
 expression:
-    expression AND expression{ $$ = makeNode("&&"); addNode(&$$,$1); addNode(&$$,$3); }
-    | expression DIVIDE expression{ $$ = makeNode("/"); addNode(&$$,$1); addNode(&$$,$3); }
-    | expression EQUALS expression{ $$ = makeNode("=="); addNode(&$$,$1); addNode(&$$,$3); }
-    | expression GREATER_THAN expression{ $$ = makeNode(">"); addNode(&$$,$1); addNode(&$$,$3); }
-    | expression GREATER_EQUALS expression{ $$ = makeNode(">="); addNode(&$$,$1); addNode(&$$,$3); }
-    | expression LOWER_THAN expression{ $$ = makeNode("<"); addNode(&$$,$1); addNode(&$$,$3); }
-    | expression LOWER_EQUALS expression { $$ = makeNode("<="); addNode(&$$,$1); addNode(&$$,$3); }
-    | expression SUBSTRACT expression { $$ = makeNode("-"); addNode(&$$,$1); addNode(&$$,$3); }
-    | NOT expression { $$ = makeNode("!"); addNode(&$$,$2); }
-    | expression NOT_EQUALS expression { $$ = makeNode("!="); addNode(&$$,$1); addNode(&$$,$3); }
-    | expression OR expression { $$ = makeNode("||"); addNode(&$$,$1); addNode(&$$,$3); }
-    | expression ADD expression { $$ = makeNode("+"); addNode(&$$,$1); addNode(&$$,$3); }
-    | expression MULTIPLY expression { $$ = makeNode("*"); addNode(&$$,$1); addNode(&$$,$3); }
-    | SUBSTRACT expression { $$ = makeNode("-"); addNode(&$$,$2); }
-    | START_ROUND_BRACKETS expression END_ROUND_BRACKETS { $$ = $2; }
-    | MULTIPLY expression { $$ = makeNode("*"); addNode(&$$,$2); }
-    | ADDRESS lhs { $$ = makeNode("&"); addNode(&$$,$2); }
-    | VERTICAL_BAR id VERTICAL_BAR { $$ = makeNode("LENGTH OF"); addNode(&$$,$2); }
+    expression AND expression 
+    {
+        $$ = makeNode("&&");
+        addNode(&$$,$1);
+        addNode(&$$,$3);
+    }
+    | expression DIVIDE expression
+    { 
+        $$ = makeNode("/");
+        addNode(&$$,$1);
+        addNode(&$$,$3); 
+    }
+    | expression EQUALS expression
+    { 
+        $$ = makeNode("==");
+        addNode(&$$,$1);
+        addNode(&$$,$3);
+    }
+    | expression GREATER_THAN expression
+    {
+        $$ = makeNode(">");
+        addNode(&$$,$1);
+        addNode(&$$,$3);
+    }
+    | expression GREATER_EQUALS expression
+    { 
+        $$ = makeNode(">=");
+        addNode(&$$,$1);
+        addNode(&$$,$3); 
+    }
+    | expression LOWER_THAN expression
+    { 
+        $$ = makeNode("<");
+        addNode(&$$,$1);
+        addNode(&$$,$3);
+    }
+    | expression LOWER_EQUALS expression
+    {
+        $$ = makeNode("<=");
+        addNode(&$$,$1);
+        addNode(&$$,$3);
+    }
+    | expression SUBSTRACT expression
+    {
+        $$ = makeNode("-");
+        addNode(&$$,$1);
+        addNode(&$$,$3);
+    }
+    | NOT expression
+    {
+        $$ = makeNode("!");
+        addNode(&$$,$2);
+    }
+    | expression NOT_EQUALS expression
+    {
+        $$ = makeNode("!=");
+        addNode(&$$,$1);
+        addNode(&$$,$3);
+    }
+    | expression OR expression
+    {
+        $$ = makeNode("||");
+        addNode(&$$,$1);
+        addNode(&$$,$3);
+    }
+    | expression ADD expression
+    {
+        $$ = makeNode("+");
+        addNode(&$$,$1);
+        addNode(&$$,$3);
+    }
+    | expression MULTIPLY expression
+    {
+        $$ = makeNode("*");
+        addNode(&$$,$1);
+        addNode(&$$,$3);
+    }
+    | SUBSTRACT expression 
+    {
+        $$ = makeNode("-");
+        addNode(&$$,$2);
+    }
+    | START_ROUND_BRACKETS expression END_ROUND_BRACKETS
+    {
+        $$ = $2;
+    }
+    | MULTIPLY expression
+    { 
+        $$ = makeNode("*");
+        addNode(&$$,$2);
+    }
+    | ADDRESS lhs {
+        $$ = makeNode("&");
+        addNode(&$$,$2);
+    }
+    | VERTICAL_BAR id VERTICAL_BAR
+    {
+        $$ = makeNode("LENGTH OF");
+        addNode(&$$,$2);
+    }
     | id START_ROUND_BRACKETS functions_args END_ROUND_BRACKETS
     {
         $$ = makeNode("FUNC-CALL");
         addNode(&$$, $1);
         addNode(&$$, $3);
     }
-    | literal_lexemes { $$ = $1;}
-    | lhs { $$ = $1; }
+    | literal_lexemes
+    {
+        $$ = $1;
+    }
+    | lhs
+    {
+        $$ = $1;
+    }
     ;
 
 literal_lexemes:
-    bool__literal { $$ = $1; }
-    | CHAR_LITERAL { $$ = makeNode(yytext); $$->type = "CHAR";}
-    | integer_literal { $$ = $1;}
-    | REAL_LITERAL { $$ = makeNode(yytext); $$->type = "REAL"; }
-    | STRING_LITERAL { $$ = makeNode(yytext); $$->type = "STRING"; }
-    | NULL_TOKEN { $$ = makeNode(yytext); $$->type = "NULL"; }
-    | id { $$ = $1; }
+    bool_literal
+    {
+        $$ = $1; 
+    }
+    | CHAR_LITERAL
+    {
+        $$ = makeNode(yytext);
+        $$->type = "CHAR";
+    }
+    | integer_literal
+    {
+        $$ = $1;
+    }
+    | REAL_LITERAL {
+        $$ = makeNode(yytext);
+        $$->type = "REAL";
+    }
+    | STRING_LITERAL {
+        $$ = makeNode(yytext);
+        $$->type = "STRING";
+    }
+    | NULL_TOKEN
+    {
+        $$ = makeNode(yytext);
+        $$->type = "NULL";
+    }
+    | id
+    {
+        $$ = $1;
+    }
     ;
 
-bool__literal:
-    FALSE { $$ = makeNode("false"); $$->type = "BOOL"; }
-    | TRUE { $$ = makeNode("true"); $$->type = "BOOL"; }
+bool_literal:
+    FALSE
+    {
+        $$ = makeNode("false");
+        $$->type = "BOOL";
+    }
+    | TRUE 
+    {
+        $$ = makeNode("true");
+        $$->type = "BOOL";
+    }
     ;
 
 integer_literal:
-    INTEGER_LITERAL { $$ = makeNode(yytext); $$->type = "INT"; }
-    | INTEGER_LITERAL_HEX { $$ = makeNode(yytext); $$->type = "INT_HEX"; }
+    INTEGER_LITERAL
+    {
+        $$ = makeNode(yytext);
+        $$->type = "INT";
+    }
+    | INTEGER_LITERAL_HEX 
+    {
+        $$ = makeNode(yytext);
+        $$->type = "INT_HEX";
+    }
     ;
 
-id: 
-    IDENTIFIER { $$ = makeNode(yytext); $$->type = "ID";};
-
-
+id:
+    IDENTIFIER
+    {
+        $$ = makeNode(yytext);
+        $$->type = "ID";
+    }
+    ;
 %%
 
 #include "lex.yy.c"

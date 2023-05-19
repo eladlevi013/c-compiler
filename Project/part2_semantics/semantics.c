@@ -46,12 +46,13 @@ int isError = 0;
 
 void semanticAnalysis(node* root)
 {
-    printf("semanticAnalysis:\n");
+    printf("Semantic Analysis:\n");
 	semanticAnalysisRecognizeScope(root, head);
     print_scopes(head);
+
     if (isError)
     {
-		printf("%d Errors found\n",isError);
+		printf("%d Errors found\n", isError);
     }
 	else
     {
@@ -61,6 +62,9 @@ void semanticAnalysis(node* root)
 
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
 {
+    /*
+        This function is the semantic analysis function, 
+    */
     if(root == NULL)
     {
         return;
@@ -123,15 +127,15 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
 
 void pushSymbols(node* decleration)
 {
-	for(int i = 0; i<decleration->count;i++)
+	for(int i = 0; i<decleration->count; i++)
     {
-		pushVariablesToSymbolTable(decleration->nodes[i]->token, decleration->nodes[i]->nodes[0]->nodes,decleration->nodes[i]->nodes[0]->count);
+		pushVariablesToSymbolTable(decleration->nodes[i]->token, decleration->nodes[i]->nodes[0]->nodes, decleration->nodes[i]->nodes[0]->count);
 	}
 }
 
 void pushVariablesToSymbolTable(char* type, node** vars, int size)
 {
-    for(int i = 0;i < size; i++)
+    for(int i = 0; i < size; i++)
     {
 		if (strcmp(vars[i]->token, "="))
         {
@@ -386,11 +390,6 @@ char* checkExpression(node* exp)
 		}
 	}
 }
-
-
-// -------------------------------------------------- //
-//                ~ Semantic Related                  //
-// -------------------------------------------------- //
 
 void pushScope(Scope** head,node** statements,int statements_size)
 {
