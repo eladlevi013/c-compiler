@@ -1,6 +1,6 @@
 %{
 #include "part1_ast/ast_helpers.c"
-#include "part2_semantics/semantics.c"
+#include "part2_semantics/semantics_helpers.c"
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
@@ -644,6 +644,7 @@ id:
         $$->type = "ID";
     }
     ;
+    
 %%
 
 #include "lex.yy.c"
