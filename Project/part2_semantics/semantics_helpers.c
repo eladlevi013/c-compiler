@@ -10,7 +10,7 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
 void pushSymbols(node* decleration);
 void pushVariablesToSymbolTable(char* type, node** vars, int size);
 void pushSymbolToTable(char* id, char* type, char* data);
-void pushScope(Scope** head,node** statements,int statements_size);
+
 Symbol* searchIdInScopes(char* id);
 char* checkExpression(node* exp);
 void push_scope(Scope** head, Scope* new_scope);
@@ -418,11 +418,6 @@ char* checkExpression(node* exp)
 			printf("[%s] is not pointer\n",expression);
 		}
 	}
-}
-
-void pushScope(Scope** head,node** statements,int statements_size)
-{
-    
 }
 
 Symbol* searchIdInScopes(char* id)
