@@ -117,7 +117,7 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             new_symbol->id = (char*)malloc(sizeof(char) * 5);
             strcpy(new_symbol->id, "main");
             new_symbol->type = (char*)malloc(sizeof(char) * 5);
-            strcpy(new_symbol->type, "void");
+            strcpy(new_symbol->type, "VOID");
             new_symbol->next = NULL;
             push_symbol_record_to_current_scope(new_symbol, &curr_scope);
         }
@@ -160,8 +160,8 @@ void pushVariablesToSymbolTable(char* type, node** vars, int size)
 void pushSymbolToTable(char* id, char* type, char* data)
 {
 	Symbol* newSymbol = (Symbol*) malloc(sizeof(Symbol));
-	newSymbol->id = (char*)(malloc (sizeof(id) + 1));
-	strncpy(newSymbol->id, id, sizeof(id)+1);
+	newSymbol->id = (char*)(malloc (strlen(id) + 1));
+	strncpy(newSymbol->id, id, strlen(id)+1);
 	if (data != NULL) 
     {
 		newSymbol->data = (char*)(malloc (sizeof(data) + 1));
