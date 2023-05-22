@@ -49,7 +49,6 @@ void semanticAnalysis(node* root)
     printf("Semantic Analysis:\n");
 	semanticAnalysisRecognizeScope(root, head);
     print_scopes(head);
-
     if (isError)
     {
 		printf("%d Errors found\n", isError);
@@ -63,23 +62,69 @@ void semanticAnalysis(node* root)
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
 {
     /*
-        This function is the semantic analysis function, 
+    This function is the semantic analysis function, 
     */
     if(root == NULL)
     {
         return;
     }
-    else if (
-            !strcmp(root->token, "FUNC")
-        || !strcmp(root->token, "CODE")
-        || !strcmp(root->token, "MAIN")
-        || !strcmp(root->token, "IF")
-        || !strcmp(root->token, "IF-ELSE")
-        || !strcmp(root->token, "WHILE")
-        || !strcmp(root->token, "DO-WHILE")
-        || !strcmp(root->token, "FOR")
-        || !strcmp(root->token, "BLOCK")
-    )
+    else if(!strcmp(root->token, "CODE"))
+    {
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+        curr_scope = new_scope;
+    }
+    else if(!strcmp(root->token, "MAIN"))
+    {
+        Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+        new_symbol->id = (char*)malloc(sizeof(char) * 5);
+        strcpy(new_symbol->id, "main");
+        new_symbol->type = (char*)malloc(sizeof(char) * 5);
+        strcpy(new_symbol->type, "VOID");
+        new_symbol->next = NULL;
+        push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+        curr_scope = new_scope;
+    }
+    else if(!strcmp(root->token, "FUNC"))
+    {
+        Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+        new_symbol->id = root->nodes[0]->token;
+        new_symbol->type = "FUNC";    
+        new_symbol->data = root->nodes[2]->nodes[0]->token;
+        new_symbol->next = NULL;
+        push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        push_scope(&head, new_scope);
+        curr_scope = new_scope;
+    }
+    else if(!strcmp(root->token, "IF") || !strcmp(root->token, "IF-ELSE") 
+         || !strcmp(root->token, "WHILE"))
+    {
+        char* exp = checkExpression(root->nodes[0]);
+        if(strcmp("BOOL",exp))
+        {
+            isError++;
+            if(!strcmp(root->token, "IF"))
+            {
+                printf("IF-condition must return type BOOL\n");
+            }
+            else if(!strcmp(root->token, "IF-ELSE"))
+            {
+                printf("IF-ELSE-condition must return type BOOL\n");
+            }
+            else if(!strcmp(root->token, "WHILE"))
+            {
+                printf("WHILE-condition must return type BOOL\n");
+            }
+            
+        }
+    }
+    else if(!strcmp(root->token, "BLOCK"))
     {
         Scope* new_scope = (Scope*)malloc(sizeof(Scope));
         new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
@@ -95,32 +140,16 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             {
                 pushSymbols(root);
             }
+            if(strcmp(root->token, "FUNC-CALL"))
+            {
+
+            }
         }
     }
 
     // Recursion, the functions are for this scope
     for (int i = 0; i < root->count; i++) //more brother in the same level
     {
-        if(!strcmp(root->nodes[i]->token, "FUNC"))
-        {
-            // if its function, get the function name and put it on the curr scope
-            Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
-            new_symbol->id = root->nodes[i]->nodes[1]->token;
-            new_symbol->type = root->nodes[i]->nodes[0]->token;
-            new_symbol->next = NULL;
-            push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-        }
-        else if(!strcmp(root->nodes[i]->token, "MAIN"))
-        {
-            // if its function, get the function name and put it on the curr scope
-            Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
-            new_symbol->id = (char*)malloc(sizeof(char) * 5);
-            strcpy(new_symbol->id, "main");
-            new_symbol->type = (char*)malloc(sizeof(char) * 5);
-            strcpy(new_symbol->type, "VOID");
-            new_symbol->next = NULL;
-            push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-        }
         semanticAnalysisRecognizeScope(root->nodes[i], curr_scope);
     }
 }
@@ -246,7 +275,7 @@ char* checkExpression(node* exp)
 		else 
         {
             isError+=1;
-			printf("Can't perform [%s] between [%s] and [%s] - [%s %s %s]\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
+			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
 		}
 	}
     else if(!strcmp(exp->token,"&&")||!strcmp(exp->token,"||"))
@@ -261,7 +290,7 @@ char* checkExpression(node* exp)
         else 
         {
             isError+=1;
-			printf("Can't perform [%s] between [%s] and [%s] - [%s %s %s]\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
+			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
 		}
 	}
     else if(!strcmp(exp->token,">")||!strcmp(exp->token,"<")||!strcmp(exp->token,">=")||!strcmp(exp->token,"<="))
@@ -276,7 +305,7 @@ char* checkExpression(node* exp)
 		else
         {
 			isError+=1;
-			printf("Can't perform [%s] between [%s] and [%s] - [%s %s %s]\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
+			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
 		}
 	}
     else if(!strcmp(exp->token,"==")||!strcmp(exp->token,"!="))
@@ -315,7 +344,7 @@ char* checkExpression(node* exp)
         else
         {
             isError+=1;
-			printf("Can't perform [%s] between [%s] and [%s] - [%s %s %s]\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
+			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
 		}
 	}
     else if (!strcmp(exp->token,"LENGTH OF"))
@@ -473,7 +502,7 @@ void print_symbol_table(Scope* scope)
 {
     Symbol* current = scope->symbolTable;
     while (current != NULL) {
-        printf("id: %s, Type: %s, data: %s\n", current->id, current->type, current->data);
+        printf("Id: %s, Type: %s, Data: %s\n", current->id, current->type, current->data);
         current = current->next;
     }
 }
