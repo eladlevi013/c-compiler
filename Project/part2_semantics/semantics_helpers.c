@@ -10,7 +10,7 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
 void pushSymbols(node* decleration);
 void pushVariablesToSymbolTable(char* type, node** vars, int size);
 void pushSymbolToTable(char* id, char* type, char* data);
-
+int checkReturnFromFunc(node* funcNode,char* type);
 Symbol* searchIdInScopes(char* id);
 char* checkExpression(node* exp);
 void push_scope(Scope** head, Scope* new_scope);
@@ -96,11 +96,13 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
         new_symbol->type = "FUNC";    
         new_symbol->data = root->nodes[2]->nodes[0]->token;
         new_symbol->next = NULL;
+        printf("\n\n%d\n\n",checkReturnFromFunc(root->nodes[3],root->nodes[2]->nodes[0]->token));
         push_symbol_record_to_current_scope(new_symbol, &curr_scope);
         Scope* new_scope = (Scope*)malloc(sizeof(Scope));
         new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
         push_scope(&head, new_scope);
         curr_scope = new_scope;
+        
     }
     else if(!strcmp(root->token, "IF") || !strcmp(root->token, "IF-ELSE") 
          || !strcmp(root->token, "WHILE"))
@@ -254,7 +256,7 @@ char* checkExpression(node* exp)
         {
 			return "INT";
         }
-		else if (!strcmp(left,"REAL") && !strcmp(right,"REAL") 
+		else if ((!strcmp(left,"REAL") && !strcmp(right,"REAL"))
                 || (!strcmp(left,"REAL") && !strcmp(right,"INT")) 
                 || (!strcmp(left,"INT") && !strcmp(right,"REAL")))
         {
@@ -418,6 +420,33 @@ char* checkExpression(node* exp)
 			printf("[%s] is not pointer\n",expression);
 		}
 	}
+}
+
+
+int checkReturnFromFunc(node* funcNode,char* type)
+{
+    if(!strcmp(funcNode->token,"RET"))
+    {
+        char* exp = checkExpression(funcNode->nodes[0]);
+        //printf("\nexp:%s\ntype:%s\n",exp,type);
+        printf("type: %s exp:%s, %d", type, exp, strcmp(exp,type)); 
+
+        if(strcmp(exp,type)==0)
+        {
+            printf("1111111111111");
+            return 1;
+        }
+        else
+        {
+            printf("00000000000");
+            return 0;
+        }
+    }
+    
+    for (int i = 0; i < funcNode->count; i++)
+    {
+        checkReturnFromFunc(funcNode->nodes[i], type);
+    }
 }
 
 Symbol* searchIdInScopes(char* id)
