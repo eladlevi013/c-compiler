@@ -81,7 +81,9 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
         new_symbol->id = (char*)malloc(sizeof(char) * 5);
         strcpy(new_symbol->id, "main");
         new_symbol->type = (char*)malloc(sizeof(char) * 5);
-        strcpy(new_symbol->type, "VOID");
+        strcpy(new_symbol->type, "MAIN");
+        new_symbol->data = (char*)malloc(sizeof(char) * 5);
+        strcpy(new_symbol->data, "VOID");
         new_symbol->next = NULL;
         push_symbol_record_to_current_scope(new_symbol, &curr_scope);
         Scope* new_scope = (Scope*)malloc(sizeof(Scope));
@@ -94,18 +96,22 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
         Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
         new_symbol->id = root->nodes[0]->token;
         new_symbol->type = "FUNC";    
-        if(strcmp(root->nodes[2]->token, "token") == 0)
+        printf("\n%d\n",root->nodes[2]->count);
+        if(root->nodes[2]->count == 0)
         {
-            new_symbol->type = "VOID";
+            new_symbol->data = "VOID";
         }
-        new_symbol->data = root->nodes[2]->nodes[0]->token;
+        else
+        {
+            new_symbol->data = root->nodes[2]->nodes[0]->token;
+        }
         new_symbol->next = NULL;
         printf("\nThis is test:%d\n\n",checkReturnFromFunc(root->nodes[3], root->nodes[2]->nodes[0]->token));
         push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
-        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
-        push_scope(&head, new_scope);
-        curr_scope = new_scope;
+        //Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+        //new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
+        //push_scope(&head, new_scope);
+        //curr_scope = new_scope;
         
     }
     else if(!strcmp(root->token, "IF") || !strcmp(root->token, "IF-ELSE") 
