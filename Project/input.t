@@ -1,6 +1,6 @@
 function a(): void
 {
-    return 1 + 4;
+    return "muzar";
 }
 function main():void
 {
