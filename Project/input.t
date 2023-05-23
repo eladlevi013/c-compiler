@@ -1,6 +1,6 @@
-function a(): int
+function a(): void
 {
-    return 1.5 + 6;
+    return 1 + 4;
 }
 function main():void
 {

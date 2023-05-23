@@ -94,9 +94,13 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
         Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
         new_symbol->id = root->nodes[0]->token;
         new_symbol->type = "FUNC";    
+        if(strcmp(root->nodes[2]->token, "token") == 0)
+        {
+            new_symbol->type = "VOID";
+        }
         new_symbol->data = root->nodes[2]->nodes[0]->token;
         new_symbol->next = NULL;
-        printf("\n\n%d\n\n",checkReturnFromFunc(root->nodes[3],root->nodes[2]->nodes[0]->token));
+        printf("\nThis is test:%d\n\n",checkReturnFromFunc(root->nodes[3], root->nodes[2]->nodes[0]->token));
         push_symbol_record_to_current_scope(new_symbol, &curr_scope);
         Scope* new_scope = (Scope*)malloc(sizeof(Scope));
         new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
@@ -423,31 +427,27 @@ char* checkExpression(node* exp)
 }
 
 
-int checkReturnFromFunc(node* funcNode,char* type)
+int checkReturnFromFunc(node* funcNode, char* type)
 {
-    if(!strcmp(funcNode->token,"RET"))
+    if (!strcmp(funcNode->token, "RET"))
     {
         char* exp = checkExpression(funcNode->nodes[0]);
-        //printf("\nexp:%s\ntype:%s\n",exp,type);
-        printf("type: %s exp:%s, %d", type, exp, strcmp(exp,type)); 
-
-        if(strcmp(exp,type)==0)
+        if (strcmp(exp, type) == 0)
         {
-            printf("1111111111111");
             return 1;
         }
-        else
-        {
-            printf("00000000000");
-            return 0;
-        }
     }
-    
-    for (int i = 0; i < funcNode->count; i++)
+
+    int found = 0;  // Flag to track if a matching return statement is found
+
+    for (int i = 0; i < funcNode->count && !found; i++)
     {
-        checkReturnFromFunc(funcNode->nodes[i], type);
+        found = checkReturnFromFunc(funcNode->nodes[i], type);
     }
+
+    return found;
 }
+
 
 Symbol* searchIdInScopes(char* id)
 {
