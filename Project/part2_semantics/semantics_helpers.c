@@ -10,9 +10,11 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
 void pushSymbols(node* decleration);
 void pushVariablesToSymbolTable(char* type, node** vars, int size);
 void pushSymbolToTable(char* id, char* type, char* data);
-int checkReturnFromFunc(node* funcNode,char* type);
-Symbol* searchIdInScopes(char* id);
 char* checkExpression(node* exp);
+int checkReturnFromFunc(node* funcNode,char* type);
+
+Symbol* searchIdInScopes(char* id);
+Scope* makeNewScope();
 void push_scope(Scope** head, Scope* new_scope);
 void pop_scope(Scope** head);
 int push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
@@ -70,10 +72,7 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
     }
     else if(!strcmp(root->token, "CODE"))
     {
-        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
-        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
-        push_scope(&head, new_scope);
-        curr_scope = new_scope;
+        curr_scope = makeNewScope();
     }
     else if(!strcmp(root->token, "MAIN"))
     {
@@ -86,18 +85,13 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
         strcpy(new_symbol->data, "VOID");
         new_symbol->next = NULL;
         push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
-        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
-        push_scope(&head, new_scope);
-        curr_scope = new_scope;
+        curr_scope = makeNewScope();
     }
     else if(!strcmp(root->token, "FUNC"))
     {
         Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
         new_symbol->id = root->nodes[0]->token;
         new_symbol->type = "FUNC";
-        printf("\n%d\n",root->nodes[2]->count);
-        
         if(root->nodes[2]->count == 0)
         {
             new_symbol->data = "VOID";
@@ -107,23 +101,31 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             new_symbol->data = root->nodes[2]->nodes[0]->token;
         }
         new_symbol->next = NULL;
-
-        if(strcmp(new_symbol->data, "STRING") != 0)
+        if(strcmp(new_symbol->data, "STRING") == 0)
         {
             isError++;
             printf("Function [%s] cannot return type STRING\n", new_symbol->id);
         }
-
-        printf("\nThis is test:%d\n\n",checkReturnFromFunc(root->nodes[3], new_symbol->data));
+        else
+        {
+            int ans = checkReturnFromFunc(root->nodes[3], new_symbol->data);
+            printf("\n%d\n",ans);
+            if (!strcmp(new_symbol->data,"VOID") && ans == 1)
+            {
+                isError++;
+                printf ("Void function (%s) cannot return value\n",new_symbol->id);
+            }
+            else if(strcmp(new_symbol->data,"VOID") && ans == 0)
+            {
+                isError++;
+                printf ("Function (%s) return invalid value\n" ,new_symbol->id);
+            }
+        }
         push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
-        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
-        push_scope(&head, new_scope);
-        curr_scope = new_scope;
-        
+        curr_scope = makeNewScope();
     }
     else if(!strcmp(root->token, "IF") || !strcmp(root->token, "IF-ELSE") 
-         || !strcmp(root->token, "WHILE"))
+      || !strcmp(root->token, "WHILE") || !strcmp(root->token, "DO-WHILE"))
     {
         char* exp = checkExpression(root->nodes[0]);
         if(strcmp("BOOL",exp))
@@ -141,15 +143,16 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
             {
                 printf("WHILE-condition must return type BOOL\n");
             }
+            else if(!strcmp(root->token, "DO-WHILE"))
+            {
+                printf("DO-WHILE-condition must return type BOOL\n");
+            }
             
         }
     }
     else if(!strcmp(root->token, "BLOCK"))
     {
-        Scope* new_scope = (Scope*)malloc(sizeof(Scope));
-        new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
-        push_scope(&head, new_scope);
-        curr_scope = new_scope;
+        curr_scope = makeNewScope();
     }
     else
     {
@@ -440,11 +443,14 @@ char* checkExpression(node* exp)
 	}
 }
 
-
 int checkReturnFromFunc(node* funcNode, char* type)
 {
     if (!strcmp(funcNode->token, "RET"))
     {
+        if(!strcmp(type,"VOID"))//IF VOID AND HAVE RETURN STATMENTS
+        {
+            return 1;
+        }
         char* exp = checkExpression(funcNode->nodes[0]);
         if (strcmp(exp, type) == 0)
         {
@@ -466,6 +472,15 @@ int checkReturnFromFunc(node* funcNode, char* type)
 Symbol* searchIdInScopes(char* id)
 {
     return NULL;
+}
+
+Scope* makeNewScope()
+{
+    Scope* new_scope = (Scope*)malloc(sizeof(Scope));
+    new_scope->symbolTable = NULL; 
+    new_scope->nextScope = NULL;
+    push_scope(&head, new_scope);
+    return new_scope;
 }
 
 void push_scope(Scope** head, Scope* new_scope)
