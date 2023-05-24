@@ -20,29 +20,10 @@ int symbol_exists_in_scope(Symbol* symbol, Scope* head);
 void print_symbol_table(Scope* scope);
 void print_scopes(Scope* head);
 
-/*
-    How to use the stackScopes functions for noobies,
-    
-    // Scope to insert
-    Scope* new_scope = (Scope*)malloc(sizeof(Scope));
-    new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
-    push_scope(&head, new_scope);
-
-    // Creating a new symbol record
-    Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
-    new_symbol->id = "x";
-    new_symbol->type = "int";
-    new_symbol->next = NULL;
-    push_symbol_record_to_current_scope(new_symbol, &head);
-
-    // Printing the contents of all symbol tables
-    print_scopes(head);
-*/
-
 // Global Variables
-Scope* head = NULL;
-Scope* currScope = NULL;
-int isError = 0;
+Scope* head = NULL; // The head of the scopes list
+Scope* currScope = NULL; // The current scope
+int isError = 0; // The number of errors in the code
 
 void semanticAnalysis(node* root)
 {
@@ -62,9 +43,6 @@ void semanticAnalysis(node* root)
 
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
 {
-    /*
-        This function is the semantic analysis function, 
-    */
     if(root == NULL)
     {
         return;
@@ -125,6 +103,8 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
     }
 }
 
+/* given node with sons, the function will insert 
+    all of them to the curr scope symbol-table */
 void pushSymbols(node* decleration)
 {
 	for(int i = 0; i<decleration->count; i++)
