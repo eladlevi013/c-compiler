@@ -3,7 +3,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
- 
+
 // Part2 - Semantic Analysis
 void semanticAnalysis(node* root);
 void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope);
@@ -12,7 +12,7 @@ void pushVariablesToSymbolTable(char* type, node** vars, int size);
 void pushSymbolToTable(char* id, char* type, char* data);
 char* checkExpression(node* exp);
 int checkReturnFromFunc(node* funcNode,char* type);
-
+Symbol* searchForIdInPreviousScopes(char* id);
 Symbol* searchIdInScopes(char* id);
 Scope* makeNewScope();
 void push_scope(Scope** head, Scope* new_scope);
@@ -21,25 +21,6 @@ int push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
 int symbol_exists_in_scope(Symbol* symbol, Scope* head);
 void print_symbol_table(Scope* scope);
 void print_scopes(Scope* head);
-
-/*
-    How to use the stackScopes functions for noobies,
-    
-    // Scope to insert
-    Scope* new_scope = (Scope*)malloc(sizeof(Scope));
-    new_scope->symbolTable = NULL; new_scope->nextScope = NULL;
-    push_scope(&head, new_scope);
-
-    // Creating a new symbol record
-    Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
-    new_symbol->id = "x";
-    new_symbol->type = "int";
-    new_symbol->next = NULL;
-    push_symbol_record_to_current_scope(new_symbol, &head);
-
-    // Printing the contents of all symbol tables
-    print_scopes(head);
-*/
 
 // Global Variables
 Scope* head = NULL;
@@ -121,8 +102,13 @@ void semanticAnalysisRecognizeScope(node* root, Scope* curr_scope)
                 printf ("Function (%s) return invalid value\n" ,new_symbol->id);
             }
         }
+
         push_symbol_record_to_current_scope(new_symbol, &curr_scope);
         curr_scope = makeNewScope();
+        currScope = curr_scope;
+
+        // add params of the function to the new scope:
+        pushSymbols(root->nodes[1]);
     }
     else if(!strcmp(root->token, "IF") || !strcmp(root->token, "IF-ELSE") 
       || !strcmp(root->token, "WHILE") || !strcmp(root->token, "DO-WHILE"))
@@ -232,7 +218,7 @@ char* checkExpression(node* exp)
 {
     if (exp->type != NULL && !strcmp(exp->type, "ID"))
     {
-        Symbol* node = searchIdInScopes(exp->token);
+        Symbol* node = searchForIdInPreviousScopes(exp->token);
         //find the id in scope => like scope search and get the id recognize
 		if(node != NULL)
         {
@@ -443,6 +429,23 @@ char* checkExpression(node* exp)
 	}
 }
 
+Symbol* searchForIdInPreviousScopes(char* id)
+{
+    Scope* current_scope = head;
+    while (current_scope != NULL) {
+        Symbol* current_symbol = current_scope->symbolTable;
+        while (current_symbol != NULL) {
+            if (strcmp(current_symbol->id, id) == 0) {
+                return current_symbol;
+            }
+            current_symbol = current_symbol->next;
+        }
+        current_scope = current_scope->nextScope;
+    }
+
+    return NULL;
+}
+
 int checkReturnFromFunc(node* funcNode, char* type)
 {
     if (!strcmp(funcNode->token, "RET"))
@@ -533,7 +536,16 @@ int push_symbol_record_to_current_scope(Symbol* symbol, Scope** head) {
     }
 
     if (symbol_exists_in_scope(symbol, *head)==1) {
-        
+        if(!strcmp("FUNC", symbol->type))
+        {
+            printf("Re-declartion of function (%s)\n", symbol->id);
+            isError++;
+        }
+        else
+        {
+            printf("Re-declartion of variable (%s)\n", symbol->id);
+            isError++;
+        }
         return 0;
     }
 

@@ -7,6 +7,7 @@ typedef struct Symbol {
     char* id;
     char* type;
     char* data;
+    struct Symbol* args;
     struct Symbol* next;
 } Symbol;
 

@@ -1,10 +1,16 @@
-function a(): int
-{
-    return 1;
-}
 function main():void
 {
+    function aa(): int
+    {
+        var special:int;
+        return 1;
+    }
+
+
     var x:int;
-    var isItamarSllleeping=false: bool;
-    
+
+    if(x > 3)
+    {
+        return 1;
+    }
 }
