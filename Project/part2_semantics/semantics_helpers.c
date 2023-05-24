@@ -13,7 +13,6 @@ void pushSymbolToTable(char* id, char* type, char* data);
 char* checkExpression(node* exp);
 int checkReturnFromFunc(node* funcNode,char* type);
 Symbol* searchForIdInPreviousScopes(char* id);
-Symbol* searchIdInScopes(char* id);
 Scope* makeNewScope();
 void push_scope(Scope** head, Scope* new_scope);
 void pop_scope(Scope** head);
@@ -429,23 +428,6 @@ char* checkExpression(node* exp)
 	}
 }
 
-Symbol* searchForIdInPreviousScopes(char* id)
-{
-    Scope* current_scope = head;
-    while (current_scope != NULL) {
-        Symbol* current_symbol = current_scope->symbolTable;
-        while (current_symbol != NULL) {
-            if (strcmp(current_symbol->id, id) == 0) {
-                return current_symbol;
-            }
-            current_symbol = current_symbol->next;
-        }
-        current_scope = current_scope->nextScope;
-    }
-
-    return NULL;
-}
-
 int checkReturnFromFunc(node* funcNode, char* type)
 {
     if (!strcmp(funcNode->token, "RET"))
@@ -471,9 +453,20 @@ int checkReturnFromFunc(node* funcNode, char* type)
     return found;
 }
 
-
-Symbol* searchIdInScopes(char* id)
+Symbol* searchForIdInPreviousScopes(char* id)
 {
+    Scope* current_scope = head;
+    while (current_scope != NULL) {
+        Symbol* current_symbol = current_scope->symbolTable;
+        while (current_symbol != NULL) {
+            if (strcmp(current_symbol->id, id) == 0) {
+                return current_symbol;
+            }
+            current_symbol = current_symbol->next;
+        }
+        current_scope = current_scope->nextScope;
+    }
+
     return NULL;
 }
 
