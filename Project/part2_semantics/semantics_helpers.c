@@ -12,12 +12,14 @@ void push_variables_to_symbol_table(char* type, node** vars, int size);
 void push_symbol_to_symbol_table(char* id, char* type, char* data);
 char* check_expression(node* exp);
 int check_function_return_type(node* funcNode,char* type);
-Symbol* id_exists_in_previous_scopes(char* id);
+int checkFunctionCall(char* funcName, node* callArgs);
+int checkFunctionArgs(node* args, node* callArgs);
 Scope* make_new_scope();
 void push_scope(Scope** head, Scope* new_scope);
 void pop_scope(Scope** head);
-int push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
 int symbol_exists_in_scope(Symbol* symbol, Scope* head);
+Symbol* id_exists_in_previous_scopes(char* id);
+int push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
 void print_symbol_table(Scope* scope);
 void print_scopes(Scope* head);
 
@@ -26,21 +28,21 @@ Scope* head = NULL;
 Scope* currScope = NULL;
 int isError = 0;
 
-// Constants
-char* RETURN_TOKEN = "RET";
-char* VOID_TOKEN = "VOID";
-char* CODE_TOKEN = "CODE";
-char* MAIN_TOKEN = "MAIN";
-char* FUNC_TOKEN = "FUNC";
-char* IF_TOKEN = "IF";
-char* IF_ELSE_TOKEN = "IF-ELSE";
-char* WHILE_TOKEN = "WHILE";
-char* DO_WHILE_TOKEN = "DO-WHILE";
-char* BOOL_TOKEN = "BOOL";
-char* BLOCK_TOKEN = "BLOCK";
-char* VAR_TOKEN = "VAR";
-char* FUNC_CALL_TOKEN = "FUNC-CALL";
-char* STRING_TOKEN = "STRING";
+// Defines
+#define RETURN_TOKEN  "RET"
+#define VOID_TOKEN "VOID"
+#define CODE_TOKEN "CODE"
+#define MAIN_TOKEN "MAIN"
+#define FUNC_TOKEN "FUNC"
+#define IF_TOKEN "IF"
+#define IF_ELSE_TOKEN "IF-ELSE"
+#define WHILE_TOKEN "WHILE"
+#define DO_WHILE_TOKEN "DO-WHILE"
+#define BOOL_TOKEN "BOOL"
+#define BLOCK_TOKEN "BLOCK"
+#define VAR_TOKEN "VAR"
+#define FUNC_CALL_TOKEN "FUNC-CALL"
+#define STRING_TOKEN "STRING"
 
 void semantic_analysis(node* root)
 {
@@ -115,7 +117,8 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                 printf ("Function (%s) return invalid value\n" ,new_symbol->id);
             }
         }
-
+        new_symbol->args = (node*)(malloc(sizeof(node)));
+        memcpy(new_symbol->args, root->nodes[1], sizeof(node));
         push_symbol_record_to_current_scope(new_symbol, &curr_scope);
         curr_scope = make_new_scope();
         currScope = curr_scope;
@@ -161,9 +164,9 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             {
                 push_symbols(root);
             }
-            if(strcmp(root->token, FUNC_CALL_TOKEN))
+            if(!strcmp(root->token, FUNC_CALL_TOKEN))
             {
-                
+                checkFunctionCall(root->nodes[0]->token, root->nodes[1]);
             }
         }
     }
@@ -456,7 +459,58 @@ int check_function_return_type(node* funcNode, char* type)
     return found;
 }
 
-/* making new scope while inserting to scopes_list */
+int checkFunctionCall(char* funcName, node* callArgs)
+{
+    Symbol* funcSymbol = id_exists_in_previous_scopes(funcName);
+	if (funcSymbol != NULL)
+    {
+		if (checkFunctionArgs(funcSymbol->args, callArgs))
+        {
+			return 1;
+        }
+        else
+        {
+            isError++;		
+            printf ("Undeclared function (%s) with matching arguments\n",funcName);
+        }
+    }
+    else
+    {
+	    isError++;		
+        printf ("Undeclared function (%s)\n",funcName);
+    }
+    return 0; 
+}
+
+int checkFunctionArgs(node* args, node* callArgs)
+{
+	if (!strcmp(args->token,"ARGS NONE") && !strcmp(callArgs->token,"ARGS NONE"))
+    {
+		return 1;
+    }
+	int count = 0;
+	for (int i = 0;i<args->count;i++)
+    {
+		count += args->nodes[i]->nodes[0]->count;
+    }
+	if(count != callArgs->count)
+    {
+		return 0;
+    }
+	int k = 0;
+	for (int i = 0;i<args->count;i++)
+    {
+		for(int j = 0; j < args->nodes[i]->nodes[0]->count;j++)
+        {
+			if (strcmp(args->nodes[i]->token, check_expression(callArgs->nodes[k++])))
+            {
+             	return 0;
+            }
+		}
+	}
+	return 1;
+}
+
 Scope* make_new_scope()
 {
     Scope* new_scope = (Scope*)malloc(sizeof(Scope));
