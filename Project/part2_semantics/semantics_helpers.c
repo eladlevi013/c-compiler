@@ -27,20 +27,20 @@ Scope* currScope = NULL;
 int isError = 0;
 
 // Constants
-const char* RETURN_TOKEN = "RET";
-const char* VOID_TOKEN = "VOID";
-const char* CODE_TOKEN = "CODE";
-const char* MAIN_TOKEN = "MAIN";
-const char* FUNC_TOKEN = "FUNC";
-const char* IF_TOKEN = "IF";
-const char* IF_ELSE_TOKEN = "IF-ELSE";
-const char* WHILE_TOKEN = "WHILE";
-const char* DO_WHILE_TOKEN = "DO-WHILE";
-const char* BOOL_TOKEN = "BOOL";
-const char* BLOCK_TOKEN = "BLOCK";
-const char* VAR_TOKEN = "VAR";
-const char* FUNC_CALL_TOKEN = "FUNC-CALL";
-const char* STRING_TOKEN = "STRING";
+char* RETURN_TOKEN = "RET";
+char* VOID_TOKEN = "VOID";
+char* CODE_TOKEN = "CODE";
+char* MAIN_TOKEN = "MAIN";
+char* FUNC_TOKEN = "FUNC";
+char* IF_TOKEN = "IF";
+char* IF_ELSE_TOKEN = "IF-ELSE";
+char* WHILE_TOKEN = "WHILE";
+char* DO_WHILE_TOKEN = "DO-WHILE";
+char* BOOL_TOKEN = "BOOL";
+char* BLOCK_TOKEN = "BLOCK";
+char* VAR_TOKEN = "VAR";
+char* FUNC_CALL_TOKEN = "FUNC-CALL";
+char* STRING_TOKEN = "STRING";
 
 void semantic_analysis(node* root)
 {
@@ -80,7 +80,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         new_symbol->next = NULL;
         push_symbol_record_to_current_scope(new_symbol, &curr_scope);
         curr_scope = make_new_scope();
-    }`
+    }
     else if(!strcmp(root->token, FUNC_TOKEN))
     {
         Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));

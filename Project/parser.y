@@ -38,7 +38,7 @@ node *temp_node = NULL;
 s: 
     code 
     {
-        semanticAnalysis($1);
+        semantic_analysis($1);
     }
     ;
 
