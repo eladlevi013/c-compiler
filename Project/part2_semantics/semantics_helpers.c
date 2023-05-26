@@ -63,6 +63,7 @@ void semantic_analysis(node* root)
 
 void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
 {
+    int flag = 0;
     if(root == NULL)
     {
         return;
@@ -178,6 +179,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             if(!strcmp(root->token, VAR_TOKEN))
             {
                 push_symbols(root);
+                flag = 1;
             }
             if(!strcmp(root->token, FUNC_CALL_TOKEN))
             {   
@@ -244,10 +246,13 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         }
     }
 
-    // iterating over the children of the current node
-    for (int i = 0; i < root->count; i++)
+    if(!flag)
     {
-        semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
+        // iterating over the children of the current node
+        for (int i = 0; i < root->count; i++)
+        {
+            semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
+        }
     }
 }
 
@@ -270,23 +275,63 @@ void push_variables_to_symbol_table(char* type, node** vars, int size)
 {
     for(int i = 0; i < size; i++)
     {
-		if (strcmp(vars[i]->token, "="))
+        if (strcmp(vars[i]->token, "=") && !strcmp(type, "STRING"))
         {
-			push_symbol_to_symbol_table(vars[i]->token, type, NULL);
-        }
-		else
-        {
-			char* exp = check_expression(vars[i]->nodes[1]);
-			if (!strcmp(type,exp))
+			char* lenType = check_expression(vars[i]->nodes[0]->nodes[0]);
+            if(strcmp("INT", lenType))
             {
-				push_symbol_to_symbol_table(vars[i]->nodes[0]->token, type, vars[i]->nodes[1]->token);
+                isError++;
+                printf("Size of string must be type INT not %s\n",lenType);
+            }
+			else
+            {
+				push_symbol_to_symbol_table(vars[i]->token, type, NULL);
+            }
+        }
+        else if(!strcmp(vars[i]->token, "=") && !strcmp(type, "STRING"))
+        {
+            char* lenType = check_expression(vars[i]->nodes[0]->nodes[0]->nodes[0]);
+            if(strcmp("INT", lenType))
+            {
+                isError++;
+                printf("Size of string must be type INT not %s\n",lenType);
+            }
+			else
+            {
+				char* right = check_expression(vars[i]->nodes[1]);
+				if (strcmp(type,right))
+                {
+	                isError++;
+					printf("Assignment Error mismatch: can not assign %s to %s\n", right, type);
+                }
+                else
+                {
+                    push_symbol_to_symbol_table(vars[i]->nodes[0]->token, type, vars[i]->nodes[1]->token);
+                }
+            }
+        }
+        else if(!strcmp(vars[i]->token, "="))
+        {
+            char* right = check_expression(vars[i]->nodes[1]);
+            if (!strcmp(right, "NULL") && (strcmp(type, "INT*") && strcmp(type, "CHAR*") && strcmp(type, "REAL*")))
+            {
+                isError++;
+                printf("Assignment Error mismatch: can not assign %s to %s\n",right, type);
+            }
+            else if (strcmp(type,right))
+            {
+				isError++;
+				printf("Assignment Error mismatch: can not assign %s to %s\n", right, type);
             }
             else 
             {
-				isError++;
-				printf("Assignment Error mismatch: can not assign %s to %s\n", exp, type);
-			}	
-		}
+			    push_symbol_to_symbol_table(vars[i]->nodes[0]->token, type, vars[i]->nodes[1]->token);
+			}
+        }
+		else if (strcmp(vars[i]->token, "="))
+        {
+			push_symbol_to_symbol_table(vars[i]->token, type, NULL);
+        }
 	}
 }
 

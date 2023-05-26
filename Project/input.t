@@ -1,11 +1,5 @@
 
 function main():void
 {    
-    var z:bool;
-    var x:char;
-    string s[50];
-    {
-
-        s = 5;
-    }
+    var x=5:int;
 }
