@@ -247,7 +247,7 @@ lhs:
     }
     | MULTIPLY id
     {
-        $$ = makeNode("*");
+        $$ = makeNode("PTR");
         addNode(&$$,$2);
     }
     ;
@@ -550,7 +550,7 @@ expression:
     }
     | MULTIPLY expression
     { 
-        $$ = makeNode("*");
+        $$ = makeNode("PTR");
         addNode(&$$,$2);
     }
     | ADDRESS lhs {

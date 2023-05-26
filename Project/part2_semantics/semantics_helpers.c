@@ -17,8 +17,8 @@ int checkFunctionArgs(node* args, node* callArgs);
 Scope* make_new_scope();
 void push_scope(Scope** head, Scope* new_scope);
 void pop_scope(Scope** head);
-int symbol_exists_in_scope(Symbol* symbol, Scope* head);
-Symbol* id_exists_in_previous_scopes(char* id);
+int is_symbol_exists_in_scope(Symbol* symbol, Scope* head);
+Symbol* get_symbol_from_previous_scopes_by_id(char* id);
 int push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
 void print_symbol_table(Scope* scope);
 void print_scopes(Scope* head);
@@ -180,8 +180,45 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                 push_symbols(root);
             }
             if(!strcmp(root->token, FUNC_CALL_TOKEN))
-            {
+            {   
                 checkFunctionCall(root->nodes[0]->token, root->nodes[1]);
+            }
+            if(!strcmp(root->token, "="))
+            {
+                if (get_symbol_from_previous_scopes_by_id(root->nodes[0]->token)!=NULL)
+                {
+                    char *left = get_symbol_from_previous_scopes_by_id(root->nodes[0]->token)->type;
+                    char *right = check_expression(root->nodes[1]);
+                    if (!strcmp(left, "STRING"))
+                    {
+                        //checkString(statements[i], right);
+                    }
+                    else if (!strcmp(right, "NULL") && (strcmp(left, "INT*") && strcmp(left, "CHAR*") && strcmp(left, "REAL*")))
+                    {
+                        isError++;
+                        printf("Assignment Error mismatch: can not assign %s to %s\n",right, left);
+                    }
+                    else if (strcmp(right,left) && strcmp(right,"NULL")  && strcmp(right,"undefined"))
+                    {
+                        isError++;
+                        printf("Assignment Error mismatch: can not assign %s to %s\n", right, left);
+                    }
+                }
+                else if(!strcmp(root->nodes[0]->token,"PTR") && get_symbol_from_previous_scopes_by_id(root->nodes[0]->nodes[0]->token)!=NULL)
+                {
+                   char *left = check_expression(root->nodes[0]);
+	               char *right = check_expression(root->nodes[1]);
+	                if (strcmp(right,left))
+                    {
+                        isError++;
+                        printf("Assignment Error mismatch: can not assign %s to %s\n",right, left);
+                    }
+                }
+                else
+                {
+                    isError++;
+                    printf("Undeclared variable [%s]\n", root->nodes[0]->token);
+                }
             }
         }
     }
@@ -192,6 +229,8 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
     }
 }
+
+
 
 /* by given root of VAR, we'll iterate over it while calling the push_varaibles_to_symbol_table 
     that takes care of inserting all variables under data_type for example a,b,c:int; */
@@ -234,8 +273,7 @@ char* check_expression(node* exp)
 {
     if (exp->type != NULL && !strcmp(exp->type, "ID"))
     {
-        Symbol* node = id_exists_in_previous_scopes(exp->token);
-        //find the id in scope => like scope search and get the id recognize
+        Symbol* node = get_symbol_from_previous_scopes_by_id(exp->token);
 		if(node != NULL)
         {
 			if(!strcmp(node->type, "STRING") && exp->count > 0)
@@ -421,10 +459,9 @@ char* check_expression(node* exp)
 			printf("Can't perform & on [%s] - [&%s]\n",  expression,exp->nodes[0]->token);
 		}
     }
-	else if(!strcmp(exp->token,"*"))//PTR
+	else if(!strcmp(exp->token,"PTR"))
     {
-        char* expression;
-        expression = check_expression(exp->nodes[0]);
+        char* expression = check_expression(exp->nodes[0]);
         if(!strcmp(expression,"INT*"))
         {
             return "INT";
@@ -476,7 +513,7 @@ int check_function_return_type(node* funcNode, char* type)
 
 int checkFunctionCall(char* funcName, node* callArgs)
 {
-    Symbol* funcSymbol = id_exists_in_previous_scopes(funcName);
+    Symbol* funcSymbol = get_symbol_from_previous_scopes_by_id  (funcName);
 	if (funcSymbol != NULL)
     {
 		if (checkFunctionArgs(funcSymbol->args, callArgs))
@@ -566,7 +603,7 @@ void pop_scope(Scope** head)
 }
 
 /* checks whether symbol exists in given scope */
-int symbol_exists_in_scope(Symbol* symbol, Scope* head) {
+int is_symbol_exists_in_scope(Symbol* symbol, Scope* head) {
     if (head == NULL 
         || head->symbolTable == NULL) {
         return 0;
@@ -586,13 +623,14 @@ int symbol_exists_in_scope(Symbol* symbol, Scope* head) {
 }
 
 /* searcing for identifier */
-Symbol* id_exists_in_previous_scopes(char* id)
+Symbol* get_symbol_from_previous_scopes_by_id(char* id)
 {
     Scope* current_scope = head;
     while (current_scope != NULL) {
         Symbol* current_symbol = current_scope->symbolTable;
         while (current_symbol != NULL) {
-            if (strcmp(current_symbol->id, id) == 0) {
+            if (strcmp(current_symbol->id, id) == 0) 
+            {
                 return current_symbol;
             }
             current_symbol = current_symbol->next;
@@ -611,7 +649,7 @@ int push_symbol_record_to_current_scope(Symbol* symbol, Scope** head) {
     }
 
     // detecting re-declaration of identifier
-    if (symbol_exists_in_scope(symbol, *head) == 1) {
+    if (is_symbol_exists_in_scope(symbol, *head) == 1) {
         // throw error whether it is a function or a variable
         if(!strcmp("FUNC", symbol->type))
         {
