@@ -241,7 +241,7 @@ lhs:
         addNode(&lenght_node, $3);
         addNode(&$$, lenght_node);
     }
-    | id 
+    | id
     {
         $$ = $1;
     }

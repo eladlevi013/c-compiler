@@ -1,9 +1,8 @@
-
-function foo(arg-> x,y:int; arg-> z:bool): int
-{
-    return 5;
-}
 function main():void
 {
-   foo(6,true);
+    var i:int;
+    for(i=0; 10; i=i+1)
+    {
+
+    }
 }

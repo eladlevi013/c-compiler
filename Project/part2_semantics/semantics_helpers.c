@@ -38,6 +38,7 @@ int isError = 0;
 #define IF_ELSE_TOKEN "IF-ELSE"
 #define WHILE_TOKEN "WHILE"
 #define DO_WHILE_TOKEN "DO-WHILE"
+#define FOR_TOKEN "FOR"
 #define BOOL_TOKEN "BOOL"
 #define BLOCK_TOKEN "BLOCK"
 #define VAR_TOKEN "VAR"
@@ -127,9 +128,19 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         push_symbols(root->nodes[1]);
     }
     else if(!strcmp(root->token, IF_TOKEN) || !strcmp(root->token, IF_ELSE_TOKEN) 
-      || !strcmp(root->token, WHILE_TOKEN) || !strcmp(root->token, DO_WHILE_TOKEN))
+      || !strcmp(root->token, WHILE_TOKEN) || !strcmp(root->token, DO_WHILE_TOKEN)
+      || !strcmp(root->token, FOR_TOKEN))
     {
-        char* exp = check_expression(root->nodes[0]);
+        char* exp;
+        if(!strcmp(root->token, FOR_TOKEN))
+        {
+            exp = check_expression(root->nodes[1]);
+        }
+        else 
+        { 
+            exp = check_expression(root->nodes[0]);
+        }
+
         if(strcmp(BOOL_TOKEN, exp))
         {
             isError++;
@@ -148,6 +159,10 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             else if(!strcmp(root->token, DO_WHILE_TOKEN))
             {
                 printf("DO-WHILE-condition must return type BOOL\n");
+            }
+            else if(!strcmp(root->token, FOR_TOKEN))
+            {
+                printf("FOR-condition must return type BOOL\n");
             }
         }
     }
