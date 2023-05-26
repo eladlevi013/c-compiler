@@ -191,7 +191,29 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                     char *right = check_expression(root->nodes[1]);
                     if (!strcmp(left, "STRING"))
                     {
-                        //checkString(statements[i], right);
+                        printf("\nLEFT: %s\nRIGHT: %s\n",left,right);
+                        if (root->nodes[0]->count != 0 && !strcmp(root->nodes[0]->nodes[0]->token, "INDEX"))
+                        {
+                            char* indexType = check_expression(root->nodes[0]->nodes[0]->nodes[0]);
+                            if(strcmp("INT", indexType))
+                            {
+                                isError++;
+                                printf("Size of string must be type INT not %s\n",indexType);
+                            }
+                            if(strcmp(right,"CHAR"))
+                            {
+                                isError++;
+                                printf("Assignment Error mismatch: can not assign %s to CHAR(STRING[INDEX])\n", right);
+                            }
+                        }
+                        else
+                        {
+                            if(strcmp(right,"STRING"))
+                            {
+                                isError++;
+                                printf("Assignment Error mismatch: can not assign %s to %s\n", right,left);
+                            }
+                        }
                     }
                     else if (!strcmp(right, "NULL") && (strcmp(left, "INT*") && strcmp(left, "CHAR*") && strcmp(left, "REAL*")))
                     {

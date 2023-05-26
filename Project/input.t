@@ -1,18 +1,10 @@
-<<<<<<< Updated upstream
-function main():void
-{
-    var i:int;
-    for(i=0; 10; i=i+1)
-    {
-
-=======
 
 function main():void
 {    
     var z:bool;
-    var x:int*;
+    var x:char;
+    string s[50];
     {
-        y = 5;
->>>>>>> Stashed changes
+        s = "x";
     }
 }
