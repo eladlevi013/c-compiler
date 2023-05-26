@@ -5,6 +5,7 @@ function main():void
     var x:char;
     string s[50];
     {
-        s = "x";
+
+        s = 5;
     }
 }

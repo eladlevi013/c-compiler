@@ -191,7 +191,6 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                     char *right = check_expression(root->nodes[1]);
                     if (!strcmp(left, "STRING"))
                     {
-                        printf("\nLEFT: %s\nRIGHT: %s\n",left,right);
                         if (root->nodes[0]->count != 0 && !strcmp(root->nodes[0]->nodes[0]->token, "INDEX"))
                         {
                             char* indexType = check_expression(root->nodes[0]->nodes[0]->nodes[0]);
