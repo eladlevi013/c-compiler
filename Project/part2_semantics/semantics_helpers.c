@@ -559,30 +559,32 @@ int check_function_return_type(node* funcNode, char* type)
 {
     if (!strcmp(funcNode->token, RETURN_TOKEN))
     {
-        // IF VOID AND HAVE RETURN STATMENTS
-        if(!strcmp(type, VOID_TOKEN))
+        // If the expected return type is not "void" and the function has a "void" return type
+        if (!strcmp(type, VOID_TOKEN))
         {
-            return 1;
+            return 0;
         }
 
+        // Check the expression within the return statement
         char* exp = check_expression(funcNode->nodes[0]);
-        if (strcmp(exp, type) == 0)
+
+        // If the expression does not match the expected return type
+        if (strcmp(exp, type) != 0)
         {
-            return 1;
-        }
-    }
-    
-    // Flag to track if a matching return statement is found
-    int found = 0;
-    for (int i = 0; i < funcNode->count && !found; i++)
-    {
-        if(strcmp(funcNode->nodes[i]->token, "FUNC"))
-        {
-            found = check_function_return_type(funcNode->nodes[i], type);
+            return 0;
         }
     }
 
-    return found;
+    for (int i = 0; i < funcNode->count; i++)
+    {
+        // Recursively check the return types of child nodes
+        if (!check_function_return_type(funcNode->nodes[i], type))
+        {
+            return 0;
+        }
+    }
+
+    return 1;
 }
 
 int checkFunctionCall(char* funcName, node* callArgs)

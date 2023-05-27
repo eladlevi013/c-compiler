@@ -6,14 +6,11 @@ function foo(arg-> x:int;arg-> y:char) : int
     }
     if(y == 'g')
     {
-        return y;
+        return 1;
     }
-    return 3.5;
+    return 3.145;
 }
-function goo() : char*
-{
-    return "hello";
-}
+
 function main() : void
 {
     
