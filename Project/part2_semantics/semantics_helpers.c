@@ -50,7 +50,6 @@ void semantic_analysis(node* root)
     printf("Semantic Analysis:\n");
 	semantic_analysis_recognize_scope(root, head);
     print_scopes(head);
-
     if (isError)
     {
 		printf("%d Errors found\n", isError);
@@ -111,35 +110,31 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         // add params of the function to the new scope:
         push_symbols(root->nodes[1]);
 
-        if(!isError)
+        if(strcmp(new_symbol->data, STRING_TOKEN) == 0)
         {
-            if(strcmp(new_symbol->data, STRING_TOKEN) == 0)
+            isError++;
+            printf("Function [%s] cannot return type STRING\n", new_symbol->id);
+        }
+        else
+        {
+            int ans = check_function_return_type(root->nodes[3], new_symbol->data);
+            if (!strcmp(new_symbol->data, VOID_TOKEN) && ans ==0 )
             {
                 isError++;
-                printf("Function [%s] cannot return type STRING\n", new_symbol->id);
+                printf ("Void function (%s) cannot return value\n",new_symbol->id);
             }
-            else
+            else if(strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
             {
-                int ans = check_function_return_type(root->nodes[3], new_symbol->data);
-                if (!strcmp(new_symbol->data, VOID_TOKEN) && ans == 1)
-                {
-                    isError++;
-                    printf ("Void function (%s) cannot return value\n",new_symbol->id);
-                }
-                else if(strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
-                {
-                    isError++;
-                    printf ("Function (%s) return invalid value\n" ,new_symbol->id);
-                }
+                isError++;
+                printf ("Function (%s) return invalid value\n" ,new_symbol->id);
             }
         }
     }
     else if(!strcmp(root->token, IF_TOKEN) || !strcmp(root->token, IF_ELSE_TOKEN) 
-      || !strcmp(root->token, WHILE_TOKEN) || !strcmp(root->token, DO_WHILE_TOKEN)
-      || !strcmp(root->token, FOR_TOKEN))
+      || !strcmp(root->token, WHILE_TOKEN) || !strcmp(root->token, DO_WHILE_TOKEN))
     {
         char* exp;
-        if(!strcmp(root->token, FOR_TOKEN))
+        if(!strcmp(root->token, DO_WHILE_TOKEN))
         {
             exp = check_expression(root->nodes[1]);
         }
@@ -167,12 +162,29 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             {
                 printf("DO-WHILE-condition must return type BOOL\n");
             }
-            else if(!strcmp(root->token, FOR_TOKEN))
-            {
-                printf("FOR-condition must return type BOOL\n");
-            }
         }
     }
+    else if (!strcmp(root->token, FOR_TOKEN))
+    {
+		char* initType = check_expression(root->nodes[0]);
+		if(strcmp("INT" ,initType))
+        {
+			isError++;
+			printf("FOR-init must initialized with type INT\n");
+		}
+		char* expType = check_expression(root->nodes[1]);
+		if(strcmp("BOOL" ,expType))
+        {
+			isError++;
+			printf("FOR-condition must return type BOOL\n");
+		}
+		char* incType = check_expression(root->nodes[2]);
+		if(strcmp("INT" ,incType))
+        {
+			isError++;
+			printf("FOR-increment must return type INT\n");
+		}
+	}
     else if(!strcmp(root->token, BLOCK_TOKEN))
     {
         curr_scope = make_new_scope();
@@ -222,6 +234,11 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                             }
                         }
                     }
+                    else if (strcmp(left, "STRING") && root->nodes[0]->count > 0)
+                    {
+					    isError++;
+					    printf("%s can not have index\n",left);
+				    }
                     else if (!strcmp(right, "NULL") && (strcmp(left, "INT*") && strcmp(left, "CHAR*") && strcmp(left, "REAL*")))
                     {
                         isError++;
@@ -252,7 +269,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         }
     }
 
-    if(!flag && isError==0)
+    if(!flag)
     {
         // iterating over the children of the current node
         for (int i = 0; i < root->count; i++)
@@ -319,20 +336,15 @@ void push_variables_to_symbol_table(char* type, node** vars, int size)
         else if(!strcmp(vars[i]->token, "="))
         {
             char* right = check_expression(vars[i]->nodes[1]);
-            if (!strcmp(right, "NULL") && (strcmp(type, "INT*") && strcmp(type, "CHAR*") && strcmp(type, "REAL*")))
+            if ((!strcmp(right, "NULL") && (strcmp(type, "INT*") || strcmp(type, "CHAR*") || strcmp(type, "REAL*"))) || !strcmp(type,right))
             {
-                isError++;
-                printf("Assignment Error mismatch: can not assign %s to %s\n",right, type);
+                push_symbol_to_symbol_table(vars[i]->nodes[0]->token, type, vars[i]->nodes[1]->token);
             }
-            else if (strcmp(type,right))
+            else
             {
 				isError++;
 				printf("Assignment Error mismatch: can not assign %s to %s\n", right, type);
             }
-            else 
-            {
-			    push_symbol_to_symbol_table(vars[i]->nodes[0]->token, type, vars[i]->nodes[1]->token);
-			}
         }
 		else if (strcmp(vars[i]->token, "="))
         {
@@ -409,9 +421,9 @@ char* check_expression(node* exp)
         }
 		else 
         {
-            isError+=1;
+            isError++;
 			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
-		}
+        }
 	}
     else if(!strcmp(exp->token,"&&")||!strcmp(exp->token,"||"))
     {
@@ -424,7 +436,7 @@ char* check_expression(node* exp)
         }
         else 
         {
-            isError+=1;
+            isError++;
 			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
 		}
 	}
@@ -439,7 +451,7 @@ char* check_expression(node* exp)
         }
 		else
         {
-			isError+=1;
+			isError++;
 			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
 		}
 	}
@@ -478,7 +490,7 @@ char* check_expression(node* exp)
 		}
         else
         {
-            isError+=1;
+            isError++;
 			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
 		}
 	}
@@ -495,10 +507,9 @@ char* check_expression(node* exp)
 			printf("Can't perform || on [%s] - [|%s|]\n",  expression,exp->nodes[0]->token);
 		}
 	}
-    else if(!strcmp(exp->token,"NOT"))
+    else if(!strcmp(exp->token,"!"))
     {
-        char* expression;
-        expression = check_expression(exp->nodes[0]);
+        char* expression = check_expression(exp->nodes[0]);
         if(!strcmp(expression,"BOOL"))
         {
             return "BOOL";
@@ -523,7 +534,7 @@ char* check_expression(node* exp)
 		else if(!strcmp(expression,"REAL"))
         {
             return "REAL*";
-        }//ADDDDDD STRING[INDEX]
+        }
 		else
         {
 			isError++;
@@ -551,6 +562,32 @@ char* check_expression(node* exp)
 			printf("[%s] is not pointer\n",expression);
 		}
 	}
+    else if (!strcmp(exp->token, "FUNC-CALL"))
+    {
+		if(checkFunctionCall(exp->nodes[0]->token, exp->nodes[1]))
+        {
+			Symbol* funcSymbol = get_symbol_from_previous_scopes_by_id(exp->nodes[0]->token);
+			return funcSymbol->data;
+		}
+	}
+    else if(!strcmp(exp->token, "="))
+	{
+        if (get_symbol_from_previous_scopes_by_id(exp->nodes[0]->token)!=NULL)
+        {
+            char *left = get_symbol_from_previous_scopes_by_id(exp->nodes[0]->token)->type;
+            char *right = check_expression(exp->nodes[1]);
+            if (strcmp(right,left) && strcmp(right,"NULL"))
+            {
+                isError++;
+                printf("Assignment Error mismatch: cannot assign %s to %s\n", right, left);
+            }
+            else
+            {
+                return left;
+            }
+		}
+    }
+    return "NULL";
 }
 
 /* checking whether function return type, matching its return statement
@@ -559,7 +596,6 @@ int check_function_return_type(node* funcNode, char* type)
 {
     if (!strcmp(funcNode->token, RETURN_TOKEN))
     {
-        // If the expected return type is not "void" and the function has a "void" return type
         if (!strcmp(type, VOID_TOKEN))
         {
             return 0;
@@ -589,7 +625,7 @@ int check_function_return_type(node* funcNode, char* type)
 
 int checkFunctionCall(char* funcName, node* callArgs)
 {
-    Symbol* funcSymbol = get_symbol_from_previous_scopes_by_id  (funcName);
+    Symbol* funcSymbol = get_symbol_from_previous_scopes_by_id(funcName);
 	if (funcSymbol != NULL)
     {
 		if (checkFunctionArgs(funcSymbol->args, callArgs))
