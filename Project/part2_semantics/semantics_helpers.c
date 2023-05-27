@@ -3,6 +3,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include "../part3_3ac/tac_helpers.c"
 
 // Part2 - Semantic Analysis
 void semantic_analysis(node* root);
@@ -58,6 +59,7 @@ void semantic_analysis(node* root)
 	else
     {
 		printTree(root, 0,0);
+        tac_gen(root);
     }
 }
 

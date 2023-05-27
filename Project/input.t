@@ -8,7 +8,7 @@ function foo(arg-> x:int;arg-> y:char) : int
     {
         return 1;
     }
-    return 3.145;
+    return 3;
 }
 
 function main() : void
