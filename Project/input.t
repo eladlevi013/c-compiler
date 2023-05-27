@@ -1,21 +1,20 @@
-function foo() : int
+function foo(arg-> x:int;arg-> y:char) : int
 {
-    function goo(arg-> x,y:int) : void
+    if(x>5)
     {
-        x=x+y;
+        return x;
     }
-    function goo(arg-> c:char): char
+    if(y == 'g')
     {
-        c = 5;
-        return c;
+        return y;
     }
-    return 1;
+    return 3.5;
 }
-function foo() : real
+function goo() : char*
 {
-    return 3.14;
+    return "hello";
 }
-function main(): void
+function main() : void
 {
-
+    
 }

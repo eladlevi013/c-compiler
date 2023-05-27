@@ -511,8 +511,7 @@ char* check_expression(node* exp)
 	}
     else if (!strcmp(exp->token,"&"))
     {
-		char* expression;
-        expression = check_expression(exp->nodes[0]);
+        char* expression = check_expression(exp->nodes[0]);
 		if(!strcmp(expression,"INT"))
         {
             return "INT*";
