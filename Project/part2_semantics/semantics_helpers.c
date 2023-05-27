@@ -90,6 +90,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
         new_symbol->id = root->nodes[0]->token;
         new_symbol->type = FUNC_TOKEN;
+        
         if(root->nodes[2]->count == 0)
         {
             new_symbol->data = VOID_TOKEN;
@@ -98,6 +99,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         {
             new_symbol->data = root->nodes[2]->nodes[0]->token;
         }
+
         new_symbol->next = NULL;
         if(strcmp(new_symbol->data, STRING_TOKEN) == 0)
         {
@@ -571,7 +573,10 @@ int check_function_return_type(node* funcNode, char* type)
     int found = 0;
     for (int i = 0; i < funcNode->count && !found; i++)
     {
-        found = check_function_return_type(funcNode->nodes[i], type);
+        if(strcmp(funcNode->nodes[i]->token, "FUNC"))
+        {
+            found = check_function_return_type(funcNode->nodes[i], type);
+        }
     }
 
     return found;
