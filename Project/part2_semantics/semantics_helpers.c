@@ -101,34 +101,38 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         }
 
         new_symbol->next = NULL;
-        if(strcmp(new_symbol->data, STRING_TOKEN) == 0)
-        {
-            isError++;
-            printf("Function [%s] cannot return type STRING\n", new_symbol->id);
-        }
-        else
-        {
-            int ans = check_function_return_type(root->nodes[3], new_symbol->data);
-            printf("\n%d\n",ans);
-            if (!strcmp(new_symbol->data, VOID_TOKEN) && ans == 1)
-            {
-                isError++;
-                printf ("Void function (%s) cannot return value\n",new_symbol->id);
-            }
-            else if(strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
-            {
-                isError++;
-                printf ("Function (%s) return invalid value\n" ,new_symbol->id);
-            }
-        }
         new_symbol->args = (node*)(malloc(sizeof(node)));
         memcpy(new_symbol->args, root->nodes[1], sizeof(node));
         push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+       
         curr_scope = make_new_scope();
         currScope = curr_scope;
 
         // add params of the function to the new scope:
         push_symbols(root->nodes[1]);
+
+        if(!isError)
+        {
+            if(strcmp(new_symbol->data, STRING_TOKEN) == 0)
+            {
+                isError++;
+                printf("Function [%s] cannot return type STRING\n", new_symbol->id);
+            }
+            else
+            {
+                int ans = check_function_return_type(root->nodes[3], new_symbol->data);
+                if (!strcmp(new_symbol->data, VOID_TOKEN) && ans == 1)
+                {
+                    isError++;
+                    printf ("Void function (%s) cannot return value\n",new_symbol->id);
+                }
+                else if(strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
+                {
+                    isError++;
+                    printf ("Function (%s) return invalid value\n" ,new_symbol->id);
+                }
+            }
+        }
     }
     else if(!strcmp(root->token, IF_TOKEN) || !strcmp(root->token, IF_ELSE_TOKEN) 
       || !strcmp(root->token, WHILE_TOKEN) || !strcmp(root->token, DO_WHILE_TOKEN)
@@ -248,7 +252,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         }
     }
 
-    if(!flag)
+    if(!flag && isError==0)
     {
         // iterating over the children of the current node
         for (int i = 0; i < root->count; i++)
@@ -697,9 +701,11 @@ int is_symbol_exists_in_scope(Symbol* symbol, Scope* head) {
 Symbol* get_symbol_from_previous_scopes_by_id(char* id)
 {
     Scope* current_scope = head;
-    while (current_scope != NULL) {
+    while (current_scope != NULL) 
+    {
         Symbol* current_symbol = current_scope->symbolTable;
-        while (current_symbol != NULL) {
+        while (current_symbol != NULL) 
+        {
             if (strcmp(current_symbol->id, id) == 0) 
             {
                 return current_symbol;
@@ -724,13 +730,13 @@ int push_symbol_record_to_current_scope(Symbol* symbol, Scope** head) {
         // throw error whether it is a function or a variable
         if(!strcmp("FUNC", symbol->type))
         {
-            printf("Re-declartion of function (%s)\n", symbol->id);
             isError++;
+            printf("Re-declartion of function (%s)\n", symbol->id);
         }
         else
         {
-            printf("Re-declartion of variable (%s)\n", symbol->id);
             isError++;
+            printf("Re-declartion of variable (%s)\n", symbol->id);
         }
 
         return 0;
