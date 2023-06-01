@@ -85,7 +85,6 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
     }
     else if(!strcmp(root->token, FUNC_TOKEN))
     {
-       avoid_recursive_check_flag = 1;
         Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
         new_symbol->id = root->nodes[0]->token;
         new_symbol->type = FUNC_TOKEN;
@@ -132,7 +131,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             new_symbol->args = (node*)(malloc(sizeof(node)));
             memcpy(new_symbol->args, root->nodes[1], sizeof(node));
             push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-        
+
             curr_scope = make_new_scope();
             currScope = curr_scope;
 
@@ -146,6 +145,9 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             }
             else
             {
+                                   avoid_recursive_check_flag = 1;
+
+                // iterating over the children of the current node
                 for (int i = 0; i < root->count; i++)
                 {
                     semantic_analysis_recognize_scope(root->nodes[i], curr_scope);

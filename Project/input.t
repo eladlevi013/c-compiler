@@ -1,19 +1,13 @@
-function foo():int{
-	function goo(arg-> x, y:int):void{
-		x = x + y;
+function foo(arg-> y:char):int{
+	function goo():char{ 
+		return 'c';
 	}
-
-	function goo1(arg-> c:char):char{
-    c = 'f';
-		return c;
-	}
-
 	return 1;
 }
 
-function foo1():real
-{
-  return 3.141;
+function main():void{
+	foo();
+	foo('c');
+	goo();
+	foo1();
 }
-
-function main():void{}
