@@ -12,7 +12,7 @@ void push_symbols(node* decleration);
 void push_variables_to_symbol_table(char* type, node** vars, int size);
 void push_symbol_to_symbol_table(char* id, char* type, char* data);
 char* check_expression(node* exp);
-int check_function_return_type(node* funcNode,char* type);
+int check_function_return_type(node* funcNode,char* type, int* return_statement_found_flag);
 int checkFunctionCall(char* funcName, node* callArgs);
 int checkFunctionArgs(node* args, node* callArgs);
 Scope* make_new_scope();
@@ -129,17 +129,25 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             {
                 semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
             }
-            int ans = check_function_return_type(root->nodes[3], new_symbol->data);
-            printf("ans: %d",ans);
-            if (!strcmp(new_symbol->data, VOID_TOKEN) && ans ==0 )
+
+            int return_statement_found_flag = 0;
+            int ans = check_function_return_type(root->nodes[3], new_symbol->data, &return_statement_found_flag);
+            
+            // we haven't found a return statement, and its not void
+            if(!return_statement_found_flag && strcmp(new_symbol->data, VOID_TOKEN))
             {
                 isError++;
-                printf ("Void function (%s) cannot return value\n",new_symbol->id);
+                printf("Function (%s) must return value\n",new_symbol->id);
+            }
+            else if (!strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
+            {
+                isError++;
+                printf ("Void function (%s) cannot return value\n", new_symbol->id);
             }
             else if(strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
             {
                 isError++;
-                printf ("Function (%s) return invalid value\n" ,new_symbol->id);
+                printf ("Function (%s) return invalid value\n" , new_symbol->id);
             }
         }
 
@@ -613,10 +621,13 @@ char* check_expression(node* exp)
 
 /* checking whether function return type, matching its return statement
     while returning 1 if its valid, and 0 otherwise */
-int check_function_return_type(node* funcNode, char* type)
+int check_function_return_type(node* funcNode, char* type, int* return_statement_found_flag)
 {
+    // While checking the return type of a function
     if (!strcmp(funcNode->token, RETURN_TOKEN))
     {
+        *return_statement_found_flag = 1;
+
         if (!strcmp(type, VOID_TOKEN))
         {
             return 0;
@@ -635,7 +646,7 @@ int check_function_return_type(node* funcNode, char* type)
     for (int i = 0; i < funcNode->count; i++)
     {
         // Recursively check the return types of child nodes
-        if (!check_function_return_type(funcNode->nodes[i], type))
+        if (!check_function_return_type(funcNode->nodes[i], type, return_statement_found_flag))
         {
             return 0;
         }

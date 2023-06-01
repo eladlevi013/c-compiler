@@ -1,7 +1,7 @@
-function goo() : int
+function test(): void
 {
-    return 5;
 }
-function main(): void
+
+function main():void
 {
 }
