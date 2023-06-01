@@ -1,14 +1,5 @@
-function f(): void
+function foo1(arg-> z:int):int
 {
-  f();
-}
-
-function main():void
-{
-  main();
-}
-
-function g(): void
-{
-  
+  var x:int;
+  return 0;
 }

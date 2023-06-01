@@ -50,6 +50,13 @@ void semantic_analysis(node* root)
 {
     printf("Semantic Analysis:\n");
 	semantic_analysis_recognize_scope(root, head);
+    
+    if(main_defined_flag == 0)
+    {
+        isError++;
+        printf("Code should have one main\n");
+    }
+
     print_scopes(head);
     if (isError)
     {
