@@ -65,7 +65,7 @@ void semantic_analysis(node* root)
 void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
 {
     int new_scope_created_flag = 0;
-    int flag = 0;
+    int avoid_recursive_check_flag = 0;
     if(root == NULL)
     {
         return;
@@ -93,6 +93,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
     }
     else if(!strcmp(root->token, FUNC_TOKEN))
     {
+       avoid_recursive_check_flag = 1;
         Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
         new_symbol->id = root->nodes[0]->token;
         new_symbol->type = FUNC_TOKEN;
@@ -124,7 +125,12 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         }
         else
         {
+            for (int i = 0; i < root->count; i++)
+            {
+                semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
+            }
             int ans = check_function_return_type(root->nodes[3], new_symbol->data);
+            printf("ans: %d",ans);
             if (!strcmp(new_symbol->data, VOID_TOKEN) && ans ==0 )
             {
                 isError++;
@@ -208,7 +214,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             if(!strcmp(root->token, VAR_TOKEN))
             {
                 push_symbols(root);
-                flag = 1;
+               avoid_recursive_check_flag = 1;
             }
             if(!strcmp(root->token, FUNC_CALL_TOKEN))
             {   
@@ -280,7 +286,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         }
     }
 
-    if(!flag)
+    if(!avoid_recursive_check_flag)
     {
         // iterating over the children of the current node
         for (int i = 0; i < root->count; i++)
