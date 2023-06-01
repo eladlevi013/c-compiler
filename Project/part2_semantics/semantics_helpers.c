@@ -145,8 +145,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             }
             else
             {
-                                   avoid_recursive_check_flag = 1;
-
+                avoid_recursive_check_flag = 1;
                 // iterating over the children of the current node
                 for (int i = 0; i < root->count; i++)
                 {
@@ -173,7 +172,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                     printf ("Function (%s) return invalid value\n" , new_symbol->id);
                 }
             }
-            new_scope_created_flag = 1;
+            pop_scope(&head);
         } 
     }
     else if(!strcmp(root->token, IF_TOKEN) || !strcmp(root->token, IF_ELSE_TOKEN) 
