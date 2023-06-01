@@ -92,7 +92,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             else 
             {
                 isError++;
-                printf("Multiple main functions defined\n");
+                printf("Code should have only one main\n");
             }
 
             // if its void
@@ -106,7 +106,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             if(root->nodes[1]->count != 0)
             {
                 isError++;
-                printf("Main function cannot have arguments\n");
+                printf("Main function can't have arguments\n");
             }
         }
 
