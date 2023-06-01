@@ -135,7 +135,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             if(strcmp(new_symbol->data, STRING_TOKEN) == 0)
             {
                 isError++;
-                printf("Function [%s] cannot return type STRING\n", new_symbol->id);
+                printf("Function [%s] can't return type STRING\n", new_symbol->id);
             }
             else
             {
@@ -156,7 +156,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                 else if (!strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
                 {
                     isError++;
-                    printf ("Void function (%s) cannot return value\n", new_symbol->id);
+                    printf ("Void function (%s) can't return value\n", new_symbol->id);
                 }
                 else if(strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
                 {
@@ -261,7 +261,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                             if(strcmp(right,"CHAR"))
                             {
                                 isError++;
-                                printf("Assignment Error mismatch: can not assign %s to CHAR(STRING[INDEX])\n", right);
+                                printf("Assignment Error mismatch: can't assign %s to CHAR(STRING[INDEX])\n", right);
                             }
                         }
                         else
@@ -269,24 +269,24 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                             if(strcmp(right,"STRING"))
                             {
                                 isError++;
-                                printf("Assignment Error mismatch: can not assign %s to %s\n", right,left);
+                                printf("Assignment Error mismatch: can't assign %s to %s\n", right,left);
                             }
                         }
                     }
                     else if (strcmp(left, "STRING") && root->nodes[0]->count > 0)
                     {
 					    isError++;
-					    printf("%s can not have index\n",left);
+					    printf("%s can't have index\n",left);
 				    }
                     else if (!strcmp(right, "NULL") && (strcmp(left, "INT*") && strcmp(left, "CHAR*") && strcmp(left, "REAL*")))
                     {
                         isError++;
-                        printf("Assignment Error mismatch: can not assign %s to %s\n",right, left);
+                        printf("Assignment Error mismatch: can't assign %s to %s\n",right, left);
                     }
                     else if (strcmp(right,left) && strcmp(right,"NULL")  && strcmp(right,"undefined"))
                     {
                         isError++;
-                        printf("Assignment Error mismatch: can not assign %s to %s\n", right, left);
+                        printf("Assignment Error mismatch: can't assign %s to %s\n", right, left);
                     }
                 }
                 else if(!strcmp(root->nodes[0]->token,"PTR") && get_symbol_from_previous_scopes_by_id(root->nodes[0]->nodes[0]->token)!=NULL)
@@ -296,7 +296,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
 	                if (strcmp(right,left))
                     {
                         isError++;
-                        printf("Assignment Error mismatch: can not assign %s to %s\n",right, left);
+                        printf("Assignment Error mismatch: can't assign %s to %s\n",right, left);
                     }
                 }
                 else
@@ -368,7 +368,7 @@ void push_variables_to_symbol_table(char* type, node** vars, int size)
 				if (strcmp(type,right))
                 {
 	                isError++;
-					printf("Assignment Error mismatch: can not assign %s to %s\n", right, type);
+					printf("Assignment Error mismatch: can't assign %s to %s\n", right, type);
                 }
                 else
                 {
@@ -386,7 +386,7 @@ void push_variables_to_symbol_table(char* type, node** vars, int size)
             else
             {
 				isError++;
-				printf("Assignment Error mismatch: can not assign %s to %s\n", right, type);
+				printf("Assignment Error mismatch: can't assign %s to %s\n", right, type);
             }
         }
 		else if (strcmp(vars[i]->token, "="))
@@ -622,7 +622,7 @@ char* check_expression(node* exp)
             if (strcmp(right,left) && strcmp(right,"NULL"))
             {
                 isError++;
-                printf("Assignment Error mismatch: cannot assign %s to %s\n", right, left);
+                printf("Assignment Error mismatch: can't assign %s to %s\n", right, left);
             }
             else
             {
