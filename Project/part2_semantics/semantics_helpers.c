@@ -288,6 +288,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
         }
 
+        // popping scope if new scope was created
         if(new_scope_created_flag == 1)
         {
             pop_scope(&head);

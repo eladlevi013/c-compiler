@@ -1,12 +1,5 @@
-function goo() : int*
+function main():void
 {
-    var x:int*;
-    *x = 5;
-    return x;
-}
-
-function main(): void
-{
-    var ptr:int*;
-    ptr = goo();
+  var a:int;
+  var b=a + 1 + 2:int;
 }
