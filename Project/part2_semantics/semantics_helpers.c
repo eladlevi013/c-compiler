@@ -667,7 +667,8 @@ int check_function_return_type(node* funcNode, char* type, int* return_statement
     for (int i = 0; i < funcNode->count; i++)
     {
         // Recursively check the return types of child nodes
-        if (!check_function_return_type(funcNode->nodes[i], type, return_statement_found_flag))
+        if (strcmp(funcNode->nodes[i]->token, FUNC_TOKEN) &&
+            !check_function_return_type(funcNode->nodes[i], type, return_statement_found_flag))
         {
             return 0;
         }
