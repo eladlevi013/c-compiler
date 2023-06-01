@@ -64,6 +64,7 @@ void semantic_analysis(node* root)
 
 void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
 {
+    int new_scope_created_flag = 0;
     int flag = 0;
     if(root == NULL)
     {
@@ -72,6 +73,8 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
     else if(!strcmp(root->token, CODE_TOKEN))
     {
         curr_scope = make_new_scope();
+
+        new_scope_created_flag = 1;
     }
     else if(!strcmp(root->token, MAIN_TOKEN))
     {
@@ -85,6 +88,8 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         new_symbol->next = NULL;
         push_symbol_record_to_current_scope(new_symbol, &curr_scope);
         curr_scope = make_new_scope();
+        
+        new_scope_created_flag = 1;
     }
     else if(!strcmp(root->token, FUNC_TOKEN))
     {
@@ -131,6 +136,8 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                 printf ("Function (%s) return invalid value\n" ,new_symbol->id);
             }
         }
+
+        new_scope_created_flag = 1;
     }
     else if(!strcmp(root->token, IF_TOKEN) || !strcmp(root->token, IF_ELSE_TOKEN) 
       || !strcmp(root->token, WHILE_TOKEN) || !strcmp(root->token, DO_WHILE_TOKEN))
@@ -190,6 +197,8 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
     else if(!strcmp(root->token, BLOCK_TOKEN))
     {
         curr_scope = make_new_scope();
+
+        new_scope_created_flag = 1;
     }
     else
     {
@@ -278,10 +287,13 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         {
             semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
         }
+
+        if(new_scope_created_flag == 1)
+        {
+            pop_scope(&head);
+        }
     }
 }
-
-
 
 /* by given root of VAR, we'll iterate over it while calling the push_varaibles_to_symbol_table 
     that takes care of inserting all variables under data_type for example a,b,c:int; */
@@ -711,7 +723,6 @@ void pop_scope(Scope** head)
     {
         Scope* temp = *head;
         *head = (*head)->nextScope;
-        free(temp);
         return;
     }
 }

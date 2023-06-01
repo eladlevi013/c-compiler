@@ -1,14 +1,12 @@
-function a() : void
+function goo() : int*
 {
-    function b() : void
-    {
-    }
+    var x:int*;
+    *x = 5;
+    return x;
 }
 
-function c() : void
+function main(): void
 {
-}
-
-function main() : void
-{
+    var ptr:int*;
+    ptr = goo();
 }
