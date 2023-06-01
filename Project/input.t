@@ -1,13 +1,14 @@
-function foo(arg-> y:char) : void
+function a() : void
 {
-    var x=5:int;
+    function b() : void
+    {
+    }
+}
+
+function c() : void
+{
 }
 
 function main() : void
 {
-    goo();
-    if(5>3)
-    {
-        var y=x:int;
-    }
 }
