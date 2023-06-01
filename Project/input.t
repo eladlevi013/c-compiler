@@ -1,16 +1,12 @@
-function foo(arg-> y:char):int{
-	function goo():char{ 
-		return 'c';
-	}
-	goo();
-	return 1;
-}
-
-function main():void{
-	/*
-	foo();
-	foo('c');
-	goo();
-	foo1();
-	*/
+function main():void
+{
+  var a:int;
+  var b=5:int;
+  if(5>4)
+  {
+    a=5;  
+    b=7;
+  }
+  else
+  
 }
