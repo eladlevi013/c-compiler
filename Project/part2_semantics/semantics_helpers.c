@@ -28,12 +28,12 @@ void print_scopes(Scope* head);
 Scope* head = NULL;
 Scope* currScope = NULL;
 int isError = 0;
+int main_defined_flag = 0;
 
 // Defines
 #define RETURN_TOKEN  "RET"
 #define VOID_TOKEN "VOID"
 #define CODE_TOKEN "CODE"
-#define MAIN_TOKEN "MAIN"
 #define FUNC_TOKEN "FUNC"
 #define IF_TOKEN "IF"
 #define IF_ELSE_TOKEN "IF-ELSE"
@@ -76,21 +76,6 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
 
         new_scope_created_flag = 1;
     }
-    else if(!strcmp(root->token, MAIN_TOKEN))
-    {
-        Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
-        new_symbol->id = (char*)malloc(sizeof(char) * 5);
-        strcpy(new_symbol->id, "main");
-        new_symbol->type = (char*)malloc(sizeof(char) * 5);
-        strcpy(new_symbol->type, MAIN_TOKEN);
-        new_symbol->data = (char*)malloc(sizeof(char) * 5);
-        strcpy(new_symbol->data, VOID_TOKEN);
-        new_symbol->next = NULL;
-        push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-        curr_scope = make_new_scope();
-        
-        new_scope_created_flag = 1;
-    }
     else if(!strcmp(root->token, FUNC_TOKEN))
     {
        avoid_recursive_check_flag = 1;
@@ -98,60 +83,89 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         new_symbol->id = root->nodes[0]->token;
         new_symbol->type = FUNC_TOKEN;
         
-        if(root->nodes[2]->count == 0)
+        if(!strcmp(new_symbol->id, "main"))
         {
+            if(main_defined_flag == 0)
+            {
+                main_defined_flag = 1;
+            }
+            else 
+            {
+                isError++;
+                printf("Multiple main functions defined\n");
+            }
+
+            // if its void
+            if(root->nodes[2]->count != 0)
+            {
+                isError++;
+                printf("Main type must be void\n");
+            }
+
+            // if it has arguments
+            if(root->nodes[1]->count != 0)
+            {
+                isError++;
+                printf("Main function cannot have arguments\n");
+            }
+        }
+
+        if(!isError)
+        {
+            if(root->nodes[2]->count == 0)
+            {
             new_symbol->data = VOID_TOKEN;
-        }
-        else
-        {
-            new_symbol->data = root->nodes[2]->nodes[0]->token;
-        }
-
-        new_symbol->next = NULL;
-        new_symbol->args = (node*)(malloc(sizeof(node)));
-        memcpy(new_symbol->args, root->nodes[1], sizeof(node));
-        push_symbol_record_to_current_scope(new_symbol, &curr_scope);
-       
-        curr_scope = make_new_scope();
-        currScope = curr_scope;
-
-        // add params of the function to the new scope:
-        push_symbols(root->nodes[1]);
-
-        if(strcmp(new_symbol->data, STRING_TOKEN) == 0)
-        {
-            isError++;
-            printf("Function [%s] cannot return type STRING\n", new_symbol->id);
-        }
-        else
-        {
-            for (int i = 0; i < root->count; i++)
+            }
+            else
             {
-                semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
+                new_symbol->data = root->nodes[2]->nodes[0]->token;
             }
 
-            int return_statement_found_flag = 0;
-            int ans = check_function_return_type(root->nodes[3], new_symbol->data, &return_statement_found_flag);
-            
-            // we haven't found a return statement, and its not void
-            if(!return_statement_found_flag && strcmp(new_symbol->data, VOID_TOKEN))
+            new_symbol->next = NULL;
+            new_symbol->args = (node*)(malloc(sizeof(node)));
+            memcpy(new_symbol->args, root->nodes[1], sizeof(node));
+            push_symbol_record_to_current_scope(new_symbol, &curr_scope);
+        
+            curr_scope = make_new_scope();
+            currScope = curr_scope;
+
+            // add params of the function to the new scope:
+            push_symbols(root->nodes[1]);
+
+            if(strcmp(new_symbol->data, STRING_TOKEN) == 0)
             {
                 isError++;
-                printf("Function (%s) must return value\n",new_symbol->id);
+                printf("Function [%s] cannot return type STRING\n", new_symbol->id);
             }
-            else if (!strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
+            else
             {
-                isError++;
-                printf ("Void function (%s) cannot return value\n", new_symbol->id);
-            }
-            else if(strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
-            {
-                isError++;
-                printf ("Function (%s) return invalid value\n" , new_symbol->id);
-            }
-        }
+                for (int i = 0; i < root->count; i++)
+                {
+                    semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
+                }
 
-        new_scope_created_flag = 1;
+                int return_statement_found_flag = 0;
+                int ans = check_function_return_type(root->nodes[3], new_symbol->data, &return_statement_found_flag);
+                
+                // we haven't found a return statement, and its not void
+                if(!return_statement_found_flag && strcmp(new_symbol->data, VOID_TOKEN))
+                {
+                    isError++;
+                    printf("Function (%s) must return value\n",new_symbol->id);
+                }
+                else if (!strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
+                {
+                    isError++;
+                    printf ("Void function (%s) cannot return value\n", new_symbol->id);
+                }
+                else if(strcmp(new_symbol->data, VOID_TOKEN) && ans == 0)
+                {
+                    isError++;
+                    printf ("Function (%s) return invalid value\n" , new_symbol->id);
+                }
+            }
+            new_scope_created_flag = 1;
+        } 
     }
     else if(!strcmp(root->token, IF_TOKEN) || !strcmp(root->token, IF_ELSE_TOKEN) 
       || !strcmp(root->token, WHILE_TOKEN) || !strcmp(root->token, DO_WHILE_TOKEN))

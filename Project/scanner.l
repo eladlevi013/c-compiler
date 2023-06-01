@@ -1,6 +1,5 @@
 %option yylineno
 %%
-main { return MAIN; }
 bool { return BOOL; }
 char { return CHAR; }
 int { return INT; }
