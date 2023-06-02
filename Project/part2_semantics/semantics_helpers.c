@@ -172,7 +172,8 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                     printf ("Function (%s) return invalid value\n" , new_symbol->id);
                 }
             }
-            pop_scope(&head);
+
+            new_scope_created_flag = 1;
         } 
     }
     else if(!strcmp(root->token, IF_TOKEN) || !strcmp(root->token, IF_ELSE_TOKEN) 
@@ -323,12 +324,12 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         {
             semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
         }
+    }
 
-        // popping scope if new scope was created
-        if(new_scope_created_flag == 1)
-        {
-            pop_scope(&head);
-        }
+    // popping scope if new scope was created
+    if(new_scope_created_flag == 1)
+    {
+        pop_scope(&head);
     }
 }
 
