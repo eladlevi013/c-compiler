@@ -172,7 +172,8 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                     printf ("Function (%s) return invalid value\n" , new_symbol->id);
                 }
             }
-            pop_scope(&head);
+
+            new_scope_created_flag = 1;
         } 
     }
     else if(!strcmp(root->token, IF_TOKEN) || !strcmp(root->token, IF_ELSE_TOKEN) 
@@ -211,6 +212,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
     }
     else if (!strcmp(root->token, FOR_TOKEN))
     {
+        avoid_recursive_check_flag = 1;
 		char* initType = check_expression(root->nodes[0]);
 		if(strcmp("INT" ,initType))
         {
@@ -229,6 +231,9 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
 			isError++;
 			printf("FOR-increment must return type INT\n");
 		}
+        // preform FOR data child
+        semantic_analysis_recognize_scope(root->nodes[3], curr_scope);
+
 	}
     else if(!strcmp(root->token, BLOCK_TOKEN))
     {
@@ -323,12 +328,12 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         {
             semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
         }
+    }
 
-        // popping scope if new scope was created
-        if(new_scope_created_flag == 1)
-        {
-            pop_scope(&head);
-        }
+    // popping scope if new scope was created
+    if(new_scope_created_flag == 1)
+    {
+        pop_scope(&head);
     }
 }
 
