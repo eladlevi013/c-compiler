@@ -51,13 +51,19 @@ void semantic_analysis(node* root)
     printf("Semantic Analysis:\n");
 	semantic_analysis_recognize_scope(root, head);
     
+    /* checking whether main exists - can be done 
+        only after recognizing all scopes */
     if(main_defined_flag == 0)
     {
         isError++;
         printf("Code should have one main\n");
     }
 
+    /* should be empty - we are popping all 
+        scopes while checking the code */
     print_scopes(head);
+    
+    // if code valid - print tree and 3ac
     if (isError)
     {
 		printf("%d Errors found\n", isError);
@@ -71,8 +77,10 @@ void semantic_analysis(node* root)
 
 void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
 {
+    // flags
     int new_scope_created_flag = 0;
     int avoid_recursive_check_flag = 0;
+
     if(root == NULL)
     {
         return;
@@ -80,17 +88,19 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
     else if(!strcmp(root->token, CODE_TOKEN))
     {
         curr_scope = make_new_scope();
-
         new_scope_created_flag = 1;
     }
     else if(!strcmp(root->token, FUNC_TOKEN))
     {
+        // creating new function symbol record 
         Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
         new_symbol->id = root->nodes[0]->token;
         new_symbol->type = FUNC_TOKEN;
-        
+
+        // case for main function        
         if(!strcmp(new_symbol->id, "main"))
         {
+            // checking whether main already exists
             if(main_defined_flag == 0)
             {
                 main_defined_flag = 1;
@@ -101,14 +111,13 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                 printf("Code should have only one main\n");
             }
 
-            // if its void
+            // main function not void
             if(root->nodes[2]->count != 0)
             {
                 isError++;
                 printf("Main type must be void\n");
             }
-
-            // if it has arguments
+            // main with arguments
             if(root->nodes[1]->count != 0)
             {
                 isError++;
