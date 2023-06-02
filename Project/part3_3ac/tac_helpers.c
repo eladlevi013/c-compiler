@@ -6,12 +6,57 @@ void tac_gen(node* root) {
     if (root == NULL)
         return;
 
-    if (strcmp(root->token, "FUNCTION") == 0) {
+    if (strcmp(root->token, "FUNC") == 0) {
         printf("%s:\n", root->nodes[0]->token);  // Print the function name
         printf("BeginFunc\n");
-        tac_gen(root->nodes[1]);  // Generate TAC for the function body
+        tac_gen(root->nodes[3]);  // Generate TAC for the function body
         printf("EndFunc\n");
     } 
+    else if(strcmp(root->token, "FOR") == 0)
+    {
+        tac_gen(root->nodes[0]);
+
+        // Create labels for the start, end, and increment blocks
+        int start_label = label++;
+        int end_label = label++;
+        int inc_label = label++;
+
+        printf("L%d:\n", start_label);
+
+        // Generate TAC for the condition expression
+        getBool(root->nodes[1]);
+
+        printf("ifZ %s goto L%d\n", root->nodes[1]->token, end_label);  // Modify this line
+
+        // Generate TAC for the statements in the for loop body
+        tac_gen(root->nodes[3]);
+
+        printf("L%d:\n", inc_label);
+
+        // Generate TAC for the increment expression
+        tac_gen(root->nodes[2]);
+
+        printf("goto L%d\n", start_label);
+        printf("L%d:\n", end_label);
+    }
+    else if (strcmp(root->token, "WHILE") == 0) {
+        // Create labels for the start and end blocks
+        int start_label = label++;
+        int end_label = label++;
+
+        printf("L%d:\n", start_label);
+
+        // Generate TAC for the condition expression
+        getBool(root->nodes[0]);
+
+        printf("ifZ %s goto L%d\n", root->nodes[0]->token, end_label);  // Modify this line
+
+        // Generate TAC for the statements in the while loop body
+        tac_gen(root->nodes[1]);
+
+        printf("goto L%d\n", start_label);
+        printf("L%d:\n", end_label);
+    }
     else if (strcmp(root->token, "=") == 0) {
         // Handle assignment statements
         tac_gen(root->nodes[1]);
@@ -45,10 +90,11 @@ void tac_gen(node* root) {
 
         printf("L%d:\n", end_label);
     } 
-    else if (strcmp(root->token, "RETURN") == 0) {
+    else if (strcmp(root->token, "RET") == 0) {
         // Handle return statements
         tac_gen(root->nodes[0]);
-        printf("Return %s\n", root->nodes[0]->token);
+        printf("_t%d= %s\n",var, root->nodes[0]->token);
+        printf("Return _t%d\n",var++ );
     } 
     else if (strcmp(root->token, "+") == 0 || strcmp(root->token, "-") == 0
                || strcmp(root->token, "*") == 0 || strcmp(root->token, "/") == 0) {
