@@ -57,6 +57,23 @@ void tac_gen(node* root) {
         printf("goto L%d\n", start_label);
         printf("L%d:\n", end_label);
     }
+    else if (strcmp(root->token, "DO-WHILE") == 0) {
+        // Create labels for the start and end blocks
+        int start_label = label++;
+        int end_label = label++;
+
+        printf("L%d:\n", start_label);
+
+        // Generate TAC for the statements in the do-while loop body
+        tac_gen(root->nodes[0]);
+
+        printf("L%d:\n", end_label);
+
+        // Generate TAC for the condition expression
+        getBool(root->nodes[1]);
+
+        printf("if %s goto L%d\n", root->nodes[1]->token, start_label);  // Modify this line
+    }
     else if (strcmp(root->token, "=") == 0) {
         // Handle assignment statements
         tac_gen(root->nodes[1]);
