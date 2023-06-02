@@ -1,73 +1,72 @@
-1).
+1)
 function main():void
 {}
 
 function main():void
 {}
 
-2).
+2)
 function foo1(arg-> x:int):int
 {
     var x:int;
     return 0;
 }
 
-3).
+3)
 function foo1(arg-> x:int)
 {
-    retrun 0;
+  retrun 0;
 }
 
 function main():void
 {
-    var y:char;
-    var x:float;
-    var c:int;
-    foo1(c,y,x);
+  var y:char;
+  var x:float;
+  var c:int;
+  foo1(c,y,x);
 }
 
-4).
+4)
 function main():void
 {
     string str[5] = "kobi1";
     var x=str:int;
 }
 
-5).
+5)
 function main():void
 {
     string str[5] = "itamar1";
     var x = str:int;
-
     if(x=5)
     {
-        str = "tamir";
+      str = "tamir";
     }
 }
 
-6).
+6)
 function goo():char
 {}
 
 function goo(): int
 {}
 
-7).
+7)
 function main(): void {
-    foo2(x);
+  foo2(x);
 }
 
-8).
+8)
 function goo(arg-> x:int; arg-> y:float; arg-> f:real)
 {
-    return 1;
+  return 1;
 }
 
 function void main()
 {
-    var x,y:int;
-    var z:int*;
-    goo(x,y,z);
+  var x,y:int;
+  var z:int*;
+  goo(x,y,z);
 }
 
 9)
@@ -96,7 +95,7 @@ function main() : void
 12)
 function main() : void 
 {
- var x:int;
+  var x:int;
   x[3] = 'l';
 }
 
@@ -164,7 +163,7 @@ function main():void
 
 
 
-1).
+1)
 function main():void
 {
   var int b; b = 5;
@@ -173,7 +172,7 @@ function main():void
   a = 4;
 }
 
-2).
+2)
 function main(int x):int
 {
   b = 5;
@@ -181,7 +180,7 @@ function main(int x):int
   return 0;
 }
 
-3).
+3)
 function int foo(){
   function void goo(int x, y){
     x = x + y;
@@ -200,7 +199,7 @@ function real foo()
 
 function main():void {}
 
-4).
+4)
 function int foo(char y){
   var int x, y;
   var char x;
@@ -208,7 +207,7 @@ function int foo(char y){
 }
 function main():void {}
 
-5).
+5)
 function int foo(char y){
   function char goo(){ 
     return 'c';
@@ -223,7 +222,7 @@ function main():void{
   foo1();
 }
 
-6).
+6)
 function int foo(char y){
   var int* p;
   *p = t;
@@ -233,7 +232,7 @@ function int foo(char y){
 }
 function main():void {}
 
-7).
+7)
 function int foo(int x, y; char z){
   return 1;
 }
@@ -244,7 +243,7 @@ function main():void{
   foo(2, 3, 't');
 }
 
-8).
+8)
 function int foo(int* x, y;real* z){
   return 1;
 }
@@ -256,7 +255,7 @@ function main():void{
   foo(r, t, q);
 }
 
-9).
+9)
 function int foo(int x;char y)
 {
   if (x > 5)
@@ -272,7 +271,7 @@ function char* goo(){
 
 function main():void {}
 
-10).
+10)
 function int foo(int x;char y){
   return 3;
 }
@@ -293,7 +292,7 @@ function main():void{
   ptr = goo();
 }
 
-11).
+11)
 function main():void{
   var int x;
   var bool y = true;
@@ -313,10 +312,10 @@ function main():void{
   }
 }
 
-12).
+12)
 function main():void{
-  var int x = 3; 
-  var bool y = true; 
+  var x = 3:int; 
+  var y = true:bool; 
   while (y){
     X = 4;
   }
@@ -335,10 +334,10 @@ function main():void{
   }
 }
 
-12b).
+12b)
 function main():void{
-  var int x = 3;
-  var bool y = true;
+  var x = 3:int;
+  var y = true:bool;
   do {
     x = 4;
   } while (y);
@@ -359,19 +358,19 @@ function main():void{
 
 12c.
 function main():void{
-  var int i;
-  var int x = 0;
-  var bool y = true;
+  var i:int;
+  var x = 0:int;
+  var y = true:bool;
   for(i = 0; i < 10;i = i + 1){
     x = x + 5;
   }
 
-  for (i 'f';i < 10;i = i + 1)
+  for (i = 'f';i < 10;i = i + 1)
   {
     x = x + 6;
   }
 
-  for (i 0; i ;i = i + 1){
+  for (i = 0; i ;i = i + 1){
     x = x + 7;
   }
 
@@ -437,10 +436,10 @@ function main(): void
   var x = 2:int;
   var r = 3.5:real;
   var c = 'g':char;
-  X = X + 1;
+  x = x + 1;
   r = 3.15 - x;
   r = c * 8;
-  X = c / 2;
+  x = c / 2;
 }
 
 16)
@@ -501,7 +500,7 @@ function main(): void
   var y = null:real;
   var t = null:char*;
   y = y - x;
-  t=t+ 2+ 3;
+  t= t + 2 + 3;
   t = t - 3.5;
   y = y * x;
 }
@@ -512,7 +511,7 @@ function main():void
   var x = 2:int;
   var y = null:int;
   string s[10] = "hello";
-  var char* p;
+  var p:char*;
   p = &s[5];
   y = &x;
   s[4] = &y;
@@ -527,7 +526,7 @@ function main(): void
   var t:char*;
   var z:char;
   *y = 9;
-  X = *Z;
+  x = *Z;
   y = *(x = 5);
   *t = 'y'
   x = *(y - 5);
