@@ -6,12 +6,13 @@ void tac_gen(node* root) {
     if (root == NULL)
         return;
 
-    if (strcmp(root->token, "FUNCTION") == 0) {
+    if (strcmp(root->token, "FUNC") == 0) {
         printf("%s:\n", root->nodes[0]->token);  // Print the function name
         printf("BeginFunc\n");
-        tac_gen(root->nodes[1]);  // Generate TAC for the function body
+        tac_gen(root->nodes[3]);  // Generate TAC for the function body
         printf("EndFunc\n");
     } 
+    
     else if (strcmp(root->token, "=") == 0) {
         // Handle assignment statements
         tac_gen(root->nodes[1]);
@@ -45,10 +46,11 @@ void tac_gen(node* root) {
 
         printf("L%d:\n", end_label);
     } 
-    else if (strcmp(root->token, "RETURN") == 0) {
+    else if (strcmp(root->token, "RET") == 0) {
         // Handle return statements
         tac_gen(root->nodes[0]);
-        printf("Return %s\n", root->nodes[0]->token);
+        printf("_t%d= %s\n",var, root->nodes[0]->token);
+        printf("Return _t%d\n",var++ );
     } 
     else if (strcmp(root->token, "+") == 0 || strcmp(root->token, "-") == 0
                || strcmp(root->token, "*") == 0 || strcmp(root->token, "/") == 0) {
