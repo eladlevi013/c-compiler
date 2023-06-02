@@ -212,6 +212,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
     }
     else if (!strcmp(root->token, FOR_TOKEN))
     {
+        avoid_recursive_check_flag = 1;
 		char* initType = check_expression(root->nodes[0]);
 		if(strcmp("INT" ,initType))
         {
@@ -230,6 +231,9 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
 			isError++;
 			printf("FOR-increment must return type INT\n");
 		}
+        // preform FOR data child
+        semantic_analysis_recognize_scope(root->nodes[3], curr_scope);
+
 	}
     else if(!strcmp(root->token, BLOCK_TOKEN))
     {
