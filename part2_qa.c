@@ -165,7 +165,7 @@ function main():void
 
 
 1).
-function main():void
+function main(): void
 {
   var int b; b = 5;
   function main():void
@@ -174,26 +174,28 @@ function main():void
 }
 
 2).
-function main(int x):int
+function main(arg-> x:int):int
 {
-  b = 5;
   var b:int;
+  b = 5;
   return 0;
 }
 
 3).
 function int foo(){
-  function void goo(int x, y){
+  function void goo(arg-> x, y:int)
+  {
     x = x + y;
   }
-
-  function char goo(char c){ c = 'f';
+  function char goo(arg-> c:char)
+  {
+     c = 'f';
     return c;
   }
   return 1;
 }
 
-function real foo()
+function foo():real
 {
   return 3.15;
 }
@@ -201,16 +203,19 @@ function real foo()
 function main():void {}
 
 4).
-function int foo(char y){
-  var int x, y;
-  var char x;
+function foo(arg-> y:char):int
+{
+  var x, y:int;
+  var x:char;
   return 1; 
 }
 function main():void {}
 
 5).
-function int foo(char y){
-  function char goo(){ 
+function foo(char y):int
+{
+  function goo():char
+  { 
     return 'c';
   }
   return 1;
@@ -224,8 +229,9 @@ function main():void{
 }
 
 6).
-function int foo(char y){
-  var int* p;
+function foo(arg-> y:char):int
+{
+  var p:int*;
   *p = t;
   t = 5;
   y = 'f';
@@ -234,59 +240,69 @@ function int foo(char y){
 function main():void {}
 
 7).
-function int foo(int x, y; char z){
+function foo(arg-> x, y:int;arg-> z:char): int
+{
   return 1;
 }
 
-function main():void{
+function main():void
+{
   foo();
   foo(2, 3);
   foo(2, 3, 't');
 }
 
 8).
-function int foo(int* x, y;real* z){
+function foo(arg->x, y:int*;arg-> z:real*):int
+{
   return 1;
 }
 
 function main():void{
-  var int r, t;
-  var real q;
+  var r, t:int;
+  var q:real;
   foo(&r, &t, &q);
   foo(r, t, q);
 }
 
 9).
-function int foo(int x;char y)
+function foo(arg->x:int;arg-> y:char):int
 {
   if (x > 5)
+  {
     return x;
+  }
   if(y == 'g')
+  {
     return y;
+  }
   return 3.5;
 }
 
-function char* goo(){
+function goo():char* 
+{
   return "hello";
 }
 
 function main():void {}
 
 10).
-function int foo(int x;char y){
+function foo(int x;char y):int
+{
   return 3;
 }
 
-function int* goo(){
-  var int* x;
+function goo(): int*
+{
+  var x:int*;
   *x = 5;
   return x;
 }
 
 function main():void{
-  var int x;
-  var char y;
-  var int* ptr;
+  var x:int;
+  var y:char;
+  var ptr:int*;
   X = foo(x, '$');
   y = foo(x, '$');
   X = goo();
@@ -295,20 +311,23 @@ function main():void{
 
 11).
 function main():void{
-  var int x;
-  var bool y = true;
+  var x:int;
+  var y = true:bool;
   if(x > 5)
   {
     x = 4;
   }
-  if(y){
-    if(x + 3){
+  if(y)
+  {
+    if(x + 3)
+    {
       x = 6;
     }
   }
   if (false)
     y = false;
-  if('g'){
+  if('g')
+  {
     x = 4;
   }
 }
