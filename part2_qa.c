@@ -13,15 +13,15 @@ function foo1(arg-> x:int):int
 }
 
 3)
-function foo1(arg-> x:int)
+function foo1(arg-> x:int):int
 {
-  retrun 0;
+  return 0;
 }
 
 function main():void
 {
   var y:char;
-  var x:float;
+  var x:real;
   var c:int;
   foo1(c,y,x);
 }
@@ -57,12 +57,12 @@ function main(): void {
 }
 
 8)
-function goo(arg-> x:int; arg-> y:float; arg-> f:real)
+function goo(arg-> x:int; arg-> y:real; arg-> f:real):int
 {
   return 1;
 }
 
-function void main()
+function main():void
 {
   var x,y:int;
   var z:int*;
@@ -70,7 +70,7 @@ function void main()
 }
 
 9)
-function goo(arg-> x;arg-> y:float;arg-> f:real):int
+function goo(arg-> x:int;arg-> y:real;arg-> f:real):int
 {
   return 'd';
 }
@@ -166,9 +166,13 @@ function main():void
 1)
 function main(): void
 {
-  var int b; b = 5;
-  function main():void
-  var int a;
+  var b:int;
+  b = 5;
+}
+
+function main():void
+{
+  var a:int;
   a = 4;
 }
 
@@ -181,12 +185,12 @@ function main(arg-> x:int):int
 }
 
 3)
-function int foo(){
-  function void goo(arg-> x, y:int)
+function foo():int{
+  function goo(arg-> x, y:int):void
   {
     x = x + y;
   }
-  function char goo(arg-> c:char)
+  function goo(arg-> c:char):char
   {
      c = 'f';
     return c;
@@ -211,7 +215,7 @@ function foo(arg-> y:char):int
 function main():void {}
 
 5)
-function foo(char y):int
+function foo(arg->y:char):int
 {
   function goo():char
   { 
@@ -286,7 +290,7 @@ function goo():char*
 function main():void {}
 
 10)
-function foo(int x;char y):int
+function foo(arg->x:int ;arg->y:char):int
 {
   return 3;
 }
@@ -302,9 +306,9 @@ function main():void{
   var x:int;
   var y:char;
   var ptr:int*;
-  X = foo(x, '$');
+  x = foo(x, '$');
   y = foo(x, '$');
-  X = goo();
+  x = goo();
   ptr = goo();
 }
 
@@ -336,7 +340,7 @@ function main():void{
   var x = 3:int; 
   var y = true:bool; 
   while (y){
-    X = 4;
+    x = 4;
   }
 
   while (x == 4){
@@ -345,7 +349,7 @@ function main():void{
   while (true && y)
     y = false;
   while ('g'){
-    X = 4;
+    x = 4;
   }
   while(5 + x)
   {
@@ -398,7 +402,7 @@ function main():void{
     x = x + 8;
   }
 
-  for (i 0;i < 10 && y || false; i = i + 1)
+  for (i = 0;i < 10 && y || false; i = i + 1)
   {
     x = x + 5;
   }
@@ -425,7 +429,7 @@ function main(): void
   string s[10];
   var x=2:int;
   var y:real*;
-  s[x] = 'g'
+  s[x] = 'g';
   x[4] = 4;
   y[x] = 'r';
 }
@@ -439,7 +443,7 @@ function main(): void
   var y = null:real*;
   var z = 2:bool;
   var z1 = true:bool;
-  s[x] 'g';
+  s[x] = 'g';
   s[4] = 4;
   z1 = 3.15;
   x = null;
@@ -494,7 +498,7 @@ function main(): void
   r = 5 != 9;
   r = s[1] == s[5];
   r = x == true;
-  r = y l = x;
+  r = y != x;
   r = *y == x;
 }
 
@@ -516,7 +520,7 @@ function main(): void
 function main(): void
 {
   var x = 2:int;
-  var y = null:real;
+  var y = null:real*;
   var t = null:char*;
   y = y - x;
   t= t + 2 + 3;
@@ -545,8 +549,8 @@ function main(): void
   var t:char*;
   var z:char;
   *y = 9;
-  x = *Z;
-  y = *(x = 5);
-  *t = 'y'
+  x = *z;
+  y = *(x - 5);
+  *t = 'y';
   x = *(y - 5);
 }
