@@ -2,11 +2,17 @@
 int var = 0;
 int label = 1;
 
+
 void getBool(node* root);
 
 void tac_gen(node* root) {
+    
+    //printf("%s\n",root->token);
+
     if (root == NULL)
         return;
+    
+    
 
     if (strcmp(root->token, "FUNC") == 0) {
         printf("%s:\n", root->nodes[0]->token);  // Print the function name
@@ -80,10 +86,33 @@ void tac_gen(node* root) {
     else if (strcmp(root->token, "=") == 0) {
         // Handle assignment statements
         tac_gen(root->nodes[1]);
-        printf("_t%d = %s\n", var, root->nodes[1]->token);
-        printf("%s = _t%d\n", root->nodes[0]->token, var++);
-    } 
-    else if (strcmp(root->token, "IF") == 0 || strcmp(root->token, "IF-ELSE") == 0) {
+        
+        if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token,"PTR") )
+            printf("_t%d = %s\n", var, root->nodes[1]->token);
+        if(strcmp (root->nodes[0]->token,"PTR") ==0)
+            printf("*%s = _t%d\n ",root->nodes[0]->nodes[0]->token,var);
+        else 
+         printf("%s = _t%d\n", root->nodes[0]->token, var++);
+        
+    } else if (strcmp(root->token, "IF") == 0) {
+        // Generate TAC for the condition expression
+        getBool(root->nodes[0]);
+
+        // Create labels for if and end blocks
+        int if_label = label++;
+        int end_label = label++;
+
+        printf("ifZ %s goto L%d\n", root->nodes[0]->token, if_label);
+
+        // Generate TAC for the statements in the if block
+        tac_gen(root->nodes[1]);
+
+        printf("goto L%d\n", end_label);
+        printf("L%d:\n", if_label);
+
+        printf("L%d:\n", end_label);
+    }
+    else if (strcmp(root->token, "IF-ELSE") == 0) {
         // Generate TAC for the condition expression
         getBool(root->nodes[0]);
 
@@ -92,19 +121,16 @@ void tac_gen(node* root) {
         int else_label = label++;
         int end_label = label++;
 
-        printf("if %s goto L%d\n", root->nodes[0]->token, if_label);  // Modify this line
-
-        printf("goto L%d\n", else_label);
-        printf("L%d:\n", if_label);
+        printf("ifZ %s goto L%d\n", root->nodes[0]->token, if_label);
 
         // Generate TAC for the statements in the if block
         tac_gen(root->nodes[1]);
+
         printf("goto L%d\n", end_label);
+        printf("L%d:\n", if_label);
 
-        printf("L%d:\n", else_label);
-
-        // Generate TAC for the statements in the else block, if it exists
-        if (strcmp(root->token, "IF-ELSE") == 0 && root->count > 2) {
+        // Generate TAC for the statements in the else block
+        if (root->count > 2) {
             tac_gen(root->nodes[2]);
         }
 
@@ -116,6 +142,20 @@ void tac_gen(node* root) {
         printf("_t%d= %s\n",var, root->nodes[0]->token);
         printf("Return _t%d\n",var++ );
     } 
+    else if (strcmp(root->token, "ARRAY_ACCESS") == 0) {
+        // Handle accessing array elements
+        char* array_name = root->nodes[0]->token;
+        char* index = root->nodes[1]->token;
+        printf("%s = %s[%s]\n", root->token, array_name, index);
+    }
+    else if (strcmp(root->token, "PTR") == 0) {
+        // Handle dereferencing a pointer        
+        printf("_t%d = *%s\n",var, root->nodes[0]->token);
+    }
+    else if (strcmp(root->token, "&") == 0) {
+        // Handle getting the address of a variable
+        printf("_t%d = &%s\n", var, root->nodes[0]->token);
+    }
     else if (strcmp(root->token, "+") == 0 || strcmp(root->token, "-") == 0
                || strcmp(root->token, "*") == 0 || strcmp(root->token, "/") == 0) {
         // Generate TAC for arithmetic expressions
@@ -147,7 +187,7 @@ void getBool(node* root) {
         strcpy(root->token, "_t");
         sprintf(root->token + 2, "%d", var++);
     } 
-    else if (strcmp(root->token, "AND") == 0 || strcmp(root->token, "OR") == 0) {
+    else if (strcmp(root->token, "||") == 0 || strcmp(root->token, "&&") == 0) {
         // Generate TAC for boolean AND and OR operators
         getBool(root->nodes[0]);
         getBool(root->nodes[1]);
@@ -155,7 +195,7 @@ void getBool(node* root) {
         strcpy(root->token, "_t");
         sprintf(root->token + 2, "%d", var++);
     } 
-    else if (strcmp(root->token, "NOT") == 0) {
+    else if (strcmp(root->token, "!=") == 0) {
         // Generate TAC for boolean NOT operator
         getBool(root->nodes[0]);
         printf("_t%d = %s %s\n", var, root->token, root->nodes[0]->token);
