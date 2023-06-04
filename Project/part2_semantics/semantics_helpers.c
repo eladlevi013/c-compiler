@@ -188,7 +188,15 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
     else if(!strcmp(root->token, IF_TOKEN) || !strcmp(root->token, IF_ELSE_TOKEN) 
       || !strcmp(root->token, WHILE_TOKEN) || !strcmp(root->token, DO_WHILE_TOKEN))
     {
+        /*
+            Purpose of this block is to check whether 
+            the condition of the IF/IF-ELSE/WHILE/DO-WHILE
+            is of type BOOL.
+        */
+
         char* exp;
+
+        // checking whether the condition is of type BOOL
         if(!strcmp(root->token, DO_WHILE_TOKEN))
         {
             exp = check_expression(root->nodes[1]);
@@ -198,9 +206,12 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             exp = check_expression(root->nodes[0]);
         }
 
+        // if condition is not of type BOOL
         if(strcmp(BOOL_TOKEN, exp))
         {
             isError++;
+
+            // matching error message to the type of loop
             if(!strcmp(root->token, IF_TOKEN))
             {
                 printf("IF-condition must return type BOOL\n");
@@ -223,31 +234,32 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
     {
         avoid_recursive_check_flag = 1;
 		char* initType = check_expression(root->nodes[0]);
-		if(strcmp("INT" ,initType))
+		char* expType = check_expression(root->nodes[1]);
+		char* incType = check_expression(root->nodes[2]);
+
+        // Checking For components types
+		if(strcmp("INT", initType))
         {
 			isError++;
 			printf("FOR-init must initialized with type INT\n");
 		}
-		char* expType = check_expression(root->nodes[1]);
-		if(strcmp("BOOL" ,expType))
+		if(strcmp("BOOL", expType))
         {
 			isError++;
 			printf("FOR-condition must return type BOOL\n");
 		}
-		char* incType = check_expression(root->nodes[2]);
-		if(strcmp("INT" ,incType))
+		if(strcmp("INT", incType))
         {
 			isError++;
 			printf("FOR-increment must return type INT\n");
 		}
+
         // preform FOR data child
         semantic_analysis_recognize_scope(root->nodes[3], curr_scope);
-
 	}
     else if(!strcmp(root->token, BLOCK_TOKEN))
     {
         curr_scope = make_new_scope();
-
         new_scope_created_flag = 1;
     }
     else
@@ -330,9 +342,9 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         }
     }
 
+    // iterating over the children of the current node
     if(!avoid_recursive_check_flag)
     {
-        // iterating over the children of the current node
         for (int i = 0; i < root->count; i++)
         {
             semantic_analysis_recognize_scope(root->nodes[i], curr_scope);
@@ -420,9 +432,15 @@ void push_variables_to_symbol_table(char* type, node** vars, int size)
 
 char* check_expression(node* exp)
 {
+    /*
+        Purpose of this function is to return the 
+        type of the expression parameter.
+    */
+
     if (exp->type != NULL && !strcmp(exp->type, "ID"))
     {
         Symbol* node = get_symbol_from_previous_scopes_by_id(exp->token);
+
 		if(node != NULL)
         {
 			if(!strcmp(node->type, "STRING") && exp->count > 0)
@@ -453,11 +471,13 @@ char* check_expression(node* exp)
     {
         return exp->type;
     }
-    if (!strcmp(exp->token,"+")||!strcmp(exp->token,"-")||!strcmp(exp->token,"*")||!strcmp(exp->token,"/"))
+    if (!strcmp(exp->token,"+") || !strcmp(exp->token,"-") 
+        ||!strcmp(exp->token,"*")||!strcmp(exp->token,"/"))
     {
 		char* left, *right;
         left = check_expression(exp->nodes[0]);
         right = check_expression(exp->nodes[1]);
+        
 		if (!strcmp(left, "NULL") || !strcmp(right,"NULL"))
         {
 			return "NULL";
@@ -502,14 +522,17 @@ char* check_expression(node* exp)
         else 
         {
             isError++;
-			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
+			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n",
+                exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
 		}
 	}
-    else if(!strcmp(exp->token,">")||!strcmp(exp->token,"<")||!strcmp(exp->token,">=")||!strcmp(exp->token,"<="))
+    else if(!strcmp(exp->token, ">") || !strcmp(exp->token, "<")
+        ||!strcmp(exp->token, ">=") || !strcmp(exp->token, "<="))
     {
         char* left, *right;
         left = check_expression(exp->nodes[0]);
         right = check_expression(exp->nodes[1]);
+        
         if((!strcmp(left,"INT") && !strcmp(right,"INT")) || (!strcmp(left,"REAL") && !strcmp(right,"REAL")))
         {
             return "BOOL";
@@ -517,49 +540,35 @@ char* check_expression(node* exp)
 		else
         {
 			isError++;
-			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
+			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", 
+                exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
 		}
 	}
-    else if(!strcmp(exp->token,"==")||!strcmp(exp->token,"!="))
+    else if(!strcmp(exp->token,"==") || !strcmp(exp->token,"!="))
     {
         char* left, *right;
         left = check_expression(exp->nodes[0]);
         right = check_expression(exp->nodes[1]);
-        if(!strcmp(left,"INT")&&!strcmp(right,"INT"))
+
+        if((!strcmp(left,"INT") && !strcmp(right,"INT"))
+            || (!strcmp(left,"BOOL") && !strcmp(right,"BOOL"))
+            || (!strcmp(left,"CHAR") && !strcmp(right,"CHAR"))
+            || (!strcmp(left,"REAL") && !strcmp(right,"REAL"))
+            || (!strcmp(left,"INT*") && !strcmp(right,"INT*"))
+            || (!strcmp(left,"CHAR*") && !strcmp(right,"CHAR*"))
+            || (!strcmp(left,"REAL*") && !strcmp(right,"REAL*"))
+        )
         {
             return "BOOL";
         }
-        else if(!strcmp(left,"BOOL")&&!strcmp(right,"BOOL"))
-        {
-            return "BOOL";
-        }   
-        else if(!strcmp(left,"CHAR")&&!strcmp(right,"CHAR"))
-        {
-            return "BOOL";  
-        }
-        else if(!strcmp(left,"REAL")&&!strcmp(right,"REAL"))
-        {
-            return "BOOL";
-        }
-        else if(!strcmp(left,"INT*")&&!strcmp(right,"INT*"))
-        {
-            return "BOOL";
-        }
-        else if(!strcmp(left,"CHAR*")&&!strcmp(right,"CHAR*"))
-		{
-        	return "BOOL";
-        }
-        else if(!strcmp(left,"REAL*")&&!strcmp(right,"REAL*"))
-		{
-            return "BOOL";
-		}
         else
         {
             isError++;
-			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n", exp->token, left, right,exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
+			printf("Can't perform [%s] between [%s] and [%s] - (%s %s %s)\n",
+                exp->token, left, right, exp->nodes[0]->token, exp->token, exp->nodes[1]->token);
 		}
 	}
-    else if (!strcmp(exp->token,"LENGTH OF"))
+    else if (!strcmp(exp->token, "LENGTH OF"))
     {
 		char* expression;
         expression = check_expression(exp->nodes[0]);
@@ -569,13 +578,13 @@ char* check_expression(node* exp)
         }
 		else{
 			isError++;
-			printf("Can't perform || on [%s] - [|%s|]\n",  expression,exp->nodes[0]->token);
+			printf("Can't perform || on [%s] - [|%s|]\n", expression,exp->nodes[0]->token);
 		}
 	}
-    else if(!strcmp(exp->token,"!"))
+    else if(!strcmp(exp->token, "!"))
     {
         char* expression = check_expression(exp->nodes[0]);
-        if(!strcmp(expression,"BOOL"))
+        if(!strcmp(expression, "BOOL"))
         {
             return "BOOL";
         }
