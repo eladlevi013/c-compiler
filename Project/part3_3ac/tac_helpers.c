@@ -105,11 +105,11 @@ void tac_gen(node* root) {
         printf("ifZ %s goto L%d\n", root->nodes[0]->token, if_label);
 
         // Generate TAC for the statements in the if block
-        tac_gen(root->nodes[1]);
+        
 
         printf("goto L%d\n", end_label);
         printf("L%d:\n", if_label);
-
+        tac_gen(root->nodes[1]);
         printf("L%d:\n", end_label);
     }
     else if (strcmp(root->token, "IF-ELSE") == 0) {
