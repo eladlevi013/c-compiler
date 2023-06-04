@@ -84,15 +84,33 @@ void tac_gen(node* root) {
         printf("goto L%d\n", end_label);
     }
     else if (strcmp(root->token, "=") == 0) {
-        // Handle assignment statements
-        tac_gen(root->nodes[1]);
+        if(strcmp (root->nodes[1]->nodes[0]->token,"INDEX") ==0)
+        {
+            printf("_t%d = &%s\n", var, root->nodes[1]->token);
+            tac_gen(root->nodes[1]);
+            printf("%s = _t%d\n", root->nodes[0]->token,var );
+        }
+        else if(strcmp (root->nodes[0]->nodes[0]->token,"INDEX") ==0)
+        {
+            
+            printf("_t%d = &%s\n", var, root->nodes[0]->token);
+            tac_gen(root->nodes[0]);
+            printf("%s = _t%d\n", root->nodes[1]->token,var );
+        }
+        else
+        {
+            // Handle assignment statements
+       
+            tac_gen(root->nodes[1]);
+                
+            if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token,"PTR") )
+                printf("_t%d = %s\n", var, root->nodes[1]->token);
+            else if(strcmp (root->nodes[0]->token,"PTR") ==0)
+                printf("*%s = _t%d\n ",root->nodes[0]->nodes[0]->token,var);
+            else 
+                printf("%s = _t%d\n", root->nodes[0]->token, var++);
         
-        if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token,"PTR") )
-            printf("_t%d = %s\n", var, root->nodes[1]->token);
-        if(strcmp (root->nodes[0]->token,"PTR") ==0)
-            printf("*%s = _t%d\n ",root->nodes[0]->nodes[0]->token,var);
-        else 
-         printf("%s = _t%d\n", root->nodes[0]->token, var++);
+        }
         
     } else if (strcmp(root->token, "IF") == 0) {
         // Generate TAC for the condition expression
@@ -141,12 +159,20 @@ void tac_gen(node* root) {
         tac_gen(root->nodes[0]);
         printf("_t%d= %s\n",var, root->nodes[0]->token);
         printf("Return _t%d\n",var++ );
-    } 
-    else if (strcmp(root->token, "ARRAY_ACCESS") == 0) {
+    }  
+    else if (strcmp(root->token, "LENGTH") == 0) {
+        
+        printf("_t%d -> sizeof(%s)\n",var++,root->nodes[0]->token);
+        
+    }        
+
+    else if (strcmp(root->token, "INDEX") == 0) {
         // Handle accessing array elements
-        char* array_name = root->nodes[0]->token;
-        char* index = root->nodes[1]->token;
-        printf("%s = %s[%s]\n", root->token, array_name, index);
+        
+        
+        printf("_t%d = _t%d + %s\n",++var,var,root->nodes[0]->token);
+        //char* index = root->nodes[1]->token;
+       
     }
     else if (strcmp(root->token, "PTR") == 0) {
         // Handle dereferencing a pointer        
@@ -164,6 +190,18 @@ void tac_gen(node* root) {
         printf("_t%d = %s %s %s\n", var, root->nodes[0]->token, root->token, root->nodes[1]->token);
         strcpy(root->token, "_t");
         sprintf(root->token + 2, "%d", var++);
+    }
+    else if (strcmp(root->token, "VAR") == 0){
+        for(int i=0;i<root->count;i++){
+            
+            if(strcmp(root->nodes[i]->token,"STRING")==0){
+                  printf("_t%d = &%s\n",var,root->nodes[i]->nodes[0]->nodes[0]->token);
+                  tac_gen(root->nodes[i]->nodes[0]->nodes[0]->nodes[0]);
+            }
+          
+        }
+
+
     }
     else {
         // Generate TAC for other nodes recursively
