@@ -2,6 +2,8 @@
 int var = 0;
 int label = 1;
 
+void getBool(node* root);
+
 void tac_gen(node* root) {
     if (root == NULL)
         return;
@@ -73,6 +75,7 @@ void tac_gen(node* root) {
         getBool(root->nodes[1]);
 
         printf("if %s goto L%d\n", root->nodes[1]->token, start_label);  // Modify this line
+        printf("goto L%d\n", end_label);
     }
     else if (strcmp(root->token, "=") == 0) {
         // Handle assignment statements
