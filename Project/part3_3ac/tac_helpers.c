@@ -8,7 +8,7 @@ void getBool(node* root);
 void tac_gen(node* root) {
     
     //printf("%s\n",root->token);
-
+      
     if (root == NULL)
         return;
     
@@ -83,36 +83,37 @@ void tac_gen(node* root) {
         printf("if %s goto L%d\n", root->nodes[1]->token, start_label);  // Modify this line
         printf("goto L%d\n", end_label);
     }
-    else if (strcmp(root->token, "=") == 0) {
-        if(strcmp (root->nodes[1]->nodes[0]->token,"INDEX") ==0)
+    else if (strcmp(root->token, "=") == 0)
+    {
+        if(root->nodes[1]->count>0 && strcmp (root->nodes[1]->nodes[0]->token,"INDEX") ==0)
         {
             printf("_t%d = &%s\n", var, root->nodes[1]->token);
             tac_gen(root->nodes[1]);
             printf("%s = _t%d\n", root->nodes[0]->token,var );
         }
-        else if(strcmp (root->nodes[0]->nodes[0]->token,"INDEX") ==0)
-        {
-            
+        else if(root->nodes[0]->count>0 && strcmp(root->nodes[0]->nodes[0]->token,"INDEX") ==0)
+        {   
             printf("_t%d = &%s\n", var, root->nodes[0]->token);
             tac_gen(root->nodes[0]);
-            printf("%s = _t%d\n", root->nodes[1]->token,var );
+            printf("*_t%d = %s\n", var,root->nodes[1]->token );
         }
         else
-        {
+        { 
             // Handle assignment statements
-       
             tac_gen(root->nodes[1]);
                 
-            if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token,"PTR") )
+            if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token,"PTR"))
+            {
                 printf("_t%d = %s\n", var, root->nodes[1]->token);
-            else if(strcmp (root->nodes[0]->token,"PTR") ==0)
+            }
+            if (strcmp(root->nodes[0]->token,"PTR")==0)
+            {
                 printf("*%s = _t%d\n ",root->nodes[0]->nodes[0]->token,var);
-            else 
-                printf("%s = _t%d\n", root->nodes[0]->token, var++);
-        
+            }
+            printf("%s = _t%d\n", root->nodes[0]->token, var++);
         }
-        
-    } else if (strcmp(root->token, "IF") == 0) {
+    } 
+    else if (strcmp(root->token, "IF") == 0) {
         // Generate TAC for the condition expression
         getBool(root->nodes[0]);
 
@@ -176,7 +177,7 @@ void tac_gen(node* root) {
     }
     else if (strcmp(root->token, "PTR") == 0) {
         // Handle dereferencing a pointer        
-        printf("_t%d = *%s\n",var, root->nodes[0]->token);
+        printf("_t%d = *%s\n",var++, root->nodes[0]->token);
     }
     else if (strcmp(root->token, "&") == 0) {
         // Handle getting the address of a variable
@@ -184,12 +185,26 @@ void tac_gen(node* root) {
     }
     else if (strcmp(root->token, "+") == 0 || strcmp(root->token, "-") == 0
                || strcmp(root->token, "*") == 0 || strcmp(root->token, "/") == 0) {
-        // Generate TAC for arithmetic expressions
-        tac_gen(root->nodes[0]);
-        tac_gen(root->nodes[1]);
-        printf("_t%d = %s %s %s\n", var, root->nodes[0]->token, root->token, root->nodes[1]->token);
-        strcpy(root->token, "_t");
-        sprintf(root->token + 2, "%d", var++);
+        int flag=0;
+        for(int i=0;i<root->count;i++)
+            if(strcmp(root->nodes[i]->token,"PTR")==0)
+                flag=1;
+        if(flag==1){
+            // Generate TAC for arithmetic expressions
+            tac_gen(root->nodes[0]);
+            tac_gen(root->nodes[1]);
+            printf("_t%d = %s %s _t%d\n", var, root->nodes[0]->token, root->token, var-1);
+            strcpy(root->token, "_t");
+            sprintf(root->token + 2, "%d", var++);
+        }
+        else{
+            // Generate TAC for arithmetic expressions
+            tac_gen(root->nodes[0]);
+            tac_gen(root->nodes[1]);
+            printf("_t%d = %s %s %s\n", var, root->nodes[0]->token, root->token, root->nodes[1]->token);
+            strcpy(root->token, "_t");
+            sprintf(root->token + 2, "%d", var++);
+        }
     }
     else if (strcmp(root->token, "VAR") == 0){
         for(int i=0;i<root->count;i++){
