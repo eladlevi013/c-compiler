@@ -3,7 +3,7 @@ int var = 0;
 int label = 1;
 
 void getBool(node* root);
-void short_circuit_evaluation(node* root,int if_label,int end_label);
+void short_circuit_evaluation(node* root,int if_label,int end_label,int flag);
 
 void tac_gen(node* root) 
 {
@@ -51,17 +51,17 @@ void tac_gen(node* root)
         int start_label = label++;
  
         printf("L%d:\n", start_label);
+        // Generate TAC for the condition expression
         if(strcmp(root->nodes[0]->token, "||") == 0)
         {
-            short_circuit_evaluation(root,start_label+1,end_label);
+            short_circuit_evaluation(root,start_label+1,end_label,0);
         }
         else if(strcmp(root->nodes[0]->token, "&&") == 0)
         {
-             short_circuit_evaluation(root,start_label+1,end_label);
+             short_circuit_evaluation(root,start_label+1,end_label,0);
         }        
         else
         {
-            // Generate TAC for the condition expression
             getBool(root->nodes[0]);
             printf("\tifZ %s goto L%d\n", root->nodes[0]->token, end_label);  // Modify this line
             // Generate TAC for the statements in the while loop body
@@ -72,18 +72,30 @@ void tac_gen(node* root)
     }
     else if (strcmp(root->token, "DO-WHILE") == 0) 
     {
-        // Create labels for the start and end blocks
-        int start_label = label++;
+        avoid_rec=1;
         int end_label = label++;
+        int start_label = label++;
 
         printf("L%d:\n", start_label);
         // Generate TAC for the statements in the do-while loop body
         tac_gen(root->nodes[0]);
-        printf("L%d:\n", end_label);
+    
         // Generate TAC for the condition expression
-        getBool(root->nodes[1]);
-        printf("\tif %s goto L%d\n", root->nodes[1]->token, start_label);  // Modify this line
+        if(strcmp(root->nodes[1]->token, "||") == 0)
+        {
+            short_circuit_evaluation(root,start_label,end_label+1,0);
+        }
+        else if(strcmp(root->nodes[1]->token, "&&") == 0)
+        {
+            short_circuit_evaluation(root,start_label,end_label+1,0);
+        }        
+        else
+        {
+            getBool(root->nodes[1]);
+            printf("\tif %s goto L%d\n", root->nodes[1]->token, start_label);  // Modify this line
+        }  
         printf("\tgoto L%d\n", end_label);
+        printf("L%d:\n", end_label);
     }
     else if (strcmp(root->token, "=") == 0)
     {
@@ -122,11 +134,11 @@ void tac_gen(node* root)
         int if_label = label++;
         if(strcmp(root->nodes[0]->token, "||") == 0)
         {
-            short_circuit_evaluation(root,if_label,end_label);
+            short_circuit_evaluation(root,if_label,end_label,1);
         }
         else if(strcmp(root->nodes[0]->token, "&&") == 0)
         {
-             short_circuit_evaluation(root,if_label,end_label);
+             short_circuit_evaluation(root,if_label,end_label,0);
         }        
         else
         {
@@ -148,11 +160,11 @@ void tac_gen(node* root)
         int if_label = label++;
         if(strcmp(root->nodes[0]->token, "||") == 0)
         {
-            short_circuit_evaluation(root,if_label,else_label);
+            short_circuit_evaluation(root,if_label,else_label,1);
         }
         else if(strcmp(root->nodes[0]->token, "&&") == 0)
         {
-             short_circuit_evaluation(root,if_label,else_label);
+             short_circuit_evaluation(root,if_label,else_label,0);
         }        
         else
         {
@@ -177,7 +189,6 @@ void tac_gen(node* root)
     {
         // Handle return statements
         tac_gen(root->nodes[0]);
-        //printf("\t_t%d= %s\n",var, root->nodes[0]->token);??????????????????????
         printf("\tReturn _t%d\n",var-1);
     }  
     else if (strcmp(root->token, "LENGTH") == 0)
@@ -188,7 +199,6 @@ void tac_gen(node* root)
     {
         // Handle accessing array elements
         printf("\t_t%d = _t%d + %s\n",++var,var,root->nodes[0]->token);
-        //char* index = root->nodes[1]->token;
     }
     else if (strcmp(root->token, "PTR") == 0)
     {
@@ -324,25 +334,36 @@ void getBool(node* root)
     }
 }
 
-void short_circuit_evaluation(node* root,int if_label,int end_label)
+void short_circuit_evaluation(node* root,int if_label,int end_label,int flag)
 {  
-    for(int i=0;i<root->nodes[0]->count;i++)
+    for(int i=0;i<root->count;i++)
     {
         if(strcmp(root->nodes[i]->token, "||") == 0)
         {
             if(strcmp(root->nodes[i]->nodes[0]->token, "&&") == 0)
             {
-                short_circuit_evaluation(root->nodes[i],if_label+1,end_label+1);
+                short_circuit_evaluation(root->nodes[i],if_label+1,end_label+1,1);
             }
             for(int j=0;j<root->nodes[i]->count;j++)
             {   
                 getBool(root->nodes[i]->nodes[j]);
 
-                printf("\tif _t%d goto L%d\n", var-1, if_label);
-                if(j+1==(root->nodes[i]->count))
+                if(flag)
                 {
-                    printf("\tgoto L%d\n", end_label);
-                }                
+                    printf("\tif _t%d goto L%d\n", var-1, if_label);
+                    if(j+1==(root->nodes[i]->count))
+                    {
+                        printf("\tgoto L%d\n", end_label);
+                    }  
+                }
+                else
+                {
+                    printf("\tif _t%d goto L%d\n", var-1, end_label);
+                    if(j+1==(root->nodes[i]->count))
+                    {
+                        printf("\tgoto L%d\n", if_label);
+                    }  
+                }              
             }
             printf("L%d:\n", if_label);
         }
@@ -350,16 +371,27 @@ void short_circuit_evaluation(node* root,int if_label,int end_label)
         {
             if(strcmp(root->nodes[i]->nodes[0]->token, "||") == 0)
             {
-                short_circuit_evaluation(root->nodes[i],if_label+1,end_label);
+                short_circuit_evaluation(root->nodes[i],if_label+1,end_label,1);
             }
             for(int j=0;j<root->nodes[i]->count;j++)
             {   
                 getBool(root->nodes[i]->nodes[j]);
-
-                printf("\tifZ _t%d goto L%d\n", var-1, if_label);
-                if(j+1==(root->nodes[i]->count))
+                
+                if(flag)
                 {
-                    printf("\tgoto L%d\n", end_label);
+                    printf("\tifZ _t%d goto L%d\n", var-1, if_label);
+                    if(j+1==(root->nodes[i]->count))
+                    {
+                        printf("\tgoto L%d\n", end_label);
+                    }
+                }
+                else
+                {
+                    printf("\tifZ _t%d goto L%d\n", var-1, end_label);
+                    if(j+1==(root->nodes[i]->count))
+                    {
+                        printf("\tgoto L%d\n", if_label);
+                    }
                 }
             }
             printf("L%d:\n", if_label);

@@ -1,17 +1,13 @@
-function foo(arg-> x: real): int{
-    var a, b: int;
-    a = 23;
-    if (a == 23)
-        b = 10;
-    else
-        b = 19;
-    return b + a;
-}
-function main(): void {
-    var a, b: int;
-    a = 0;
-    while(a < 10) {
-        b = foo(3.14);
-        a = a + b;
-}
+function main():void{
+  var i:int;
+  var x = 0:int;
+  if( x <= 5  || x < 7 && x>5 )
+  {
+    x=8;
+  }
+  else
+  {
+    x=10;
+  }
+  
 }
