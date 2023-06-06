@@ -322,7 +322,7 @@ void short_circuit_evaluation(node* root,int if_label,int end_label)
         {
             if(strcmp(root->nodes[i]->nodes[0]->token, "&&") == 0)
             {
-                short_circuit_evaluation(root->nodes[i],if_label+1,end_label);
+                short_circuit_evaluation(root->nodes[i],if_label+1,end_label+1);
             }
             for(int j=0;j<root->nodes[i]->count;j++)
             {   
@@ -346,10 +346,10 @@ void short_circuit_evaluation(node* root,int if_label,int end_label)
             {   
                 getBool(root->nodes[i]->nodes[j]);
 
-                printf("\tifZ _t%d goto L%d\n", var-1, end_label);
+                printf("\tifZ _t%d goto L%d\n", var-1, if_label);
                 if(j+1==(root->nodes[i]->count))
                 {
-                    printf("\tgoto L%d\n", if_label);
+                    printf("\tgoto L%d\n", end_label);
                 }
             }
             printf("L%d:\n", if_label);
