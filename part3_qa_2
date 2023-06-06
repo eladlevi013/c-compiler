@@ -1,0 +1,172 @@
+///////////////////////////////////////////////
+// EX1
+function foo():int(arg->x:real)
+{
+	var a:int;
+	for(a = 1; a > 5; a = a + 1)
+	{
+		var i:int;
+		i = i + 1;
+	}
+	
+	while(a < 30)
+	{
+		a = a + 1;
+	}
+	
+	if(a == 23)
+	{
+		a = 10;
+	}
+	else 
+	{
+		a = 19;
+	}
+	return a;
+}
+
+function main():void
+{
+	var a,b:int;
+	a = 0;
+	while(a < 10)
+	{
+		b = foo(3.14);
+		a = a + b;
+	}
+}
+
+///////////////////////////////////////////////
+// EX2
+function foo(arg->x,y,z:int; arg->f:real)
+{
+	var d,t1,t2:int;
+	var t3:real;
+	var t4:char;
+	
+	t3 = 0.0;
+	if(x > y)
+	{
+		t2 = 0;
+	}
+	else 
+	{
+		x = x + y;
+		t3 = 2.0 + 1.1;
+	}
+	return 0;
+}
+
+function goo():int
+{
+	return 1;
+}
+
+function main():void
+{
+	var x:int;
+}
+
+///////////////////////////////////////////////
+// EX3
+function foo(arg->i,j,k):int
+{
+	function fee(arg->l,m,n:int):bool
+	{
+		return true;
+	}
+	return 0;
+}
+
+function main():void
+{
+	var a:int;
+	var b:int;
+	var c:bool;
+	string[10] d;
+	var e:int*;
+	var f:char*;
+	
+	f = "asda";
+	e = &a;
+	a = 0 + 1 / 2;
+	if(a == 0)
+	{
+		a = a - 1*0;
+	}
+	while(a < 10 && 4 >= 2 || 1 < 3)
+	{
+		if(b != a || a < 3)
+		{
+			b = foo(a, 1, 2);
+			a = a + b;
+		}
+	}
+}
+
+///////////////////////////////////////////////
+// EX4
+function foo():int
+{
+	var x:int;
+	var y:int*;
+	x = 5;
+	y = &x;
+	*y = 6;
+	x = 6;
+	if(&x == y && *y == x)
+	{
+		*y = 9;
+	}
+	{
+		var x:char*;
+		string[10] y;
+		var z:char;
+		y = "fooBar";
+		x = &y[5];
+		z = *(x - 5);
+		y = "barfoo";
+		{
+			var y:int;
+			x = "asd";
+			y = 2;
+			{
+				x = "asd";
+			}
+			y = 3;
+		}
+	}
+	return 0;
+}
+
+function main():void
+{
+	string[100] a,b;
+	var c:char;
+	char i:int;
+	c = 'e';
+	a[19] = 'f';
+	a[4 + 2] = 'g';
+	b = a;
+	b[3] = c;
+	a = "test";
+	i = |b|;
+	i = foo();
+}
+
+
+///////////////////////////////////////////////
+// EX5
+function foo1(arg->k:int): int
+{
+	var i=8:int;
+	do
+	{
+		i = i+ 1;
+	}
+	while(i < 20);
+	i = 9;
+	return i;
+}
+
+function main():void;
