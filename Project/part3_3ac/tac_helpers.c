@@ -131,24 +131,36 @@ void tac_gen(node* root)
     }
     else if (strcmp(root->token, "IF-ELSE") == 0) 
     {
-        // Generate TAC for the condition expression
-        getBool(root->nodes[0]);
-        // Create labels for if, else, and end blocks
-        int if_label = label++;
-        int else_label = label++;
+        avoid_rec=1;
         int end_label = label++;
-
-        printf("\tif %s goto L%d\n", root->nodes[0]->token, if_label);
-        // Generate TAC for the statements in the if block
+        int else_label = label++;
+        int if_label = label++;
+        if(strcmp(root->nodes[0]->token, "||") == 0)
+        {
+            short_circuit_evaluation(root,if_label,else_label);
+        }
+        else if(strcmp(root->nodes[0]->token, "&&") == 0)
+        {
+             short_circuit_evaluation(root,if_label,else_label);
+        }        
+        else
+        {
+            getBool(root->nodes[0]);
+            // Create labels for if and end blocks
+            printf("\tif %s goto L%d\n", root->nodes[0]->token, if_label);
+            // Generate TAC for the statements in the if block
+            printf("\tgoto L%d\n", else_label);
+            printf("L%d:\n", if_label);
+        }
         tac_gen(root->nodes[1]);
         printf("\tgoto L%d\n", end_label);
-        printf("L%d:\n", if_label);
+        printf("L%d:\n", else_label);
         // Generate TAC for the statements in the else block
         if (root->count > 2)
         {
             tac_gen(root->nodes[2]);
         }
-        printf("L%d:\n", end_label);
+        printf("L%d:\n", end_label);        
     } 
     else if (strcmp(root->token, "RET") == 0)
     {
