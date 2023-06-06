@@ -237,15 +237,18 @@ void tac_gen(node* root)
     }
     if (strcmp(root->token, "FUNC-CALL") == 0) 
     {
-        // Generate TAC for function call
-        char* func_name = root->nodes[0]->token;
+       
         
         // Generate TAC for arguments
         for (int i = 0; i < root->nodes[1]->count; i++)
         {
-            tac_gen(root->nodes[1]->nodes[i]);
-            printf("\tPushParam _t%d\n", var);
+          
+            printf("\t_t%d = %s\n",var,root->nodes[1]->nodes[i]->token);
+            printf("\tPushParam _t%d\n", var++);
         }
+        printf("\t_t%d = LCall %s\n",var,root->nodes[0]->token);
+        printf("\tPopParams %d\n",(root->nodes[1]->count+1)*4);
+        
     }
     else 
     {
