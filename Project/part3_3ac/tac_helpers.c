@@ -46,15 +46,26 @@ void tac_gen(node* root)
     }
     else if (strcmp(root->token, "WHILE") == 0)
     {
-        // Create labels for the start and end blocks
-        int start_label = label++;
+        avoid_rec=1;
         int end_label = label++;
-
+        int start_label = label++;
+ 
         printf("L%d:\n", start_label);
-        // Generate TAC for the condition expression
-        getBool(root->nodes[0]);
-        printf("\tifZ %s goto L%d\n", root->nodes[0]->token, end_label);  // Modify this line
-        // Generate TAC for the statements in the while loop body
+        if(strcmp(root->nodes[0]->token, "||") == 0)
+        {
+            short_circuit_evaluation(root,start_label+1,end_label);
+        }
+        else if(strcmp(root->nodes[0]->token, "&&") == 0)
+        {
+             short_circuit_evaluation(root,start_label+1,end_label);
+        }        
+        else
+        {
+            // Generate TAC for the condition expression
+            getBool(root->nodes[0]);
+            printf("\tifZ %s goto L%d\n", root->nodes[0]->token, end_label);  // Modify this line
+            // Generate TAC for the statements in the while loop body
+        }
         tac_gen(root->nodes[1]);
         printf("\tgoto L%d\n", start_label);
         printf("L%d:\n", end_label);
@@ -90,18 +101,18 @@ void tac_gen(node* root)
         }
         else
         { 
-            // Handle assignment statements
+            avoid_rec = 1;
             tac_gen(root->nodes[1]);
-                
-            if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token,"PTR"))
+            if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token,"PTR") && strcmp (root->nodes[1]->token,"FUNC-CALL"))
             {
-                printf("\t_t%d = %s\n", var, root->nodes[1]->token);
+               printf("\t_t%d = %s\n", var, root->nodes[1]->token);
             }
             if (strcmp(root->nodes[0]->token,"PTR")==0)
             {
                 printf("\t*%s = _t%d\n ",root->nodes[0]->nodes[0]->token,var);
             }
             printf("\t%s = _t%d\n", root->nodes[0]->token, var++);
+            
         }
     } 
     else if (strcmp(root->token, "IF") == 0) 
@@ -166,8 +177,8 @@ void tac_gen(node* root)
     {
         // Handle return statements
         tac_gen(root->nodes[0]);
-        printf("\t_t%d= %s\n",var, root->nodes[0]->token);
-        printf("\tReturn _t%d\n",var++ );
+        //printf("\t_t%d= %s\n",var, root->nodes[0]->token);??????????????????????
+        printf("\tReturn _t%d\n",var-1);
     }  
     else if (strcmp(root->token, "LENGTH") == 0)
     {
@@ -237,18 +248,14 @@ void tac_gen(node* root)
     }
     if (strcmp(root->token, "FUNC-CALL") == 0) 
     {
-       
-        
         // Generate TAC for arguments
         for (int i = 0; i < root->nodes[1]->count; i++)
         {
-          
             printf("\t_t%d = %s\n",var,root->nodes[1]->nodes[i]->token);
             printf("\tPushParam _t%d\n", var++);
         }
         printf("\t_t%d = LCall %s\n",var,root->nodes[0]->token);
         printf("\tPopParams %d\n",(root->nodes[1]->count+1)*4);
-        
     }
     else 
     {
