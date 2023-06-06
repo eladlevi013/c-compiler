@@ -54,11 +54,11 @@ void tac_gen(node* root)
         // Generate TAC for the condition expression
         if(strcmp(root->nodes[0]->token, "||") == 0)
         {
-            short_circuit_evaluation(root,start_label+1,end_label,0);
+            short_circuit_evaluation(root,start_label,end_label,1);
         }
         else if(strcmp(root->nodes[0]->token, "&&") == 0)
         {
-             short_circuit_evaluation(root,start_label+1,end_label,0);
+             short_circuit_evaluation(root,start_label,end_label,0);
         }        
         else
         {
