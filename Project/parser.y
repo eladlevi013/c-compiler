@@ -28,7 +28,8 @@ node *temp_node = NULL;
 
 %right ASSIGNMENT
 
-%left AND OR
+%left OR
+%left AND
 %left EQUALS GREATER_THAN GREATER_EQUALS LOWER_THAN LOWER_EQUALS NOT_EQUALS 
 %left NOT
 %left SUBSTRACT ADD

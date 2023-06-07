@@ -76,13 +76,13 @@ void tac_gen(node* root)
         int end_label = label++;
         int start_label = label++;
 
-        printf("L%d:\n", start_label);
+        printf("L%d:\n", start_label++);
         tac_gen(root->nodes[0]);
 
         // Generate TAC for the condition expression
         if(strcmp(root->nodes[1]->token, "||") == 0)
         {
-            short_circuit_evaluation(root,start_label,end_label,0);
+            short_circuit_evaluation(root,start_label,end_label,2);
         }
         else if(strcmp(root->nodes[1]->token, "&&") == 0)
         {
@@ -94,7 +94,7 @@ void tac_gen(node* root)
             printf("\tif %s goto L%d\n", root->nodes[1]->token, start_label);  // Modify this line
         }
 
-        printf("\tgoto L%d\n", start_label);
+        printf("\tgoto L%d\n", start_label-1);
         printf("L%d:\n", end_label);
     }
     else if (strcmp(root->token, "=") == 0)
@@ -276,19 +276,19 @@ void tac_gen(node* root)
         {
             printf("\t_t%d = %s\n",var,root->nodes[1]->nodes[i]->token);
             printf("\tPushParam _t%d\n", var++);
-            
-        }
-        for(int i=0; i<root->nodes[1]->count;i++)
-        {
-            
             if(strcmp(root->nodes[1]->nodes[i]->type,"INT")==0)
+            {
                 sum+=4;
+            }
             else if(strcmp(root->nodes[1]->nodes[i]->type,"REAL")==0)
+            {
                 sum+=8;
+            }
             else if(strcmp(root->nodes[1]->nodes[i]->type,"CHAR")==0)
+            {    
                 sum+=1;
+            }
         }
-        
         printf("\t_t%d = LCall %s\n",var,root->nodes[0]->token);
         printf("\tPopParams %d\n",sum);
     }
@@ -365,9 +365,19 @@ void short_circuit_evaluation(node* root,int if_label,int end_label,int flag)
     {
         if(strcmp(root->nodes[i]->token, "||") == 0)
         {
-            if(strcmp(root->nodes[i]->nodes[0]->token, "&&") == 0)
+            int temp_flag = 0;
+            for(int j=0;j<root->nodes[i]->count && !temp_flag;j++)
             {
-                short_circuit_evaluation(root->nodes[i],if_label+1,end_label+1,flag);
+                if(strcmp(root->nodes[i]->nodes[j]->token, "&&") == 0)
+                {
+                    short_circuit_evaluation(root->nodes[i],if_label+1,end_label+1,flag);
+                    temp_flag = 1;
+                }
+                else if(strcmp(root->nodes[i]->nodes[j]->token, "||") == 0)
+                {
+                    short_circuit_evaluation(root->nodes[i],if_label+1,end_label,1);
+                    temp_flag = 1;
+                }
             }
             for(int j=0;j<root->nodes[i]->count;j++)
             {
@@ -391,12 +401,23 @@ void short_circuit_evaluation(node* root,int if_label,int end_label,int flag)
                 }
             }
             printf("L%d:\n", if_label);
+            if_label+=1;
         }
         if(strcmp(root->nodes[i]->token, "&&") == 0)
         {
-            if(strcmp(root->nodes[i]->nodes[0]->token, "||") == 0)
+            int temp_flag = 0;
+            for(int j=0;j<root->nodes[i]->count && !temp_flag;j++)
             {
-                short_circuit_evaluation(root->nodes[i],if_label+1,end_label,1);
+                if(strcmp(root->nodes[i]->nodes[j]->token, "&&") == 0)
+                {
+                    short_circuit_evaluation(root->nodes[i],if_label+1,end_label,flag);
+                    temp_flag = 1;
+                }
+                else if(strcmp(root->nodes[i]->nodes[j]->token, "||") == 0)
+                {
+                    short_circuit_evaluation(root->nodes[i],if_label+1,end_label,1);
+                    temp_flag = 1;
+                }
             }
             for(int j=0;j<root->nodes[i]->count;j++)
             {
@@ -428,7 +449,7 @@ void short_circuit_evaluation(node* root,int if_label,int end_label,int flag)
                 }
             }
             printf("L%d:\n", if_label);
+            if_label+=1;
         }
-        if_label+=1;
     }
 }
