@@ -50,7 +50,8 @@ void tac_gen(node* root)
         int end_label = label++;
         int start_label = label++;
  
-        printf("L%d:\n", start_label);
+        printf("L%d:\n", start_label++);
+        
         // Generate TAC for the condition expression
         if(strcmp(root->nodes[0]->token, "||") == 0)
         {
@@ -67,7 +68,8 @@ void tac_gen(node* root)
             // Generate TAC for the statements in the while loop body
         }
         tac_gen(root->nodes[1]);
-        printf("\tgoto L%d\n", start_label);
+        
+        printf("\tgoto L%d\n", start_label-1);
         printf("L%d:\n", end_label);
     }
     else if (strcmp(root->token, "DO-WHILE") == 0) 
@@ -79,22 +81,22 @@ void tac_gen(node* root)
         printf("L%d:\n", start_label);
         // Generate TAC for the statements in the do-while loop body
         tac_gen(root->nodes[0]);
-    
+        
         // Generate TAC for the condition expression
         if(strcmp(root->nodes[1]->token, "||") == 0)
         {
-            short_circuit_evaluation(root,start_label,end_label+1,0);
+            short_circuit_evaluation(root,start_label,end_label,0);
         }
         else if(strcmp(root->nodes[1]->token, "&&") == 0)
         {
-            short_circuit_evaluation(root,start_label,end_label+1,0);
+            short_circuit_evaluation(root,start_label,end_label,0);
         }        
         else
         {
             getBool(root->nodes[1]);
             printf("\tif %s goto L%d\n", root->nodes[1]->token, start_label);  // Modify this line
         }  
-        printf("\tgoto L%d\n", end_label);
+        printf("\tgoto L%d\n", start_label);
         printf("L%d:\n", end_label);
     }
     else if (strcmp(root->token, "=") == 0)
@@ -388,7 +390,7 @@ void short_circuit_evaluation(node* root,int if_label,int end_label,int flag)
                     printf("\tifZ _t%d goto L%d\n", var-1, if_label);
                     if(j+1==(root->nodes[i]->count))
                     {
-                        printf("\tgoto L%d\n", end_label);
+                        printf("\tgoto L%d\n", end_label+1);
                     }
                 }
                 else
