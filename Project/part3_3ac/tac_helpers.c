@@ -54,7 +54,7 @@ void tac_gen(node* root)
         // Generate TAC for the condition expression
         if(strcmp(root->nodes[0]->token, "||") == 0)
         {
-            short_circuit_evaluation(root,start_label,end_label,1);
+            short_circuit_evaluation(root,start_label,end_label,2);
         }
         else if(strcmp(root->nodes[0]->token, "&&") == 0)
         {
@@ -115,15 +115,15 @@ void tac_gen(node* root)
         {
             avoid_rec = 1;
             tac_gen(root->nodes[1]);
-            if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token, PTR_TOKEN) && strcmp (root->nodes[1]->token,"FUNC-CALL"))
+            if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token, PTR_TOKEN) && strcmp (root->nodes[1]->token,"FUNC-CALL") && strcmp (root->nodes[1]->token,"LENGTH OF"))
             {
-               printf("\t_t%d = %s\n", var, root->nodes[1]->token);
+               printf("120\t_t%d = %s\n", var, root->nodes[1]->token);
             }
             if (strcmp(root->nodes[0]->token, PTR_TOKEN)==0)
             {
-                printf("\t*%s = _t%d\n ",root->nodes[0]->nodes[0]->token,var);
+                printf("124\t*%s = _t%d\n ",root->nodes[0]->nodes[0]->token,var);
             }
-            printf("\t%s = _t%d\n", root->nodes[0]->token, var++);
+            printf("126\t%s = _t%d\n", root->nodes[0]->token, var++);
         }
     }
     else if (strcmp(root->token, IF_TOKEN) == 0)
@@ -212,7 +212,7 @@ void tac_gen(node* root)
     else if (strcmp(root->token, "LENGTH OF") == 0)
     {
         // Handle getting the address of a variable
-        printf("\t_t%d = LENGTH OF %s \n", var, root->nodes[0]->token);
+        printf("215\t_t%d = LENGTH OF (%s) \n", var, root->nodes[0]->token);
     }
     else if (strcmp(root->token, "+") == 0
             || strcmp(root->token, "-") == 0
@@ -220,10 +220,14 @@ void tac_gen(node* root)
             || strcmp(root->token, "/") == 0)
     {
         int flag=0;
-
+        avoid_rec=1;
         for(int i=0;i<root->count;i++)
         {
             if(strcmp(root->nodes[i]->token, PTR_TOKEN)==0)
+            {
+                flag=1;
+            }
+            if(strcmp(root->nodes[i]->token, "LENGTH OF")==0)
             {
                 flag=1;
             }
@@ -351,7 +355,7 @@ void short_circuit_evaluation(node* root,int if_label,int end_label,int flag)
         {
             if(strcmp(root->nodes[i]->nodes[0]->token, "&&") == 0)
             {
-                short_circuit_evaluation(root->nodes[i],if_label+1,end_label+1,1);
+                short_circuit_evaluation(root->nodes[i],if_label+1,end_label+1,flag);
             }
             for(int j=0;j<root->nodes[i]->count;j++)
             {
@@ -386,12 +390,20 @@ void short_circuit_evaluation(node* root,int if_label,int end_label,int flag)
             {
                 get_bool(root->nodes[i]->nodes[j]);
 
-                if(flag)
+                if(flag==2)
                 {
                     printf("\tifZ _t%d goto L%d\n", var-1, if_label);
                     if(j+1==(root->nodes[i]->count))
                     {
                         printf("\tgoto L%d\n", end_label+1);
+                    }
+                }
+                else if(flag==1)
+                {
+                    printf("\tifZ _t%d goto L%d\n", var-1, if_label);
+                    if(j+1==(root->nodes[i]->count))
+                    {
+                        printf("\tgoto L%d\n", end_label);
                     }
                 }
                 else
