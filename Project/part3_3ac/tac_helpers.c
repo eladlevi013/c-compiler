@@ -124,17 +124,21 @@ void tac_gen(node* root)
         }
         else
         {
+            int ptrR=0;
             avoid_rec = 1;
             tac_gen(root->nodes[1]);
             if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token, PTR_TOKEN) && strcmp (root->nodes[1]->token,"FUNC-CALL") && strcmp (root->nodes[1]->token,"LENGTH OF"))
             {
+               
                printf("\t_t%d = %s\n", var, root->nodes[1]->token);
             }
-            if (strcmp(root->nodes[0]->token, PTR_TOKEN)==0)
+            else if (strcmp(root->nodes[0]->token, PTR_TOKEN)==0)
             {
+                 ptrR=1;
                 printf("\t*%s = _t%d\n ",root->nodes[0]->nodes[0]->token,var);
             }
-            printf("\t%s = _t%d\n", root->nodes[0]->token, var++);
+            if(ptrR==0)
+                printf("\t%s = _t%d\n", root->nodes[0]->token, var++);
         }
     }
     else if (strcmp(root->token, IF_TOKEN) == 0)
