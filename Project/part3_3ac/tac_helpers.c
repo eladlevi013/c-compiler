@@ -117,13 +117,13 @@ void tac_gen(node* root)
             tac_gen(root->nodes[1]);
             if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token, PTR_TOKEN) && strcmp (root->nodes[1]->token,"FUNC-CALL") && strcmp (root->nodes[1]->token,"LENGTH OF"))
             {
-               printf("120\t_t%d = %s\n", var, root->nodes[1]->token);
+               printf("\t_t%d = %s\n", var, root->nodes[1]->token);
             }
             if (strcmp(root->nodes[0]->token, PTR_TOKEN)==0)
             {
-                printf("124\t*%s = _t%d\n ",root->nodes[0]->nodes[0]->token,var);
+                printf("\t*%s = _t%d\n ",root->nodes[0]->nodes[0]->token,var);
             }
-            printf("126\t%s = _t%d\n", root->nodes[0]->token, var++);
+            printf("\t%s = _t%d\n", root->nodes[0]->token, var++);
         }
     }
     else if (strcmp(root->token, IF_TOKEN) == 0)
@@ -212,7 +212,7 @@ void tac_gen(node* root)
     else if (strcmp(root->token, "LENGTH OF") == 0)
     {
         // Handle getting the address of a variable
-        printf("215\t_t%d = LENGTH OF (%s) \n", var, root->nodes[0]->token);
+        printf("\t_t%d = LENGTH OF (%s) \n", var, root->nodes[0]->token);
     }
     else if (strcmp(root->token, "+") == 0
             || strcmp(root->token, "-") == 0
