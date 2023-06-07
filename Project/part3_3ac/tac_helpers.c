@@ -210,6 +210,12 @@ void tac_gen(node* root)
         // Handle getting the address of a variable
         printf("\t_t%d = &%s\n", var, root->nodes[0]->token);
     }
+    else if (strcmp(root->token, "LENGTH OF") == 0) 
+    {
+        
+        // Handle getting the address of a variable
+        printf("\t_t%d = LENGTH OF %s \n", var, root->nodes[0]->token);
+    }
     else if (strcmp(root->token, "+") == 0 || strcmp(root->token, "-") == 0
                || strcmp(root->token, "*") == 0 || strcmp(root->token, "/") == 0) 
     {
