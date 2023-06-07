@@ -124,21 +124,22 @@ void tac_gen(node* root)
         }
         else
         {
-            int ptrR=0;
+            int flag=0;
             avoid_rec = 1;
             tac_gen(root->nodes[1]);
             if(strcmp (root->nodes[1]->token,"&") && strcmp (root->nodes[1]->token, PTR_TOKEN) && strcmp (root->nodes[1]->token,"FUNC-CALL") && strcmp (root->nodes[1]->token,"LENGTH OF"))
             {
-               
                printf("\t_t%d = %s\n", var, root->nodes[1]->token);
             }
-            else if (strcmp(root->nodes[0]->token, PTR_TOKEN)==0)
+            if(strcmp(root->nodes[0]->token, PTR_TOKEN)==0)
             {
-                 ptrR=1;
-                printf("\t*%s = _t%d\n ",root->nodes[0]->nodes[0]->token,var);
+                flag = 1;
+                printf("\t*%s = _t%d\n",root->nodes[0]->nodes[0]->token,var++);
             }
-            if(ptrR==0)
+            if(!flag)
+            {
                 printf("\t%s = _t%d\n", root->nodes[0]->token, var++);
+            }
         }
     }
     else if (strcmp(root->token, IF_TOKEN) == 0)
@@ -217,7 +218,7 @@ void tac_gen(node* root)
     else if (strcmp(root->token, PTR_TOKEN) == 0)
     {
         // Handle dereferencing a pointer
-        printf("\t_t%d = *%s\n",var++, root->nodes[0]->token);
+        printf("\t_t%d = *%s\n",var, root->nodes[0]->token);
     }
     else if (strcmp(root->token, "&") == 0)
     {
