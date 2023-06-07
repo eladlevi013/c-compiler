@@ -270,16 +270,27 @@ void tac_gen(node* root)
     }
     if (strcmp(root->token, FUNC_CALL_TOKEN) == 0)
     {
+        int sum=0;
         // Generate TAC for arguments
         for (int i = 0; i < root->nodes[1]->count; i++)
         {
             printf("\t_t%d = %s\n",var,root->nodes[1]->nodes[i]->token);
             printf("\tPushParam _t%d\n", var++);
-            printf("%s",root->nodes[1]->nodes[i]->type);
+            
         }
-
+        for(int i=0; i<root->nodes[1]->count;i++)
+        {
+            
+            if(strcmp(root->nodes[1]->nodes[i]->type,"INT")==0)
+                sum+=4;
+            else if(strcmp(root->nodes[1]->nodes[i]->type,"REAL")==0)
+                sum+=8;
+            else if(strcmp(root->nodes[1]->nodes[i]->type,"CHAR")==0)
+                sum+=1;
+        }
+        
         printf("\t_t%d = LCall %s\n",var,root->nodes[0]->token);
-        printf("\tPopParams %d\n",(root->nodes[1]->count+1)*4);
+        printf("\tPopParams %d\n",sum);
     }
     else
     {
