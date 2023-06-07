@@ -1,7 +1,11 @@
 function main():void{
-  var x:int;
-  do
+  var i:int;
+  var x = 0:int;
+  var y = true:bool;
+
+  if((x==69 && x==76) || (x>5 && x==5) || (x==6))
   {
-    x = 5;
-  }while((x==1|| x==6) && (x==5||x==9));
+    x = x + 5;
+  }
+
 }

@@ -26,22 +26,33 @@ void tac_gen(node* root)
     }
     else if(strcmp(root->token, FOR_TOKEN) == 0)
     {
-        tac_gen(root->nodes[0]);
-        // Create labels for the start, end, and increment blocks
-        int start_label = label++;
+        avoid_rec = 1;
         int end_label = label++;
         int inc_label = label++;
+        int start_label = label++;
 
-        printf("L%d:\n", start_label);
-        // Generate TAC for the condition expression
-        get_bool(root->nodes[1]);
-        printf("\tifZ %s goto L%d\n", root->nodes[1]->token, end_label);  // Modify this line
-        // Generate TAC for the statements in the for loop body
-        tac_gen(root->nodes[3]);
-        printf("L%d:\n", inc_label);
-        // Generate TAC for the increment expression
+        tac_gen(root->nodes[0]);
+        printf("L%d:\n", start_label++);
+
+        if(strcmp(root->nodes[1]->token, "||") == 0)
+        {
+            short_circuit_evaluation(root,start_label,inc_label,2);
+        }
+        else if(strcmp(root->nodes[1]->token, "&&") == 0)
+        {
+            short_circuit_evaluation(root,start_label,end_label,0);
+        }
+        else
+        {
+            get_bool(root->nodes[1]);
+            printf("\tifZ %s goto L%d\n", root->nodes[1]->token, end_label);
+        }
+        
         tac_gen(root->nodes[2]);
-        printf("\tgoto L%d\n", start_label);
+        printf("L%d:\n", inc_label);
+
+        tac_gen(root->nodes[3]);
+        printf("\tgoto L%d\n", start_label-1);
         printf("L%d:\n", end_label);
     }
     else if (strcmp(root->token, WHILE_TOKEN) == 0)
@@ -82,7 +93,7 @@ void tac_gen(node* root)
         // Generate TAC for the condition expression
         if(strcmp(root->nodes[1]->token, "||") == 0)
         {
-            short_circuit_evaluation(root,start_label,end_label,2);
+            short_circuit_evaluation(root,start_label,end_label,1);
         }
         else if(strcmp(root->nodes[1]->token, "&&") == 0)
         {
@@ -383,7 +394,15 @@ void short_circuit_evaluation(node* root,int if_label,int end_label,int flag)
             {
                 get_bool(root->nodes[i]->nodes[j]);
 
-                if(flag)
+                if(flag==2)
+                {
+                    printf("\tif _t%d goto L%d\n", var-1, end_label+root->nodes[i]->count);
+                    if(j+1==(root->nodes[i]->count))
+                    {
+                        printf("\tgoto L%d\n", end_label-1);
+                    }
+                }
+                else if(flag==1)
                 {
                     printf("\tif _t%d goto L%d\n", var-1, if_label);
                     if(j+1==(root->nodes[i]->count))
