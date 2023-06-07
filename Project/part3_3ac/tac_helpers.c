@@ -275,6 +275,7 @@ void tac_gen(node* root)
         {
             printf("\t_t%d = %s\n",var,root->nodes[1]->nodes[i]->token);
             printf("\tPushParam _t%d\n", var++);
+            printf("%s",root->nodes[1]->nodes[i]->type);
         }
 
         printf("\t_t%d = LCall %s\n",var,root->nodes[0]->token);

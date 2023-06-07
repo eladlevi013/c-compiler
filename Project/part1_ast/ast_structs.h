@@ -10,4 +10,5 @@ typedef struct node
     int count;
     struct node **nodes;
     char* type;
+    char* id_type; //
 } node;

@@ -25,6 +25,7 @@ int push_symbol_record_to_current_scope(Symbol* symbol, Scope** head);
 void print_symbol_table(Scope* scope);
 void print_scopes(Scope* head);
 
+
 // Global Variables
 Scope* head = NULL;
 Scope* currScope = NULL;
