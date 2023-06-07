@@ -7,6 +7,5 @@ function foo(arg-> x:int): int
 function main():void{
   string s[10];
   var x = 0:int;
-  
-  x = foo(x);
+  x = foo(5);
 }

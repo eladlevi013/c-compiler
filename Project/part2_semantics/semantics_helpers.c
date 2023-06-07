@@ -36,8 +36,8 @@ void semantic_analysis(node* root)
 {
     printf("Semantic Analysis:\n");
 	semantic_analysis_recognize_scope(root, head);
-    
-    /* checking whether main exists - can be done 
+
+    /* checking whether main exists - can be done
         only after recognizing all scopes */
     if(main_defined_flag == 0)
     {
@@ -45,10 +45,10 @@ void semantic_analysis(node* root)
         printf("Code should have one main\n");
     }
 
-    /* should be empty - we are popping all 
+    /* should be empty - we are popping all
         scopes while checking the code */
     print_scopes(head);
-    
+
     // if code valid - print tree and 3ac
     if (isError)
     {
@@ -78,12 +78,12 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
     }
     else if(!strcmp(root->token, FUNC_TOKEN))
     {
-        // creating new function symbol record 
+        // creating new function symbol record
         Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
         new_symbol->id = root->nodes[0]->token;
         new_symbol->type = FUNC_TOKEN;
 
-        // case for main function        
+        // case for main function
         if(!strcmp(new_symbol->id, "main"))
         {
             // checking whether main already exists
@@ -91,7 +91,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             {
                 main_defined_flag = 1;
             }
-            else 
+            else
             {
                 isError++;
                 printf("Code should have only one main\n");
@@ -149,7 +149,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
 
                 int return_statement_found_flag = 0;
                 int ans = check_function_return_type(root->nodes[3], new_symbol->data, &return_statement_found_flag);
-                
+
                 // we haven't found a return statement, and its not void
                 if(!return_statement_found_flag && strcmp(new_symbol->data, VOID_TOKEN))
                 {
@@ -169,13 +169,13 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
             }
 
             new_scope_created_flag = 1;
-        } 
+        }
     }
-    else if(!strcmp(root->token, IF_TOKEN) || !strcmp(root->token, IF_ELSE_TOKEN) 
+    else if(!strcmp(root->token, IF_TOKEN) || !strcmp(root->token, IF_ELSE_TOKEN)
       || !strcmp(root->token, WHILE_TOKEN) || !strcmp(root->token, DO_WHILE_TOKEN))
     {
         /*
-            Purpose of this block is to check whether 
+            Purpose of this block is to check whether
             the condition of the IF/IF-ELSE/WHILE/DO-WHILE
             is of type BOOL.
         */
@@ -187,8 +187,8 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
         {
             exp = check_expression(root->nodes[1]);
         }
-        else 
-        { 
+        else
+        {
             exp = check_expression(root->nodes[0]);
         }
 
@@ -259,7 +259,7 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                avoid_recursive_check_flag = 1;
             }
             if(!strcmp(root->token, FUNC_CALL_TOKEN))
-            {   
+            {
                 checkFunctionCall(root->nodes[0]->token, root->nodes[1]);
             }
             if(!strcmp(root->token, "="))
@@ -419,7 +419,7 @@ void push_variables_to_symbol_table(char* type, node** vars, int size)
 char* check_expression(node* exp)
 {
     /*
-        Purpose of this function is to return the 
+        Purpose of this function is to return the
         type of the expression parameter.
     */
 
@@ -440,6 +440,11 @@ char* check_expression(node* exp)
 				}
 			    return "CHAR";
 			}
+
+            // sets the id_type property to be the type of the id
+            exp->type = (char*)malloc(sizeof(char) * strlen(node->type));
+            strcpy(exp->type, node->type);
+
 			return node->type;
 		}
         else
@@ -451,6 +456,7 @@ char* check_expression(node* exp)
 	}
     else if (exp->type != NULL && !strcmp(exp->type, "NULL"))
     {
+
         return "NULL";
     }
 	else if (exp->type != NULL)
@@ -801,12 +807,12 @@ int is_symbol_exists_in_scope(Symbol* symbol, Scope* head) {
 Symbol* get_symbol_from_previous_scopes_by_id(char* id)
 {
     Scope* current_scope = head;
-    while (current_scope != NULL) 
+    while (current_scope != NULL)
     {
         Symbol* current_symbol = current_scope->symbolTable;
-        while (current_symbol != NULL) 
+        while (current_symbol != NULL)
         {
-            if (strcmp(current_symbol->id, id) == 0) 
+            if (strcmp(current_symbol->id, id) == 0)
             {
                 return current_symbol;
             }

@@ -5,10 +5,9 @@
 
 // Structs
 typedef struct node
-{ 
+{
     char *token;
     int count;
     struct node **nodes;
     char* type;
-    char* id_type; //
 } node;
