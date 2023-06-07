@@ -4,6 +4,7 @@
 #include<string.h>
 #include<stdlib.h>
 #include "../part3_3ac/tac_helpers.c"
+#include "../tokers.h"
 
 // Part2 - Semantic Analysis
 void semantic_analysis(node* root);
@@ -29,22 +30,6 @@ Scope* head = NULL;
 Scope* currScope = NULL;
 int isError = 0;
 int main_defined_flag = 0;
-
-// Defines
-#define RETURN_TOKEN  "RET"
-#define VOID_TOKEN "VOID"
-#define CODE_TOKEN "CODE"
-#define FUNC_TOKEN "FUNC"
-#define IF_TOKEN "IF"
-#define IF_ELSE_TOKEN "IF-ELSE"
-#define WHILE_TOKEN "WHILE"
-#define DO_WHILE_TOKEN "DO-WHILE"
-#define FOR_TOKEN "FOR"
-#define BOOL_TOKEN "BOOL"
-#define BLOCK_TOKEN "BLOCK"
-#define VAR_TOKEN "VAR"
-#define FUNC_CALL_TOKEN "FUNC-CALL"
-#define STRING_TOKEN "STRING"
 
 void semantic_analysis(node* root)
 {
