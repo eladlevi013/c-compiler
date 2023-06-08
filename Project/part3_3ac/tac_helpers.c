@@ -102,7 +102,7 @@ void tac_gen(node* root)
         else
         {
             get_bool(root->nodes[1]);
-            printf("\tif %s goto L%d\n", root->nodes[1]->token, start_label);  // Modify this line
+            printf("\tif %s goto L%d\n", root->nodes[1]->token, end_label); 
         }
 
         printf("\tgoto L%d\n", start_label-1);
