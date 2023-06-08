@@ -113,15 +113,36 @@ void tac_gen(node* root)
         avoid_rec = 1;
         if(root->nodes[1]->count>0 && strcmp (root->nodes[1]->nodes[0]->token,"INDEX") ==0)
         {
-            printf("115\t_t%d = &%s\n", var, root->nodes[1]->token);
+            int saveVar = -1;
+            if(root->nodes[0]->count>0)
+            {
+                printf("\t_t%d = &%s\n", var, root->nodes[0]->token);
+                tac_gen(root->nodes[0]);
+                saveVar = var++;
+            }
+            printf("\t_t%d = &%s\n", var, root->nodes[1]->token);
             tac_gen(root->nodes[1]);
-            printf("117\t%s = _t%d\n", root->nodes[0]->token,var );
+            if(saveVar==-1)
+            {
+                printf("\t%s = *_t%d\n", root->nodes[0]->token,var );
+            }
+            else
+            {
+                printf("\t_t%d = _t%d\n", saveVar,var );
+            }
         }
         else if(root->nodes[0]->count>0 && strcmp(root->nodes[0]->nodes[0]->token,"INDEX") ==0)
         {
-            printf("121\t_t%d = &%s\n", var, root->nodes[0]->token);
+            printf("\t_t%d = &%s\n", var, root->nodes[0]->token);
             tac_gen(root->nodes[0]);
-            printf("123\t*_t%d = %s\n", var,root->nodes[1]->token );
+            if(root->nodes[1]->count>0)
+            {
+                tac_gen(root->nodes[1]);
+            }
+            else
+            {
+                printf("\t*_t%d = %s\n", var,root->nodes[1]->token );
+            }
         }
         else
         {
@@ -217,22 +238,27 @@ void tac_gen(node* root)
         {
             int saveVar = var++;
             tac_gen(root->nodes[0]);
-            printf("217\t_t%d = _t%d + %s\n",var,saveVar,root->nodes[0]->token);
+            printf("\t_t%d = %s + _t%d\n",var,root->nodes[0]->token,saveVar);
         }
         else
         {
-            printf("224\t_t%d = _t%d + %s\n",++var,var,root->nodes[0]->token);
+            printf("\t_t%d = _t%d + %s\n",++var,var,root->nodes[0]->token);
         }
     }
     else if (strcmp(root->token, PTR_TOKEN) == 0)
     {
         // Handle dereferencing a pointer
-        // Handle accessing array elements
+        // Handle accessing array elements.
         if(root->nodes[0]->count>0)
         {
+            int saveVar = var;
             tac_gen(root->nodes[0]);
+            var = saveVar;
         }
-        printf("221\t_t%d = *%s\n",var, root->nodes[0]->token);
+        else
+        {
+            printf("\t*_t%d = *%s\n",var, root->nodes[0]->token);
+        }
     }
     else if (strcmp(root->token, "&") == 0)
     {
@@ -268,7 +294,7 @@ void tac_gen(node* root)
             // Generate TAC for arithmetic expressions
             tac_gen(root->nodes[0]);
             tac_gen(root->nodes[1]);
-            printf("257\t_t%d = %s %s _t%d\n", var, root->nodes[0]->token, root->token, var-1);
+            printf("\t_t%d = %s %s _t%d\n", var, root->nodes[0]->token, root->token, var-1);
             strcpy(root->token, "_t");
             sprintf(root->token + 2, "%d", var++);
         }
@@ -277,7 +303,7 @@ void tac_gen(node* root)
             // Generate TAC for arithmetic expressions
             tac_gen(root->nodes[0]);
             tac_gen(root->nodes[1]);
-            printf("266\t_t%d = %s %s %s\n", var, root->nodes[0]->token, root->token, root->nodes[1]->token);
+            printf("\t_t%d = %s %s %s\n", var, root->nodes[0]->token, root->token, root->nodes[1]->token);
             strcpy(root->token, "_t");
             sprintf(root->token + 2, "%d", var++);
         }
