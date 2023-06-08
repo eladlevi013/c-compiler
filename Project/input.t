@@ -1,13 +1,8 @@
-function foo1(arg->k:int): int
+function main():void
 {
-	var i=8:int;
-	do
-	{
-		i = i+ 1;
-	}
-	while(i < 20);
-	i = 9;
-	return i;
+	var x:char*;
+	string y[10];
+	var z:char;
+	
+	y[5] = *x;
 }
-
-function main():void{}
