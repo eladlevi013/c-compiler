@@ -204,7 +204,7 @@ void tac_gen(node* root)
     else if (strcmp(root->token, RETURN_TOKEN) == 0)
     {
         tac_gen(root->nodes[0]);
-        printf("\tReturn _t%d\n",var-1);
+        printf("\tReturn %s\n",root->nodes[0]->token);
     }
     else if (strcmp(root->token, LENGTH_TOKEN) == 0)
     {

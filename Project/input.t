@@ -1,11 +1,13 @@
-function main():void
+function foo1(arg->k:int): int
 {
-	var x:int;
-	var p,t:int*;
-	var r:int*;
-	
-	x = *p;
-	*p = x;
-	p = t;
-	*t = *p;
+	var i=8:int;
+	do
+	{
+		i = i+ 1;
+	}
+	while(i < 20);
+	i = 9;
+	return i;
 }
+
+function main():void{}
