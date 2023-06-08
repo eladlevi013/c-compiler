@@ -224,17 +224,17 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
 		char* incType = check_expression(root->nodes[2]);
 
         // Checking For components types
-		if(strcmp("INT", initType))
+		if(strcmp(INT_TOKEN, initType))
         {
 			isError++;
 			printf("FOR-init must initialized with type INT\n");
 		}
-		if(strcmp("BOOL", expType))
+		if(strcmp(BOOL_TOKEN, expType))
         {
 			isError++;
 			printf("FOR-condition must return type BOOL\n");
 		}
-		if(strcmp("INT", incType))
+		if(strcmp(INT_TOKEN, incType))
         {
 			isError++;
 			printf("FOR-increment must return type INT\n");
@@ -268,17 +268,17 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                 {
                     char *left = get_symbol_from_previous_scopes_by_id(root->nodes[0]->token)->type;
                     char *right = check_expression(root->nodes[1]);
-                    if (!strcmp(left, "STRING"))
+                    if (!strcmp(left, STRING_TOKEN))
                     {
                         if (root->nodes[0]->count != 0 && !strcmp(root->nodes[0]->nodes[0]->token, "INDEX"))
                         {
                             char* indexType = check_expression(root->nodes[0]->nodes[0]->nodes[0]);
-                            if(strcmp("INT", indexType))
+                            if(strcmp(INT_TOKEN, indexType))
                             {
                                 isError++;
                                 printf("Size of string must be type INT not %s\n",indexType);
                             }
-                            if(strcmp(right,"CHAR"))
+                            if(strcmp(right, CHAR_TOKEN))
                             {
                                 isError++;
                                 printf("Assignment Error mismatch: can't assign %s to CHAR(STRING[INDEX])\n", right);
@@ -286,14 +286,14 @@ void semantic_analysis_recognize_scope(node* root, Scope* curr_scope)
                         }
                         else
                         {
-                            if(strcmp(right,"STRING"))
+                            if(strcmp(right, STRING_TOKEN))
                             {
                                 isError++;
                                 printf("Assignment Error mismatch: can't assign %s to %s\n", right,left);
                             }
                         }
                     }
-                    else if (strcmp(left, "STRING") && root->nodes[0]->count > 0)
+                    else if (strcmp(left, STRING_TOKEN) && root->nodes[0]->count > 0)
                     {
 					    isError++;
 					    printf("%s can't have index\n",left);
