@@ -148,11 +148,11 @@ void tac_gen(node* root)
         {
             int flag=0;
             tac_gen(root->nodes[1]);
-            if(strcmp (root->nodes[1]->token,ADDRESS_OPERATOR_TOKEN) && strcmp (root->nodes[1]->token, PTR_TOKEN) && strcmp (root->nodes[1]->token,"FUNC-CALL") && strcmp (root->nodes[1]->token,LENGTH_OF_TOKEN) && root->nodes[1]->count<2)
+            if(strcmp (root->nodes[1]->token,ADDRESS_OPERATOR_TOKEN) && strcmp (root->nodes[1]->token, PTR_TOKEN) && strcmp (root->nodes[1]->token, FUNC_CALL_TOKEN) && strcmp (root->nodes[1]->token,LENGTH_OF_TOKEN) && root->nodes[1]->count<2)
             {
                printf("\t_t%d = %s\n", var, root->nodes[1]->token);
             }
-            if(root->nodes[1]->count>=2 && strcmp (root->nodes[1]->token,"FUNC-CALL"))
+            if(root->nodes[1]->count>=2 && strcmp (root->nodes[1]->token,FUNC_CALL_TOKEN))
             {
                 var-=1;
             }
