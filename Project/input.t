@@ -6,6 +6,6 @@ function main():void{
 	var z:int*;
 	var v:int*;
 	var i=5:int; 
-	x = foo1();
+	x = |s|;
 	i=5;
 }
