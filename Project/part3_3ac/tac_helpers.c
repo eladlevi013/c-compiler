@@ -126,11 +126,11 @@ void tac_gen(node* root)
             tac_gen(root->nodes[1]);
             if(saveVar==-1)
             {
-                printf("\t%s = *_t%d\n", root->nodes[0]->token,var );
+                printf("\t%s = *_t%d\n", root->nodes[0]->token,var++ );
             }
             else
             {
-                printf("\t*_t%d = *_t%d\n", saveVar,var);
+                printf("\t*_t%d = *_t%d\n", saveVar,var++);
             }
         }
         else if(root->nodes[0]->count>0 && strcmp(root->nodes[0]->nodes[0]->token,INDEX_TOKEN) ==0)
@@ -449,19 +449,34 @@ void get_bool(node* root)
         strcmp(root->token, LESS_THAN_OR_EQUAL_OPERATOR_TOKEN) == 0 || strcmp(root->token, GREATER_THAN_OR_EQUAL_OPERATOR_TOKEN) == 0)
     {
         // Generate TAC for comparison operators
+        int flag=0;
+        if(root->nodes[0]->count>0 && strcmp (root->nodes[0]->nodes[0]->token, INDEX_TOKEN) ==0)
+        {
+            printf("\t_t%d = &%s\n", var, root->nodes[0]->token);
+            flag=1;
+        }
         tac_gen(root->nodes[0]);
+        int saveVar = var-1;
+        if(root->nodes[1]->count>0 && strcmp (root->nodes[1]->nodes[0]->token, INDEX_TOKEN) ==0)
+        {
+            if(flag)
+            {
+                saveVar = var++;
+            }
+            printf("\t_t%d = &%s\n", var, root->nodes[1]->token);
+        }
         tac_gen(root->nodes[1]);
         if(root->nodes[1]->count>0 && root->nodes[0]->count>0)
         {
-            printf("\t_t%d = _t%d %s _t%d\n", var, var-2, root->token,var-1);
+            printf("\t_t%d = _t%d %s _t%d\n", ++var, saveVar, root->token,var);
         }
         else if(root->nodes[1]->count>0)
         {
-            printf("\t_t%d = %s %s _t%d\n", var, root->nodes[0]->token, root->token, var-1);
+            printf("\t_t%d = %s %s _t%d\n", ++var, root->nodes[0]->token, root->token, var);
         }
         else if(root->nodes[0]->count>0)
         {
-            printf("\t_t%d = _t%d %s %s\n", var, var-1, root->token,root->nodes[1]->token);
+            printf("\t_t%d = _t%d %s %s\n", ++var, var, root->token,root->nodes[1]->token);
         }
         else
         {
