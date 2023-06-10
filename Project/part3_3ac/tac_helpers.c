@@ -116,29 +116,39 @@ void tac_gen(node* root)
         if(root->nodes[1]->count>0 && strcmp (root->nodes[1]->nodes[0]->token, INDEX_TOKEN) ==0)
         {
             int saveVar = -1;
-            if(root->nodes[0]->count>0)
+            if(root->nodes[0]->count>0 && strcmp (root->nodes[0]->token,PTR_TOKEN)==0)
             {
                 saveVar = var;
-                tac_gen(root->nodes[0]);
+                printf("\t_t%d = &%s\n", var, root->nodes[0]->nodes[0]->token);
+                var++;
             }
             printf("\t_t%d = &%s\n", var, root->nodes[1]->token);
             tac_gen(root->nodes[1]);
             if(saveVar==-1)
             {
-                printf("128\t%s = *_t%d\n", root->nodes[0]->token,var );
+                printf("\t%s = *_t%d\n", root->nodes[0]->token,var );
             }
             else
             {
-                printf("132\t_t%d = *_t%d\n", saveVar,var);
+                printf("\t*_t%d = *_t%d\n", saveVar,var);
             }
         }
         else if(root->nodes[0]->count>0 && strcmp(root->nodes[0]->nodes[0]->token,INDEX_TOKEN) ==0)
         {
             printf("\t_t%d = &%s\n", var, root->nodes[0]->token);
             tac_gen(root->nodes[0]);
-            if(root->nodes[1]->count>0)
+            if(root->nodes[1]->count>0 && strcmp (root->nodes[1]->token,PTR_TOKEN)==0)
             {
-                tac_gen(root->nodes[1]);
+                int saveVar = var++;
+                tac_gen(root->nodes[1]->nodes[0]);
+                if(root->nodes[1]->nodes[0]->count==0)
+                {
+                    printf("\t*_t%d = *%s\n", var-1, root->nodes[1]->nodes[0]->token);
+                }
+                else
+                {
+                    printf("\t*_t%d = *_t%d\n", saveVar,var-1);
+                }
             }
             else
             {
@@ -368,6 +378,7 @@ void tac_gen(node* root)
                 {
                     printf("\t_t%d = &%s\n",var,root->nodes[i]->nodes[0]->nodes[0]->nodes[0]->token);
                     tac_gen(root->nodes[i]->nodes[0]->nodes[0]->nodes[0]->nodes[0]);
+                    printf("\t*_t%d = %s\n",var-1,root->nodes[i]->nodes[0]->nodes[0]->nodes[1]->token);
                 }
                 else
                 {

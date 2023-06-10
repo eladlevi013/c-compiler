@@ -4,6 +4,6 @@ function main():void
 	string y[10];
 	var z:char;
 	
-	*x = y[5];
-	y[5] = *x;
+	y[2+55] = *x;
+	y[5]=*(x+5);
 }
