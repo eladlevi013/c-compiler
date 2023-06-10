@@ -8,7 +8,6 @@ int flag=0;
 
 void get_bool(node* root);
 void short_circuit_evaluation(node* root, int if_label, int end_label, int flag);
-int char_exists(char* str);
 
 void tac_gen(node* root)
 {
@@ -48,7 +47,7 @@ void tac_gen(node* root)
         else
         {
             get_bool(root->nodes[1]);
-            printf("\tifZ %s goto L%d\n", root->nodes[1]->token, end_label);
+            printf("\tifZ _t%d goto L%d\n", var-1, end_label);
         }
         
         tac_gen(root->nodes[2]);
@@ -77,7 +76,7 @@ void tac_gen(node* root)
         else
         {
             get_bool(root->nodes[0]);
-            printf("\tifZ %s goto L%d\n", root->nodes[0]->token, end_label);
+            printf("\tifZ _t%d goto L%d\n", var-1, end_label);
         }
 
         tac_gen(root->nodes[1]);
@@ -105,7 +104,7 @@ void tac_gen(node* root)
         else
         {
             get_bool(root->nodes[1]);
-            printf("\tif %s goto L%d\n", root->nodes[1]->token, end_label); 
+            printf("\tifZ _t%d goto L%d\n", var-1, end_label); 
         }
 
         printf("\tgoto L%d\n", start_label-1);
@@ -157,24 +156,19 @@ void tac_gen(node* root)
             }
             if(strcmp (root->nodes[1]->token,FUNC_CALL_TOKEN)==0 
             || strcmp (root->nodes[1]->token,LENGTH_OF_TOKEN) ==0 
-            || strcmp (root->nodes[1]->token,ADDRESS_OPERATOR_TOKEN) ==0
             || strcmp (root->nodes[1]->token,PTR_TOKEN)==0
             || root->nodes[1]->count>=2)
+            //|| strcmp (root->nodes[1]->token,ADDRESS_OPERATOR_TOKEN) ==0)
             {
-                if(char_exists(root->nodes[1]->token)==1)
+                if(strcmp(root->nodes[1]->token, PTR_TOKEN)==0 && root->nodes[1]->nodes[0]->count>0)
                 {
-                    flag=1;
-                    printf("\t%s = %s\n", root->nodes[0]->token, root->nodes[1]->token);
-                    var = (root->nodes[1]->nodes[0]->token[strlen(root->nodes[1]->token)-1])-'0'+2;
-                
+                    flag = 1;
+                    printf("222\t%s = *_t%d\n", root->nodes[0]->token, var-1);
                 }
-                else if(char_exists(root->nodes[1]->nodes[0]->token)==1)
+                else
                 {
-                    flag=1;
-                    printf("\t%s = %s\n", root->nodes[0]->token, root->nodes[1]->nodes[0]->token);
-                    var = (root->nodes[1]->nodes[0]->token[strlen(root->nodes[1]->nodes[0]->token)-1])-'0'+2;
+                    var-=1;
                 }
-                var-=1;
             }
             if(strcmp(root->nodes[0]->token, PTR_TOKEN)==0)
             {
@@ -204,7 +198,7 @@ void tac_gen(node* root)
         else
         {
             get_bool(root->nodes[0]);
-            printf("\tif %s goto L%d\n", root->nodes[0]->token, if_label);
+            printf("\tif _t%d goto L%d\n", var-1, if_label);
             printf("\tgoto L%d\n", end_label);
             printf("L%d:\n", if_label);
         }
@@ -230,7 +224,7 @@ void tac_gen(node* root)
         else
         {
             get_bool(root->nodes[0]);
-            printf("\tif %s goto L%d\n", root->nodes[0]->token, if_label);
+            printf("\tif _t%d goto L%d\n", var-1, if_label);
             printf("\tgoto L%d\n", else_label);
             printf("L%d:\n", if_label);
         }
@@ -260,9 +254,10 @@ void tac_gen(node* root)
         // Handle accessing array elements
         if(root->nodes[0]->count>0)
         {
+            avoid_rec=1;
             int saveVar = var++;
             tac_gen(root->nodes[0]);
-            printf("\t_t%d = %s + _t%d\n",var,root->nodes[0]->token,saveVar);
+            printf("\t_t%d = _t%d + _t%d\n",var,var-1,saveVar);
         }
         else
         {
@@ -275,9 +270,8 @@ void tac_gen(node* root)
         // Handle accessing array elements.
         if(root->nodes[0]->count>0)
         {
-            int saveVar = var;
+            avoid_rec = 1;
             tac_gen(root->nodes[0]);
-            var = saveVar;
         }
         else
         {
@@ -287,7 +281,7 @@ void tac_gen(node* root)
     else if (strcmp(root->token, ADDRESS_OPERATOR_TOKEN) == 0)
     {
         // Handle getting the address of a variable
-        printf("\t_t%d = &%s\n", var++, root->nodes[0]->token);
+        printf("\t_t%d = &%s\n", var, root->nodes[0]->token);
     }
     else if (strcmp(root->token, LENGTH_OF_TOKEN) == 0)
     {
@@ -308,7 +302,6 @@ void tac_gen(node* root)
                 flag=1;
             }
         }
-
         if(flag==1)
         {
             // Generate TAC for arithmetic expressions
@@ -326,17 +319,25 @@ void tac_gen(node* root)
             {
                 printf("\t_t%d = _t%d %s %s\n", var, var-1, root->token,root->nodes[1]->token);
             }
-            strcpy(root->token, "_t");
-            sprintf(root->token + 2, "%d", var);
+            var++;
         }
         else
         {
             // Generate TAC for arithmetic expressions
             tac_gen(root->nodes[0]);
-            tac_gen(root->nodes[1]);
-            printf("\t_t%d = %s %s %s\n", var, root->nodes[0]->token, root->token, root->nodes[1]->token);
-            strcpy(root->token, "_t");
-            sprintf(root->token + 2, "%d", var++);
+            tac_gen(root->nodes[1]);  
+            if (strcmp(root->nodes[0]->token, "+") == 0
+            || strcmp(root->nodes[0]->token, "-") == 0
+            || strcmp(root->nodes[0]->token, "*") == 0
+            || strcmp(root->nodes[0]->token, "/") == 0)
+            {
+                printf("\t_t%d = _t%d %s %s\n", var, var-1, root->token, root->nodes[1]->token);
+            }
+            else
+            {
+                printf("\t_t%d = %s %s %s\n", var,  root->nodes[0]->token, root->token, root->nodes[1]->token);
+            }
+            var++;
         }
     }
     else if (strcmp(root->token, VAR_TOKEN) == 0)
@@ -407,8 +408,7 @@ void get_bool(node* root)
         tac_gen(root->nodes[0]);
         tac_gen(root->nodes[1]);
         printf("\t_t%d = %s %s %s\n", var, root->nodes[0]->token, root->token, root->nodes[1]->token);
-        strcpy(root->token, "_t");
-        sprintf(root->token + 2, "%d", var++);
+        var++;
     }
     else if (strcmp(root->token, OR_OPERATOR_TOKEN) == 0 )
     {
@@ -416,8 +416,7 @@ void get_bool(node* root)
         get_bool(root->nodes[0]);
         get_bool(root->nodes[1]);
         printf("\t_t%d = %s %s %s\n", var, root->nodes[0]->token, root->token, root->nodes[1]->token);
-        strcpy(root->token, "_t");
-        sprintf(root->token + 2, "%d", var++);
+        var++;
     }
     else if( strcmp(root->token, AND_OPERATOR_TOKEN) == 0)
     {
@@ -425,16 +424,14 @@ void get_bool(node* root)
         get_bool(root->nodes[0]);
         get_bool(root->nodes[1]);
         printf("\t_t%d = %s %s %s\n", var, root->nodes[0]->token, root->token, root->nodes[1]->token);
-        strcpy(root->token, "_t");
-        sprintf(root->token + 2, "%d", var++);
+        var++;
     }
     else if (strcmp(root->token, NOT_EQUAL_OPERATOR_TOKEN) == 0)
     {
         // Generate TAC for boolean NOT operator
         get_bool(root->nodes[0]);
         printf("\t_t%d = %s %s\n", var, root->token, root->nodes[0]->token);
-        strcpy(root->token, "_t");
-        sprintf(root->token + 2, "%d", var++);
+        var++;
     }
     else
     {
@@ -547,14 +544,4 @@ void short_circuit_evaluation(node* root,int if_label,int end_label,int flag)
             if_label+=1;
         }
     }
-}
-
-int char_exists(char* str)
-{
-  for(int i=0; i<strlen(str)-1; i++)
-  {
-    if(str[i] == '_' && str[i+1] == 't')
-      return 1;
-  }
-  return 0;
 }
