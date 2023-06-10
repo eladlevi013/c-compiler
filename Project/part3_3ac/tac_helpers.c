@@ -122,9 +122,15 @@ void tac_gen(node* root)
                 tac_gen(root->nodes[0]);
             }
             printf("\t_t%d = &%s\n", var, root->nodes[1]->token);
-            var++;
             tac_gen(root->nodes[1]);
-            printf("\t_t%d = *_t%d\n", saveVar,var-1);
+            if(saveVar==-1)
+            {
+                printf("128\t%s = *_t%d\n", root->nodes[0]->token,var );
+            }
+            else
+            {
+                printf("132\t_t%d = *_t%d\n", saveVar,var);
+            }
         }
         else if(root->nodes[0]->count>0 && strcmp(root->nodes[0]->nodes[0]->token,INDEX_TOKEN) ==0)
         {
@@ -275,7 +281,13 @@ void tac_gen(node* root)
     else if (strcmp(root->token, ADDRESS_OPERATOR_TOKEN) == 0)
     {
         // Handle getting the address of a variable
-        printf("\t_t%d = &%s\n", var++, root->nodes[0]->token);
+        printf("\t_t%d = &%s\n", var, root->nodes[0]->token);
+        if(root->nodes[0]->count>0)
+        {
+            avoid_rec = 1;
+            tac_gen(root->nodes[0]);
+        }
+        var++;
     }
     else if (strcmp(root->token, LENGTH_OF_TOKEN) == 0)
     {
