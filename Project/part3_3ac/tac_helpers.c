@@ -456,7 +456,7 @@ void get_bool(node* root)
             flag=1;
         }
         tac_gen(root->nodes[0]);
-        int saveVar = var-1;
+        int saveVar = var;
         if(root->nodes[1]->count>0 && strcmp (root->nodes[1]->nodes[0]->token, INDEX_TOKEN) ==0)
         {
             if(flag)
@@ -472,11 +472,11 @@ void get_bool(node* root)
         }
         else if(root->nodes[1]->count>0)
         {
-            printf("\t_t%d = %s %s _t%d\n", ++var, root->nodes[0]->token, root->token, var);
+            printf("\t_t%d = %s %s _t%d\n", var, root->nodes[0]->token, root->token, var-1);
         }
         else if(root->nodes[0]->count>0)
         {
-            printf("\t_t%d = _t%d %s %s\n", ++var, var, root->token,root->nodes[1]->token);
+            printf("\t_t%d = _t%d %s %s\n", var, var-1, root->token,root->nodes[1]->token);
         }
         else
         {

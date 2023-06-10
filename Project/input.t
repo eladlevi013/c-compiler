@@ -1,9 +1,9 @@
 function main():void
 {
-	var x: char*;
+	var x : int;
 	string s[5] = "com";
-	if(*x == s[1])
-		*x = s[1];
-	else 
-		*x = s[2];
+	if(x==5)
+	{
+		
+	}
 }
