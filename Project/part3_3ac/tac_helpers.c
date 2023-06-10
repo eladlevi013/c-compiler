@@ -150,8 +150,8 @@ void tac_gen(node* root)
             if(strcmp (root->nodes[1]->token,FUNC_CALL_TOKEN)==0 
             || strcmp (root->nodes[1]->token,LENGTH_OF_TOKEN) ==0 
             || strcmp (root->nodes[1]->token,PTR_TOKEN)==0
-            || root->nodes[1]->count>=2)
-            //|| strcmp (root->nodes[1]->token,ADDRESS_OPERATOR_TOKEN) ==0)
+            || root->nodes[1]->count>=2
+            || strcmp (root->nodes[1]->token,ADDRESS_OPERATOR_TOKEN) ==0)
             {
                 if(strcmp(root->nodes[1]->token, PTR_TOKEN)==0 && root->nodes[1]->nodes[0]->count>0)
                 {
@@ -250,11 +250,11 @@ void tac_gen(node* root)
             avoid_rec=1;
             int saveVar = var++;
             tac_gen(root->nodes[0]);
-            printf("260\t_t%d = _t%d + _t%d\n",var,var-1,saveVar);
+            printf("\t_t%d = _t%d + _t%d\n",var,var-1,saveVar);
         }
         else
         {
-            printf("264\t_t%d = _t%d + %s\n",var,var-1,root->nodes[0]->token);
+            printf("\t_t%d = _t%d + %s\n",var,var-1,root->nodes[0]->token);
             var++;
         }
     }
@@ -275,7 +275,7 @@ void tac_gen(node* root)
     else if (strcmp(root->token, ADDRESS_OPERATOR_TOKEN) == 0)
     {
         // Handle getting the address of a variable
-        printf("\t_t%d = &%s\n", var, root->nodes[0]->token);
+        printf("\t_t%d = &%s\n", var++, root->nodes[0]->token);
     }
     else if (strcmp(root->token, LENGTH_OF_TOKEN) == 0)
     {
