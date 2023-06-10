@@ -118,20 +118,13 @@ void tac_gen(node* root)
             int saveVar = -1;
             if(root->nodes[0]->count>0)
             {
-                printf("\t_t%d = &%s\n", var, root->nodes[0]->token);
+                saveVar = var;
                 tac_gen(root->nodes[0]);
-                saveVar = var++;
             }
             printf("\t_t%d = &%s\n", var, root->nodes[1]->token);
+            var++;
             tac_gen(root->nodes[1]);
-            if(saveVar==-1)
-            {
-                printf("\t%s = *_t%d\n", root->nodes[0]->token,var );
-            }
-            else
-            {
-                printf("\t_t%d = _t%d\n", saveVar,var );
-            }
+            printf("\t_t%d = *_t%d\n", saveVar,var-1);
         }
         else if(root->nodes[0]->count>0 && strcmp(root->nodes[0]->nodes[0]->token,INDEX_TOKEN) ==0)
         {
@@ -257,11 +250,12 @@ void tac_gen(node* root)
             avoid_rec=1;
             int saveVar = var++;
             tac_gen(root->nodes[0]);
-            printf("\t_t%d = _t%d + _t%d\n",var,var-1,saveVar);
+            printf("260\t_t%d = _t%d + _t%d\n",var,var-1,saveVar);
         }
         else
         {
-            printf("\t_t%d = _t%d + %s\n",++var,var,root->nodes[0]->token);
+            printf("264\t_t%d = _t%d + %s\n",var,var-1,root->nodes[0]->token);
+            var++;
         }
     }
     else if (strcmp(root->token, PTR_TOKEN) == 0)
@@ -358,8 +352,16 @@ void tac_gen(node* root)
         for(int i=0;i<root->count;i++){
             if(strcmp(root->nodes[i]->token, STRING_TOKEN)==0)
             {
-                printf("\t_t%d = &%s\n",var,root->nodes[i]->nodes[0]->nodes[0]->token);
-                tac_gen(root->nodes[i]->nodes[0]->nodes[0]->nodes[0]);
+                if(strcmp(root->nodes[i]->nodes[0]->nodes[0]->token,"=")==0)
+                {
+                    printf("\t_t%d = &%s\n",var,root->nodes[i]->nodes[0]->nodes[0]->nodes[0]->token);
+                    tac_gen(root->nodes[i]->nodes[0]->nodes[0]->nodes[0]->nodes[0]);
+                }
+                else
+                {
+                    printf("\t_t%d = &%s\n",var,root->nodes[i]->nodes[0]->nodes[0]->token);
+                    tac_gen(root->nodes[i]->nodes[0]->nodes[0]->nodes[0]);
+                }
             }
             else
             {
@@ -418,7 +420,22 @@ void get_bool(node* root)
         // Generate TAC for comparison operators
         tac_gen(root->nodes[0]);
         tac_gen(root->nodes[1]);
-        printf("\t_t%d = %s %s %s\n", var, root->nodes[0]->token, root->token, root->nodes[1]->token);
+        if(root->nodes[1]->count>0 && root->nodes[0]->count>0)
+        {
+            printf("\t_t%d = _t%d %s _t%d\n", var, var-2, root->token,var-1);
+        }
+        else if(root->nodes[1]->count>0)
+        {
+            printf("\t_t%d = %s %s _t%d\n", var, root->nodes[0]->token, root->token, var-1);
+        }
+        else if(root->nodes[0]->count>0)
+        {
+            printf("\t_t%d = _t%d %s %s\n", var, var-1, root->token,root->nodes[1]->token);
+        }
+        else
+        {
+            printf("\t_t%d = %s %s %s\n", var, root->nodes[0]->token, root->token, root->nodes[1]->token);
+        }
         var++;
     }
     else if (strcmp(root->token, OR_OPERATOR_TOKEN) == 0 )

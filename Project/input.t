@@ -1,8 +1,11 @@
 function main():void
 {
-    var b:int;
-    var a:int;
-    b = 3;
-    a = 12;
-    a = (b + 2) - (a * 3) /6 + (5+6);
+    var x: char*;
+	var z:int;
+    string s[5] = "com";
+    *x = 'c';
+    if(|s| == z)
+        *x = s[1];
+    else 
+        *x = s[2];
 }
