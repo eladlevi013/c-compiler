@@ -1,9 +1,17 @@
-function main():void
-{
-	var x:char*;
-	string y[10];
-	var z:char;
-	
-	y[2+55] = *x;
-	y[5]=*(x+5);
+function foo(arg-> x: real): int{
+ var a, b: int;
+a = 23;
+if (a == 23)
+b = 10;
+else
+b = 19;
+return b + a+5+6;
+}
+function main(): void {
+var a, b: int;
+a = 0;
+while(a < 10) {
+b = foo(3.14);
+a = a + b;
+}
 }
