@@ -163,7 +163,7 @@ void tac_gen(node* root)
                 if(strcmp(root->nodes[1]->token, PTR_TOKEN)==0 && root->nodes[1]->nodes[0]->count>0)
                 {
                     flag = 1;
-                    printf("222\t%s = *_t%d\n", root->nodes[0]->token, var-1);
+                    printf("\t%s = *_t%d\n", root->nodes[0]->token, var-1);
                 }
                 else
                 {
