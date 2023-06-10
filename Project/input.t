@@ -1,9 +1,12 @@
 function main():void
 {
-	var x : char*;
-	string s[5] = "com";
-	if('c'==[5])
-		*x = s[1];
-	else 
-		*x = s[2];
+	var x:char*;
+	string y[10];
+	var z:char;
+	
+	y = "foobar";
+	x = &y[5];
+	z = *(x - 5);
+	y = "barfoo";
+	y[5] = *x;
 }

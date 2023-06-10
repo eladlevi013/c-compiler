@@ -110,7 +110,7 @@ void tac_gen(node* root)
         printf("\tgoto L%d\n", start_label-1);
         printf("L%d:\n", end_label);
     }
-    else if (strcmp(root->token, "=") == 0)
+    else if (strcmp(root->token, ASS_TOKEN) == 0)
     {
         avoid_rec = 1;
         if(root->nodes[1]->count>0 && strcmp (root->nodes[1]->nodes[0]->token, INDEX_TOKEN) ==0)
@@ -382,7 +382,7 @@ void tac_gen(node* root)
         for(int i=0;i<root->count;i++){
             if(strcmp(root->nodes[i]->token, STRING_TOKEN)==0)
             {
-                if(strcmp(root->nodes[i]->nodes[0]->nodes[0]->token,"=")==0)
+                if(strcmp(root->nodes[i]->nodes[0]->nodes[0]->token,ASS_TOKEN)==0)
                 {
                     printf("\t_t%d = &%s\n",var,root->nodes[i]->nodes[0]->nodes[0]->nodes[0]->token);
                     tac_gen(root->nodes[i]->nodes[0]->nodes[0]->nodes[0]->nodes[0]);
