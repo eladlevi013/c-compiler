@@ -254,7 +254,7 @@ void tac_gen(node* root)
         }
         else
         {
-            printf("\t_t%d = _t%d + %s\n",var,var-1,root->nodes[0]->token);
+            printf("\t_t%d = _t%d + %s\n",var+1,var,root->nodes[0]->token);
             var++;
         }
     }
