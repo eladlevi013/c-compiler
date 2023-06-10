@@ -325,13 +325,24 @@ void tac_gen(node* root)
         {
             // Generate TAC for arithmetic expressions
             tac_gen(root->nodes[0]);
+            int saveVar = var;
             tac_gen(root->nodes[1]);  
             if (strcmp(root->nodes[0]->token, "+") == 0
             || strcmp(root->nodes[0]->token, "-") == 0
             || strcmp(root->nodes[0]->token, "*") == 0
             || strcmp(root->nodes[0]->token, "/") == 0)
             {
-                printf("\t_t%d = _t%d %s %s\n", var, var-1, root->token, root->nodes[1]->token);
+                if (strcmp(root->nodes[1]->token, "+") == 0
+                || strcmp(root->nodes[1]->token, "-") == 0
+                || strcmp(root->nodes[1]->token, "*") == 0
+                || strcmp(root->nodes[1]->token, "/") == 0)
+                {
+                    printf("\t_t%d = _t%d %s _t%d\n", var, saveVar-1, root->token, var-1);
+                }
+                else
+                {
+                    printf("\t_t%d = _t%d %s %s\n", var, var-1, root->token, root->nodes[1]->token);
+                }
             }
             else
             {
