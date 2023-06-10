@@ -468,7 +468,7 @@ void get_bool(node* root)
         tac_gen(root->nodes[1]);
         if(root->nodes[1]->count>0 && root->nodes[0]->count>0)
         {
-            printf("\t_t%d = _t%d %s _t%d\n", ++var, saveVar, root->token,var);
+            printf("\t_t%d = _t%d %s _t%d\n", var, saveVar-1, root->token,var-1);
         }
         else if(root->nodes[1]->count>0)
         {
