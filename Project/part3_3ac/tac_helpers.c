@@ -158,9 +158,17 @@ void tac_gen(node* root)
             if(strcmp (root->nodes[1]->token,FUNC_CALL_TOKEN)==0 
             || strcmp (root->nodes[1]->token,LENGTH_OF_TOKEN) ==0 
             || strcmp (root->nodes[1]->token,ADDRESS_OPERATOR_TOKEN) ==0
-            || strcmp (root->nodes[1]->token,PTR_TOKEN)==0)
+            || strcmp (root->nodes[1]->token,PTR_TOKEN)==0
+            || root->nodes[1]->count>=2)
             {
-                if(char_exists(root->nodes[1]->nodes[0]->token)==1)
+                if(char_exists(root->nodes[1]->token)==1)
+                {
+                    flag=1;
+                    printf("\t%s = %s\n", root->nodes[0]->token, root->nodes[1]->token);
+                    var = (root->nodes[1]->nodes[0]->token[strlen(root->nodes[1]->token)-1])-'0'+2;
+                
+                }
+                else if(char_exists(root->nodes[1]->nodes[0]->token)==1)
                 {
                     flag=1;
                     printf("\t%s = %s\n", root->nodes[0]->token, root->nodes[1]->nodes[0]->token);
